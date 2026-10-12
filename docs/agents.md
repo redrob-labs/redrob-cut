@@ -1,9 +1,9 @@
 # Agents
 
-FilmCraft is built to be driven by AI agents, and largely built by them. Part 1 covers using
-FilmCraft from an agent. Part 2 covers developing FilmCraft as an agent.
+Redrob Cut is built to be driven by AI agents, and largely built by them. Part 1 covers using
+Redrob Cut from an agent. Part 2 covers developing Redrob Cut as an agent.
 
-# Part 1: driving FilmCraft
+# Part 1: driving Redrob Cut
 
 ## Redrob Code (built in)
 
@@ -15,7 +15,7 @@ open window.
 - The app starts `redrob acp` (Agent Client Protocol on stdio) on the first message. It looks for
   `redrob` in `REDROB_CODE_PATH`, then `PATH`, then `~/.redrob/bin`, `~/.local/bin`, `~/.bun/bin`.
 - The tools reach the agent as an MCP server named `redrob-cut`: this same executable, run as
-  `filmcraft mcp --connect 127.0.0.1:<port>`, on a free control port opened at launch and gated by
+  `redrob-cut mcp --connect 127.0.0.1:<port>`, on a free control port opened at launch and gated by
   a per-launch token (`REDROB_CUT_CONTROL_TOKEN`, handed only to that server). Nothing is written
   to your Redrob Code config for this.
 - Model calls are billed to the connected Redrob workspace (Help ▸ Connect to Redrob…). The first
@@ -28,55 +28,55 @@ panel) adds `redrob-cut` to `~/.config/redrob/redrob.json` as a local server, `[
 headless mode below, keeping everything else in that file. In this repository,
 `.redrob/redrob.json` registers the same two development servers as `.mcp.json`.
 
-Other agents (Claude Code, Codex, any MCP client) connect as before, through `filmcraft-cli mcp`.
+Other agents (Claude Code, Codex, any MCP client) connect as before, through `redrob-cut-cli mcp`.
 
 ## 1. MCP server
 
-`filmcraft-cli mcp` serves MCP on stdio. It has two modes:
+`redrob-cut-cli mcp` serves MCP on stdio. It has two modes:
 
 | Mode | Command | What it drives |
 |---|---|---|
-| Headless | `filmcraft-cli mcp --demo` or `--project p.fcproj` (neither = empty project) | an in-process engine session, no window |
-| Bridge | `filmcraft-cli mcp --bridge 127.0.0.1:9876` | the running desktop app started with `filmcraft --control 9876` |
+| Headless | `redrob-cut-cli mcp --demo` or `--project p.fcproj` (neither = empty project) | an in-process engine session, no window |
+| Bridge | `redrob-cut-cli mcp --bridge 127.0.0.1:9876` | the running desktop app started with `redrob-cut --control 9876` |
 
 Headless mode also takes `--data-dir DIR` (user presets). Any other option is rejected (exit 2):
 there are no folder-confinement flags such as `--automation-read-root`, so the server can read
 and write wherever the user can.
 
 **Claude Code.** The repository's `.mcp.json` registers both servers (`filmcraft` = bridge,
-`filmcraft-headless` = demo). Both point at `target/release/filmcraft-cli`, so build it first:
+`filmcraft-headless` = demo). Both point at `target/release/redrob-cut-cli`, so build it first:
 
 ```sh
 cargo build --release -p filmcraft-cli -p filmcraft
-./target/release/filmcraft --control 9876 &      # only for the bridge server
+./target/release/redrob-cut --control 9876 &      # only for the bridge server
 claude                                           # approve the project MCP servers when asked
 ```
 
 To register the server by hand, or for another MCP client, use the absolute binary path:
 
 ```sh
-claude mcp add filmcraft-headless -- /abs/path/filmcraft/target/release/filmcraft-cli mcp --demo
+claude mcp add filmcraft-headless -- /abs/path/filmcraft/target/release/redrob-cut-cli mcp --demo
 ```
 
 ```json
-{ "mcpServers": { "filmcraft": { "command": "/abs/path/filmcraft-cli", "args": ["mcp", "--bridge", "127.0.0.1:9876"] } } }
+{ "mcpServers": { "filmcraft": { "command": "/abs/path/redrob-cut-cli", "args": ["mcp", "--bridge", "127.0.0.1:9876"] } } }
 ```
 
 ### From an installed release
 
-The release packages ship `filmcraft-cli` alongside the desktop app, so no build is needed:
+The release packages ship `redrob-cut-cli` alongside the desktop app, so no build is needed:
 
 | Install | CLI |
 |---|---|
-| Windows (MSI) | `C:\Program Files\FilmCraft\filmcraft-cli.exe` by default (wherever you installed it otherwise), not on `PATH` |
-| Linux (deb, rpm) | `/usr/bin/filmcraft-cli` |
-| macOS | the separate `filmcraft-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
+| Windows (MSI) | `C:\Program Files\Redrob Cut\redrob-cut-cli.exe` by default (wherever you installed it otherwise), not on `PATH` |
+| Linux (deb, rpm) | `/usr/bin/redrob-cut-cli` |
+| macOS | the separate `redrob-cut-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
 
 ```sh
 # Windows, default install folder
-claude mcp add filmcraft -- "C:\Program Files\FilmCraft\filmcraft-cli.exe" mcp
+claude mcp add filmcraft -- "C:\Program Files\Redrob Cut\redrob-cut-cli.exe" mcp
 # Linux, or macOS with the CLI unzipped onto PATH
-claude mcp add filmcraft -- filmcraft-cli mcp
+claude mcp add filmcraft -- redrob-cut-cli mcp
 ```
 
 ### Tools
@@ -107,11 +107,11 @@ Typical loop: `project_inspect` / `sequence_inspect` → get ids → `command_ru
 ### Conventions
 
 The server follows a few conventions that make it predictable for agents. They are not
-FilmCraft-specific: the sibling craft apps' MCP servers can follow the same ones, so an agent that has
+Redrob Cut-specific: the sibling craft apps' MCP servers can follow the same ones, so an agent that has
 driven one app can drive the others.
 
 - **Core tools.** `command_list`, `command_run`, `command_batch`, `doc_inspect` and `render_preview`
-  work in both modes. The FilmCraft tools above stay as they are.
+  work in both modes. The Redrob Cut tools above stay as they are.
 - **Titles and annotations.** Every tool has a `title` and the four MCP hints (`readOnlyHint`,
   `destructiveHint`, `idempotentHint`, `openWorldHint`), so a client can let the read-only tools
   (lists, inspects, renders, screenshots) run without asking and ask before edits. When you add a
@@ -150,11 +150,11 @@ progress and stop it:
   ignore the token.
 - Bridge mode works the same way: the export runs as an app job (the app stays responsive and shows
   "Exporting… NN%" in its status bar) and the call returns when it is written, however long it
-  takes. `filmcraft-cli --bridge … exec file.exportMedia … wait=true` blocks the same way.
+  takes. `redrob-cut-cli --bridge … exec file.exportMedia … wait=true` blocks the same way.
 
 ## 2. Control channel
 
-`filmcraft --control 9876` (or `FILMCRAFT_CONTROL_PORT=9876`) listens on `127.0.0.1` only. Send one
+`redrob-cut --control 9876` (or `FILMCRAFT_CONTROL_PORT=9876`) listens on `127.0.0.1` only. Send one
 JSON request per line and get one JSON reply per line. Full method table:
 [control-protocol.md](control-protocol.md).
 
@@ -205,32 +205,32 @@ Notes:
 - `timeline.move` takes linked partners along while Linked Selection is on: moving a picture
   clip moves its sound by the same offset (pass `"linked": false` to move only the listed clips).
   It returns `{"moved": [ids]}`, every clip that moved.
-- Without a window, `filmcraft-cli run script.jsonl` (lines of `{"id":"…","params":{…}}`) runs the
+- Without a window, `redrob-cut-cli run script.jsonl` (lines of `{"id":"…","params":{…}}`) runs the
   same commands headlessly. See §2b for the rest of the CLI.
 
 ## 2b. Command-line interface
 
 Every command is also one shell call away. Options go anywhere; output is JSON; exit status is 0 on
-success, 1 when a command fails and 2 on a usage error. `filmcraft-cli help`, `filmcraft-cli --help`
-and `filmcraft-cli -h` print the reference and exit successfully.
-If the reader of stdout closes the pipe early (`filmcraft-cli commands | head`), the CLI drops the rest
+success, 1 when a command fails and 2 on a usage error. `redrob-cut-cli help`, `redrob-cut-cli --help`
+and `redrob-cut-cli -h` print the reference and exit successfully.
+If the reader of stdout closes the pipe early (`redrob-cut-cli commands | head`), the CLI drops the rest
 of its output but still finishes the work, saves included, and the exit status still reports
 failures; any other stdout write error is reported and makes the status 1.
 
 ```sh
-filmcraft-cli commands razor                     # find ids (add --json for machine output)
-filmcraft-cli describe timeline.razor            # one command: menu, shortcut, params, enabled now
-filmcraft-cli --demo inspect sequence            # project / sequence as JSON
-filmcraft-cli --project p.fcproj --save exec timeline.razor seconds=3.5
-filmcraft-cli --project p.fcproj exec effects.apply '{"effect":"Gaussian Blur"}'
-filmcraft-cli --project p.fcproj exec markers.exportCsv path=review.csv
-filmcraft-cli --project p.fcproj --save import a.mov b.wav
-filmcraft-cli --project p.fcproj export out.mp4  # format from the extension; waits for the job
-filmcraft-cli --project p.fcproj export out --preset "YouTube 1080p Full HD" --start 0 --end 10
-filmcraft-cli export --list-presets prores       # built-in + user presets (--data-dir for another library)
-filmcraft-cli --project p.fcproj exec export.queue.add preset="Apple ProRes 422 HQ" path=renders/ start=true wait=true
-echo '{"id":"file.newBin","params":{"name":"Selects"}}' | filmcraft-cli --project p.fcproj --save run -
-filmcraft-cli --bridge 127.0.0.1:9876 exec window.workspace.color   # the running app
+redrob-cut-cli commands razor                     # find ids (add --json for machine output)
+redrob-cut-cli describe timeline.razor            # one command: menu, shortcut, params, enabled now
+redrob-cut-cli --demo inspect sequence            # project / sequence as JSON
+redrob-cut-cli --project p.fcproj --save exec timeline.razor seconds=3.5
+redrob-cut-cli --project p.fcproj exec effects.apply '{"effect":"Gaussian Blur"}'
+redrob-cut-cli --project p.fcproj exec markers.exportCsv path=review.csv
+redrob-cut-cli --project p.fcproj --save import a.mov b.wav
+redrob-cut-cli --project p.fcproj export out.mp4  # format from the extension; waits for the job
+redrob-cut-cli --project p.fcproj export out --preset "YouTube 1080p Full HD" --start 0 --end 10
+redrob-cut-cli export --list-presets prores       # built-in + user presets (--data-dir for another library)
+redrob-cut-cli --project p.fcproj exec export.queue.add preset="Apple ProRes 422 HQ" path=renders/ start=true wait=true
+echo '{"id":"file.newBin","params":{"name":"Selects"}}' | redrob-cut-cli --project p.fcproj --save run -
+redrob-cut-cli --bridge 127.0.0.1:9876 exec window.workspace.color   # the running app
 ```
 
 `key=value` values are parsed as JSON when they can be (`3.5`, `true`, `[1,2]`), otherwise taken as
@@ -264,10 +264,10 @@ For any UI change, look at the result:
 3. Assert on `ui.inspect`, `ui.elements` and `sequence.inspect`.
 4. Take `ui.screenshot` (the whole window and the panel you changed) and open the PNG.
 
-Screenshots you commit must follow [AGENTS.md](../AGENTS.md) §1: FilmCraft only, openly licensed
+Screenshots you commit must follow [AGENTS.md](../AGENTS.md) §1: Redrob Cut only, openly licensed
 media, sidecar and `ATTRIBUTION.md` entry.
 
-# Part 2: developing FilmCraft
+# Part 2: developing Redrob Cut
 
 ## 4. Orientation, in this order
 

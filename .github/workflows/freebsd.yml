@@ -1,4 +1,4 @@
-# Builds FilmCraft on FreeBSD, inside a FreeBSD VM on a Linux runner (GitHub has no FreeBSD
+# Builds Redrob Cut on FreeBSD, inside a FreeBSD VM on a Linux runner (GitHub has no FreeBSD
 # runners), then runs packaging/freebsd/package.sh, the script the release job runs, and checks
 # the tarball. A broken FreeBSD build or package fails here before it can fail a release. Nothing
 # is uploaded and no secrets are used. (The test suite isn't run here yet: the ffmpeg-oracle and
@@ -54,5 +54,5 @@ jobs:
             rustc --version
             export CARGO_TARGET_DIR=/var/tmp/filmcraft-target CARGO_BUILD_JOBS=4
             bash packaging/freebsd/package.sh
-            tar -tzf dist/release/filmcraft-*-freebsd-x86_64.tar.gz \
-              | grep -E '/bin/filmcraft$|/bin/filmcraft-cli$|/share/applications/ai\.storyteller\.filmcraft\.desktop$|/share/doc/filmcraft/LICENSE-MIT$'
+            tar -tzf dist/release/redrob-cut-*-freebsd-x86_64.tar.gz \
+              | grep -E '/bin/redrob-cut$|/bin/redrob-cut-cli$|/share/applications/ai\.redrob\.cut\.desktop$|/share/doc/redrob-cut/LICENSE-MIT$'

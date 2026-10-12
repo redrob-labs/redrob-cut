@@ -1,5 +1,5 @@
 //! Wiring for the built-in agent: the token-gated control port it drives, the MCP server it
-//! starts (`filmcraft mcp`), and adding this app to the user's Redrob Code config.
+//! starts (`redrob-cut mcp`), and adding this app to the user's Redrob Code config.
 //!
 //! The control port (a free port, a fresh token per launch) is how Redrob Code's MCP server reaches
 //! this window; `--control <port>` keeps the upstream tokenless port instead.
@@ -32,7 +32,7 @@ pub fn agent_cwd() -> String {
     cwd.or(home).map(|d| d.to_string_lossy().to_string()).unwrap_or_else(|| ".".into())
 }
 
-/// `filmcraft mcp [--connect HOST:PORT]`: the MCP server on stdio. With `--connect` it drives the
+/// `redrob-cut mcp [--connect HOST:PORT]`: the MCP server on stdio. With `--connect` it drives the
 /// running window (the built-in agent's case, token from the environment); without, an
 /// in-process empty project, which is what Redrob Code in a terminal gets from
 /// [`add_to_redrob_code`].
@@ -42,26 +42,26 @@ pub fn serve_mcp(args: &[String]) -> i32 {
         [flag, addr] if flag == "--connect" => match filmcraft_automation::FilmcraftMcp::bridge(addr) {
             Ok(s) => s,
             Err(e) => {
-                eprintln!("filmcraft mcp: {e}");
+                eprintln!("redrob-cut mcp: {e}");
                 return 1;
             }
         },
         _ => {
-            eprintln!("usage: filmcraft mcp [--connect HOST:PORT]");
+            eprintln!("usage: redrob-cut mcp [--connect HOST:PORT]");
             return 2;
         }
     };
     let rt = match tokio::runtime::Builder::new_multi_thread().enable_all().build() {
         Ok(rt) => rt,
         Err(e) => {
-            eprintln!("filmcraft mcp: {e}");
+            eprintln!("redrob-cut mcp: {e}");
             return 1;
         }
     };
     match rt.block_on(server.serve_stdio()) {
         Ok(()) => 0,
         Err(e) => {
-            eprintln!("filmcraft mcp: {e}");
+            eprintln!("redrob-cut mcp: {e}");
             1
         }
     }

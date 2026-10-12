@@ -16,7 +16,7 @@ const JOB_POLL: Duration = Duration::from_millis(250);
 type Conn = (BufReader<tokio::net::tcp::OwnedReadHalf>, tokio::net::tcp::OwnedWriteHalf);
 
 /// The control token a tokened app server expects (the built-in agent's MCP server is started
-/// with it). Unset for `filmcraft --control <port>`, which takes none.
+/// with it). Unset for `redrob-cut --control <port>`, which takes none.
 pub const CONTROL_TOKEN_ENV: &str = "REDROB_CUT_CONTROL_TOKEN";
 
 pub struct BridgeClient {
@@ -80,7 +80,7 @@ impl BridgeClient {
                 let s = tokio::time::timeout(Duration::from_secs(5), TcpStream::connect(&self.addr))
                     .await
                     .map_err(|_| AutomationError::Bridge(format!("timed out connecting to {}", self.addr)))?
-                    .map_err(|e| AutomationError::Bridge(format!("cannot connect to {} ({e}); start the app with `filmcraft --control <port>`", self.addr)))?;
+                    .map_err(|e| AutomationError::Bridge(format!("cannot connect to {} ({e}); start the app with `redrob-cut --control <port>`", self.addr)))?;
                 let (r, w) = s.into_split();
                 *guard = Some((BufReader::new(r), w));
             }

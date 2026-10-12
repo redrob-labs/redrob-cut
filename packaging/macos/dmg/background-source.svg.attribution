@@ -1,0 +1,7 @@
+asset:        background-source.svg
+title:        Redrob Cut macOS DMG window background, source with live text
+author:       Redrob (McKinley Rice, Inc.)
+license:      Redrob trademark (the embedded lockup); layout MIT OR Apache-2.0. See assets/brand/README.md
+added:        2026-10-12 for Janghoon Lee (Redrob)
+source:       original layout for this repository, after the Redrob design system's product lockup (10-logo.md)
+notes:        References assets/brand/redrob-logo-primary.png. Outline it into background.svg (README.md).

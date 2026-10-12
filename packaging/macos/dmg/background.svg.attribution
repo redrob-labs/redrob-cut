@@ -1,8 +1,7 @@
 asset:        background.svg
-title:        FilmCraft macOS DMG window background
-author:       @XusBadia
-source:       original work
-license:      MIT OR Apache-2.0
-license-file: LICENSE-MIT, LICENSE-APACHE
-added:        2026-10-08 by @XusBadia
-notes:        Original work for this repository, derived from the FilmCraft app icon (assets/app-icon/filmcraft.svg, referenced via <image>, not copied). Text is outlined Inter / JetBrains Mono glyph paths. Used for the Finder window of the macOS DMG; packaging/macos/dmg/generate.py renders it to background.tiff. See packaging/macos/dmg/README.md.
+title:        Redrob Cut macOS DMG window background
+author:       Redrob (McKinley Rice, Inc.)
+license:      Redrob trademark (the embedded lockup); layout MIT OR Apache-2.0. See assets/brand/README.md
+added:        2026-10-12 for Janghoon Lee (Redrob)
+source:       background-source.svg with its text outlined by usvg (Pretendard SemiBold, OFL-1.1, from the Redrob design system)
+notes:        White ground, the Redrob primary lockup (assets/brand/redrob-logo-primary.png, embedded byte for byte) with the name Cut, and a gray-5 drag arrow. generate.py renders it to background.tiff.

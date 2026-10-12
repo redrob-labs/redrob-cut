@@ -3,7 +3,7 @@
 //!
 //! Only the handful of ACP methods the Agent palette needs are typed here; anything else is
 //! ignored (notifications) or declined (requests). The editing tools reach the agent as an MCP
-//! server named in `session/new`: this same executable, run as `filmcraft mcp --connect`, talking
+//! server named in `session/new`: this same executable, run as `redrob-cut mcp --connect`, talking
 //! to the window's token-gated control port. Nothing is written to the user's Redrob Code config,
 //! and keys and subscriptions stay in Redrob Code's own sign-in (`redrob auth login`).
 

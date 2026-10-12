@@ -10,6 +10,6 @@
   "excludedPrefixes": [],
   "proprietaryPrefixes": ["docs/brand/"],
   "proprietaryReason": "Upstream's NOTICE and docs/brand/LICENSE-brand.txt state that the ArtCraft name, wordmark and mark under this prefix are trademarks of the ArtCraft Team, not covered by MIT OR Apache-2.0, and that forks and modified versions must remove them. Until proprietaryReplaced is true the check reports how many of these files are still byte-identical to upstream; once true, it fails if any is.",
-  "proprietaryReplaced": false,
+  "proprietaryReplaced": true,
   "lastSyncedUpstream": null
 }

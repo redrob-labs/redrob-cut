@@ -151,18 +151,23 @@ pub struct Tokens {
 
 impl Tokens {
     pub fn for_kind(kind: ThemeKind) -> Self {
-        // Measured from Premiere 26 "Darkest" (plan/premiere/02-ui-ux.md §1).
+        // The neutral greys are upstream's, measured from an editor's "Darkest" theme (they are
+        // tuned for judging pictures). The brand colours - the accent and primary actions, the
+        // focus outline, the playhead, timecodes and drag values, track targeting, errors and the
+        // ground between panels - are the Redrob design tokens (`redrob_tokens`, generated from
+        // redrob-ui), so the editor reads as Redrob and matches the rest of the suite.
+        use crate::redrob_tokens::dark as rd;
         let dark = Tokens {
             kind,
-            app_bg: Color32::from_rgb(0, 0, 0),
+            app_bg: rd::SURFACE_BASE,
             header_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
             panel_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
             tab_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
             tab_text: Color32::from_rgb(0xb0, 0xb0, 0xb0),
             tab_text_active: Color32::from_rgb(0xd1, 0xd1, 0xd1),
-            focus: Color32::from_rgb(0x57, 0x94, 0xec),
-            accent: Color32::from_rgb(0x2f, 0x6b, 0xdf),
-            accent_hover: Color32::from_rgb(0x3f, 0x7c, 0xe8),
+            focus: rd::FOCUS_RING,
+            accent: rd::ACTION_PRIMARY,
+            accent_hover: rd::ACTION_PRIMARY_HOVER,
             text: Color32::from_rgb(0xd1, 0xd1, 0xd1),
             text_dim: Color32::from_rgb(0xb0, 0xb0, 0xb0),
             text_faint: Color32::from_rgb(0x6e, 0x6e, 0x6e),
@@ -175,7 +180,7 @@ impl Tokens {
             separator: Color32::from_rgb(0x30, 0x30, 0x30),
             row_alt: Color32::from_rgb(0x21, 0x21, 0x21),
             row_selected: Color32::from_rgb(0x33, 0x33, 0x33),
-            hot_text: Color32::from_rgb(0x40, 0x96, 0xf3),
+            hot_text: rd::INK_BRAND,
             pill_active_bg: Color32::from_rgb(0x3a, 0x3a, 0x3a),
             clip_bar_bg: Color32::from_rgb(58, 58, 70),
             control_surface: Color32::from_rgb(0x24, 0x24, 0x24),
@@ -226,16 +231,16 @@ impl Tokens {
             tl_ruler_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
             tl_ruler_tick: Color32::from_rgb(0x8d, 0x8d, 0x8d),
             tl_ruler_text: Color32::from_rgb(0xb0, 0xb0, 0xb0),
-            playhead: Color32::from_rgb(0x58, 0x95, 0xec),
-            track_target: Color32::from_rgb(0x26, 0x5b, 0xc1),
+            playhead: rd::ACTION_PRIMARY_HOVER,
+            track_target: rd::BLUE_7,
             in_out_shade: Color32::from_rgb(0x3f, 0x3f, 0x3f),
             clip_selected_border: Color32::from_rgb(0xeb, 0xeb, 0xeb),
             render_red: Color32::from_rgb(0xe3, 0x48, 0x50),
             render_yellow: Color32::from_rgb(0xf0, 0xf0, 0x4f),
             render_green: Color32::from_rgb(0x2d, 0x9d, 0x78),
             monitor_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            timecode: Color32::from_rgb(0x40, 0x96, 0xf3),
-            danger: Color32::from_rgb(0xdc, 0x51, 0x3d),
+            timecode: rd::INK_BRAND,
+            danger: rd::STATUS_DANGER,
             radius: 0.0,
             radius_sm: 4.0,
             gap: 4.0,
@@ -328,6 +333,15 @@ impl Tokens {
                 tl_header_bg: Color32::from_rgb(214, 214, 214),
                 tl_ruler_bg: Color32::from_rgb(226, 226, 226),
                 tl_ruler_text: Color32::from_rgb(80, 80, 80),
+                // Redrob's light-theme brand tokens (darker blues read on a light ground).
+                focus: crate::redrob_tokens::light::FOCUS_RING,
+                accent: crate::redrob_tokens::light::ACTION_PRIMARY,
+                accent_hover: crate::redrob_tokens::light::ACTION_PRIMARY_HOVER,
+                hot_text: crate::redrob_tokens::light::INK_BRAND,
+                timecode: crate::redrob_tokens::light::INK_BRAND,
+                playhead: crate::redrob_tokens::light::ACTION_PRIMARY,
+                track_target: crate::redrob_tokens::light::BLUE_8,
+                danger: crate::redrob_tokens::light::STATUS_DANGER,
                 ..dark
             },
         }
@@ -457,7 +471,7 @@ fn add_craft_fonts(fonts: &mut FontDefinitions) {
 
 pub fn apply_visuals(ctx: &egui::Context, t: &Tokens) {
     let light = t.kind == ThemeKind::Light;
-    // FilmCraft decides between light and dark itself (Settings ▸ Appearance ▸ Appearance Mode), so
+    // Redrob Cut decides between light and dark itself (Settings ▸ Appearance ▸ Appearance Mode), so
     // egui must not switch to its other built-in style when the system appearance changes.
     ctx.set_theme(if light { egui::Theme::Light } else { egui::Theme::Dark });
     let mut v = if light { Visuals::light() } else { Visuals::dark() };

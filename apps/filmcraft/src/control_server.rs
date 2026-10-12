@@ -34,12 +34,12 @@ pub fn start(port: u16, ctx: egui::Context, token: Option<String>) -> (Receiver<
     let listener = match TcpListener::bind(("127.0.0.1", port)) {
         Ok(l) => l,
         Err(e) => {
-            eprintln!("filmcraft: control server failed to bind 127.0.0.1:{port}: {e}");
+            eprintln!("redrob-cut: control server failed to bind 127.0.0.1:{port}: {e}");
             return (rx, None);
         }
     };
     let bound = listener.local_addr().map(|a| a.port()).ok();
-    eprintln!("filmcraft: control server listening on 127.0.0.1:{}", bound.unwrap_or(port));
+    eprintln!("redrob-cut: control server listening on 127.0.0.1:{}", bound.unwrap_or(port));
     let token: Option<Arc<str>> = token.map(Arc::from);
     std::thread::spawn(move || accept_loop(listener, tx, ctx, token));
     (rx, bound)
@@ -64,7 +64,7 @@ fn accept_loop(listener: TcpListener, tx: Sender<ControlRequest>, ctx: egui::Con
             serve(stream, &tx, &ctx, token.as_deref());
         });
         if let Err(e) = spawned {
-            eprintln!("filmcraft: control server could not start a connection thread: {e}");
+            eprintln!("redrob-cut: control server could not start a connection thread: {e}");
         }
     }
 }

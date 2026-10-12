@@ -28,24 +28,6 @@ iconography, images or other Adobe assets; open licences only; every asset attri
 | `docs/images/filmcraft-scopes.png` | FilmCraft contributors | Original work: FilmCraft UI crop (scopes of a Charade (1963) frame, public domain) | MIT OR Apache-2.0 |
 | `docs/images/filmcraft-effects.png` | FilmCraft contributors | Original work: FilmCraft screenshot crop; NASA Earth Views (US Government work, public domain) | MIT OR Apache-2.0; footage public domain |
 | `docs/images/filmcraft-timeline.png` | FilmCraft contributors | Original work: FilmCraft UI crop; thumbnails from Night of the Living Dead (1968) and Carnival of Souls (1962), CC0 Chopin waveform | MIT OR Apache-2.0; film frames public domain |
-| `assets/app-icon/filmcraft.svg` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; canonical vector | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `packaging/macos/dmg/background.svg` | @XusBadia | Original work: FilmCraft macOS DMG window background, derived from the FilmCraft app icon (`assets/app-icon/filmcraft.svg`); rendered to `background.tiff` by `packaging/macos/dmg/generate.py` | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) |
-| `packaging/macos/dmg/background.tiff` | @XusBadia | Rendered from `packaging/macos/dmg/background.svg` by `packaging/macos/dmg/generate.py` | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) |
-| `assets/app-icon/filmcraft-small.svg` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; lighter vector | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/filmcraft-1024.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; 1024 px render | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/filmcraft-macos-512.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; macOS runtime Dock icon (512 px) | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/filmcraft.icns` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; macOS .icns | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/filmcraft.ico` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Windows .ico (16-256 px) | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/16x16/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 16 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/24x24/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 24 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/32x32/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 32 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/48x48/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 48 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/64x64/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 64 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/128x128/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 128 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/256x256/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 256 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/512x512/apps/ai.storyteller.filmcraft.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme 512 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `assets/app-icon/hicolor/scalable/apps/ai.storyteller.filmcraft.svg` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; Linux hicolor theme scalable | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
-| `apps/filmcraft-web/web/favicon.png` | Brandon Thomas (FilmCraft owner) | Original work: FilmCraft app icon (owl with ear tufts), drawn by the owner in ArtCraft and vectorised; 128 px | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
 
 ## Golden test images
 
@@ -127,23 +109,45 @@ carry each font's licence as `OFL-<family>.txt`.
 | Shippori Mincho Regular (FONTDASU) | Japanese fallback for serif titles (native builds) | OFL-1.1 |
 | BIZ UDMincho Regular (Morisawa) | Japanese fallback for serif titles (native builds) | OFL-1.1 |
 
-## First-party brand marks
+## Redrob brand marks
 
-The ArtCraft name, wordmark and logos are trademarks of the ArtCraft Team. They are not open source and
-are not covered by the project licence; they may be used only unmodified and only in the context of
-FilmCraft, under [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt). Forks and modified versions must
-remove them (AGENTS.md §1.8).
+The Redrob name, symbol, tile and lockup are trademarks of Redrob (McKinley Rice, Inc.). They are not
+open source and not covered by the project licence. The sources in `assets/brand/` are verbatim
+copies of the Redrob design system's files, pinned by `assets/brand/SHA256SUMS`; every app icon and
+favicon is derived from them by `packaging/brand-assets.sh` (`assets/brand/README.md`). A fork that is
+not Redrob's must remove them. Upstream's ArtCraft marks (`docs/brand/`) were removed, as upstream's
+NOTICE requires of forks.
 
 | File | Author | Source | Licence |
 |---|---|---|---|
-| `docs/brand/artcraft-logo-white.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark, light ink for dark backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-logo-white.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark, light ink for dark backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-logo.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark (symbol + "ARTCRAFT"), dark ink for light backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-logo.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark (symbol + "ARTCRAFT"), dark ink for light backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark-black.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), black) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark-black.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), black) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), blue) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), blue) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
+| `assets/brand/favicon-16x16.png` | Redrob (McKinley Rice, Inc.) | Redrob favicon, 16 px tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/favicon-32x32.png` | Redrob (McKinley Rice, Inc.) | Redrob favicon, 32 px tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/favicon-48x48.png` | Redrob (McKinley Rice, Inc.) | Redrob favicon, 48 px tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/favicon-64x64.png` | Redrob (McKinley Rice, Inc.) | Redrob favicon, 64 px tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/favicon.ico` | Redrob (McKinley Rice, Inc.) | Redrob favicon, .ico (16, 32, 48) | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/favicon.svg` | Redrob (McKinley Rice, Inc.) | Redrob favicon, vector tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/icon-192.png` | Redrob (McKinley Rice, Inc.) | Redrob app icon, 192 px tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/icon-512.png` | Redrob (McKinley Rice, Inc.) | Redrob app icon, 512 px tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/redrob-logo-primary.png` | Redrob (McKinley Rice, Inc.) | Redrob primary lockup, for light grounds | Redrob trademark (`assets/brand/README.md`) |
+| `assets/brand/redrob-logo-primary-white.png` | Redrob (McKinley Rice, Inc.) | Redrob primary lockup, white wordmark for dark grounds | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/128x128/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/128x128/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/16x16/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/16x16/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/24x24/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/24x24/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/256x256/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/256x256/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/32x32/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/32x32/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/48x48/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/48x48/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/512x512/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/512x512/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/64x64/apps/ai.redrob.cut.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/64x64/apps/ai.redrob.cut.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/hicolor/scalable/apps/ai.redrob.cut.svg` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (hicolor/scalable/apps/ai.redrob.cut.svg), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/redrob-cut-256.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (redrob-cut-256.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/redrob-cut-512.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (redrob-cut-512.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/redrob-cut.icns` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (redrob-cut.icns), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `assets/app-icon/redrob-cut.ico` | Redrob (McKinley Rice, Inc.) | Redrob Cut app icon (redrob-cut.ico), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
+| `apps/filmcraft-web/web/favicon.png` | Redrob (McKinley Rice, Inc.) | Redrob Cut web favicon (the 64 px Redrob tile) | Redrob trademark (`assets/brand/README.md`) |
+| `apps/filmcraft-web/web/favicon.svg` | Redrob (McKinley Rice, Inc.) | Redrob Cut web favicon (the vector Redrob tile) | Redrob trademark (`assets/brand/README.md`) |
+| `packaging/macos/dmg/background-source.svg` | Redrob (McKinley Rice, Inc.) | Original layout: the Redrob primary lockup and the name Cut, after the design system's product lockup | Redrob trademark (the lockup); layout MIT OR Apache-2.0 |
+| `packaging/macos/dmg/background.svg` | Redrob (McKinley Rice, Inc.) | `background-source.svg` with its text outlined (Pretendard SemiBold, OFL-1.1) and the lockup embedded | Redrob trademark (the lockup); layout MIT OR Apache-2.0 |
+| `packaging/macos/dmg/background.tiff` | Redrob (McKinley Rice, Inc.) | Rendered from `packaging/macos/dmg/background.svg` by `packaging/macos/dmg/generate.py` | Redrob trademark (the lockup); layout MIT OR Apache-2.0 |
 
 ## Third-party source code
 
