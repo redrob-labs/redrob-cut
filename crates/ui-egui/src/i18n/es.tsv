@@ -3552,3 +3552,19 @@
 	Redrob Cut on redrob.io	Redrob Cut en redrob.io
 	An agentic, pure-Rust non-linear video editor by Redrob.	Un editor de video no lineal agéntico, en Rust puro, de Redrob.
 	Links	Enlaces
+	Connect to Redrob…	Conectar con Redrob…
+	Redrob Account	Cuenta de Redrob
+	Connect to Redrob	Conectar con Redrob
+	{feature} needs a Redrob workspace.	{feature} necesita un espacio de trabajo de Redrob.
+	Editing is free and never needs an account. AI features are billed to the Redrob workspace connected here.	Editar es gratis y nunca requiere una cuenta. Las funciones de IA se facturan al espacio de trabajo de Redrob conectado aquí.
+	Connecting a Redrob workspace is available in the desktop app.	Conectar un espacio de trabajo de Redrob está disponible en la aplicación de escritorio.
+	Asking console.redrob.ai for a code…	Pidiendo un código a console.redrob.ai…
+	Approve this code on console.redrob.ai:	Aprueba este código en console.redrob.ai:
+	Open console.redrob.ai	Abrir console.redrob.ai
+	{time} left	Quedan {time}
+	Workspace: {name}	Espacio de trabajo: {name}
+	Key: {name}	Clave: {name}
+	Disconnect	Desconectar
+	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	Desconectar elimina la clave de este equipo. Revócala en console.redrob.ai para invalidarla.
+	Connect a Redrob workspace	Conectar un espacio de trabajo de Redrob
+	Redrob Account…	Cuenta de Redrob…

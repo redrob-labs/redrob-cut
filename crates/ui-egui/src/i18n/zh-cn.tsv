@@ -3533,3 +3533,19 @@
 	Redrob Cut on redrob.io	redrob.io 上的 Redrob Cut
 	An agentic, pure-Rust non-linear video editor by Redrob.	Redrob 出品的智能体驱动纯 Rust 非线性视频编辑器。
 	Links	链接
+	Connect to Redrob…	连接到 Redrob…
+	Redrob Account	Redrob 账户
+	Connect to Redrob	连接到 Redrob
+	{feature} needs a Redrob workspace.	{feature}需要一个 Redrob 工作区。
+	Editing is free and never needs an account. AI features are billed to the Redrob workspace connected here.	编辑免费，无需账户。AI 功能按此处连接的 Redrob 工作区计费。
+	Connecting a Redrob workspace is available in the desktop app.	连接 Redrob 工作区仅在桌面应用中可用。
+	Asking console.redrob.ai for a code…	正在向 console.redrob.ai 请求代码…
+	Approve this code on console.redrob.ai:	请在 console.redrob.ai 上批准此代码：
+	Open console.redrob.ai	打开 console.redrob.ai
+	{time} left	剩余 {time}
+	Workspace: {name}	工作区：{name}
+	Key: {name}	密钥：{name}
+	Disconnect	断开连接
+	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	断开连接会从此电脑移除密钥。要使其失效，请在 console.redrob.ai 上撤销。
+	Connect a Redrob workspace	连接 Redrob 工作区
+	Redrob Account…	Redrob 账户…

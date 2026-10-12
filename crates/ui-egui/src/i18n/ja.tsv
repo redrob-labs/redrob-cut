@@ -3540,3 +3540,19 @@
 	Redrob Cut on redrob.io	redrob.io の Redrob Cut
 	An agentic, pure-Rust non-linear video editor by Redrob.	Redrob による、エージェント駆動の純 Rust ノンリニア動画編集ソフト。
 	Links	リンク
+	Connect to Redrob…	Redrob に接続…
+	Redrob Account	Redrob アカウント
+	Connect to Redrob	Redrob に接続
+	{feature} needs a Redrob workspace.	{feature} には Redrob ワークスペースが必要です。
+	Editing is free and never needs an account. AI features are billed to the Redrob workspace connected here.	編集は無料でアカウント不要です。AI 機能はここで接続した Redrob ワークスペースに課金されます。
+	Connecting a Redrob workspace is available in the desktop app.	Redrob ワークスペースの接続はデスクトップ版で利用できます。
+	Asking console.redrob.ai for a code…	console.redrob.ai にコードを要求中…
+	Approve this code on console.redrob.ai:	console.redrob.ai でこのコードを承認してください:
+	Open console.redrob.ai	console.redrob.ai を開く
+	{time} left	残り {time}
+	Workspace: {name}	ワークスペース: {name}
+	Key: {name}	キー: {name}
+	Disconnect	切断
+	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	切断するとこのコンピューターからキーが削除されます。無効にするには console.redrob.ai で取り消してください。
+	Connect a Redrob workspace	Redrob ワークスペースを接続
+	Redrob Account…	Redrob アカウント…

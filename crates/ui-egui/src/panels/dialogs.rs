@@ -55,6 +55,12 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
             }
             return;
         }
+        Dialog::RedrobConnect => {
+            if !crate::account::connect_dialog(app, ctx) && app.dialog == Some(d) {
+                app.dialog = None;
+            }
+            return;
+        }
         Dialog::DeleteTracks => {
             if !delete_tracks(app, ctx) {
                 app.dialog = None;
