@@ -1,4 +1,4 @@
-//! The FilmCraft egui frontend.
+//! The Redrob Cut egui frontend.
 //!
 //! Thin by design: all project changes go through `filmcraft_engine::Session::execute`; this crate
 //! owns only presentation state ([`state::UiState`]), GPU textures, the playback clock and the
@@ -29,6 +29,8 @@ macro_rules! tlf {
     };
 }
 
+pub mod account;
+pub mod agent;
 pub mod automation;
 pub mod brand;
 mod cjk;
@@ -46,6 +48,7 @@ pub mod panels;
 pub mod perf;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod play_ahead;
+pub mod redrob_tokens;
 pub mod scrub;
 pub mod source_playback;
 pub mod state;
@@ -148,7 +151,7 @@ pub struct HostHooks {
     /// uses `egui::Context::system_theme`.
     pub system_theme: Option<SystemThemeFn>,
     /// Files or an image on the system clipboard, for Paste in the Timeline and the Project panel
-    /// (#611). Without it Paste only pastes clips copied in FilmCraft.
+    /// (#611). Without it Paste only pastes clips copied in Redrob Cut.
     pub clipboard_media: Option<Box<dyn FnMut() -> Option<ClipboardMedia>>>,
 }
 
@@ -194,6 +197,9 @@ pub enum Dialog {
     SequenceSettings,
     /// Set Transition Duration (double-click a transition in the Timeline).
     TransitionDuration,
+    /// Connect a Redrob workspace (device flow); opened by `account.connect` or by an AI feature
+    /// that needs the workspace key (`account::require`).
+    RedrobConnect,
 }
 
 #[derive(Default)]
@@ -245,7 +251,7 @@ pub(crate) const EXPORT_SAVE_DIALOGS: [(&str, &str, &str); 7] = [
     ("file.exportFcpxml", "FCPXML", "fcpxml"),
     ("file.exportOtio", "OpenTimelineIO", "otio"),
     ("file.exportAle", "Avid Log Exchange", "ale"),
-    ("file.exportSelectionProject", "FilmCraft Project", "fcproj"),
+    ("file.exportSelectionProject", "Redrob Cut Project", "fcproj"),
 ];
 
 pub struct FilmcraftApp {
@@ -259,6 +265,12 @@ pub struct FilmcraftApp {
     /// Audio during scrubbing (#211).
     pub scrub: scrub::ScrubAudio,
     pub hooks: HostHooks,
+    /// The Redrob workspace account (desktop only; `None` on the web and in headless tests).
+    pub account: Option<Box<dyn account::AccountService>>,
+    /// The Agent panel's conversation with Redrob Code.
+    pub agent: agent::AgentPanel,
+    /// The built-in agent and its config hook (desktop only; empty on the web and in tests).
+    pub agent_services: agent::AgentServices,
     pub dialog: Option<Dialog>,
     pub file_dialogs: panels::file_dialogs::FileDialogState,
     pub auto: automation::Registry,
@@ -496,6 +508,9 @@ impl FilmcraftApp {
             audio: None,
             scrub: Default::default(),
             hooks: HostHooks::default(),
+            account: None,
+            agent: Default::default(),
+            agent_services: Default::default(),
             // Unsaved changes left by a session that died are offered first thing.
             dialog: recovery.then_some(Dialog::Recovery),
             file_dialogs: Default::default(),
@@ -786,7 +801,9 @@ impl FilmcraftApp {
                     .into_iter()
                     .find(|k| self.ui.dock.contains(*k))
                     .unwrap_or(PanelKind::Program),
-                PanelKind::LumetriColor | PanelKind::EssentialGraphics | PanelKind::EssentialSound | PanelKind::Properties => PanelKind::Program,
+                PanelKind::LumetriColor | PanelKind::EssentialGraphics | PanelKind::EssentialSound | PanelKind::Properties | PanelKind::Agent => {
+                    [PanelKind::Properties, PanelKind::EssentialGraphics].into_iter().find(|k| self.ui.dock.contains(*k)).unwrap_or(PanelKind::Program)
+                }
                 PanelKind::Source
                 | PanelKind::EffectControls
                 | PanelKind::AudioClipMixer
@@ -1836,13 +1853,13 @@ impl FilmcraftApp {
 }
 
 impl FilmcraftApp {
-    /// The "FilmCraft hit an error" window after a caught UI panic. Automation ids:
+    /// The "Redrob Cut hit an error" window after a caught UI panic. Automation ids:
     /// `error.dismiss`, `error.save`.
     fn error_window(&mut self, ctx: &egui::Context) {
         let Some(msg) = self.ui_error.clone() else { return };
         let mut close = false;
-        egui::Window::new(tl!("FilmCraft hit an error"))
-            .id(egui::Id::new("FilmCraft hit an error"))
+        egui::Window::new(tl!("Redrob Cut hit an error"))
+            .id(egui::Id::new("Redrob Cut hit an error"))
             .collapsible(false)
             .resizable(false)
             .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
@@ -1933,6 +1950,10 @@ impl eframe::App for FilmcraftApp {
         // Quitting with unsaved changes asks to save them first.
         if ctx.input(|i| i.viewport().close_requested()) && panels::clip_dialogs::intercept_quit(self) {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+        }
+        // The agent's reply and its permission questions arrive whether or not its tab is showing.
+        if self.agent.poll() {
+            ctx.request_repaint_after(std::time::Duration::from_millis(100));
         }
         let had_synthetic = !self.synthetic.is_empty();
         self.drain_control(ctx);

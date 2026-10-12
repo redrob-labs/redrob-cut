@@ -1,4 +1,4 @@
-# Builds FilmCraft on FreeBSD, inside a FreeBSD VM on a Linux runner (GitHub has no FreeBSD
+# Builds Redrob Cut on FreeBSD, inside a FreeBSD VM on a Linux runner (GitHub has no FreeBSD
 # runners), then runs packaging/freebsd/package.sh, the script the release job runs, and checks
 # the tarball. A broken FreeBSD build or package fails here before it can fail a release. Nothing
 # is uploaded and no secrets are used. (The test suite isn't run here yet: the ffmpeg-oracle and
@@ -38,8 +38,10 @@ jobs:
         with:
           release: "14.3"
           usesh: true
-          cpu: 4
-          mem: 12288
+          # A private repository's GitHub-hosted runner has 2 vCPUs and about 7 GB of RAM: a
+          # 12 GB guest fails at boot ("cannot set up guest memory"). The guest fits the runner.
+          cpu: 2
+          mem: 5632
           # Nothing to bring back; copying the target dir out of the VM fails on large builds.
           copyback: false
           # The same packages as release.yml's freebsd job: winit/wgpu (X11, Wayland, Vulkan,
@@ -52,7 +54,7 @@ jobs:
             . "$HOME/.cargo/env"
             git config --global --add safe.directory "*"
             rustc --version
-            export CARGO_TARGET_DIR=/var/tmp/filmcraft-target CARGO_BUILD_JOBS=4
+            export CARGO_TARGET_DIR=/var/tmp/filmcraft-target CARGO_BUILD_JOBS=2
             bash packaging/freebsd/package.sh
-            tar -tzf dist/release/filmcraft-*-freebsd-x86_64.tar.gz \
-              | grep -E '/bin/filmcraft$|/bin/filmcraft-cli$|/share/applications/ai\.storyteller\.filmcraft\.desktop$|/share/doc/filmcraft/LICENSE-MIT$'
+            tar -tzf dist/release/redrob-cut-*-freebsd-x86_64.tar.gz \
+              | grep -E '/bin/redrob-cut$|/bin/redrob-cut-cli$|/share/applications/ai\.redrob\.cut\.desktop$|/share/doc/redrob-cut/LICENSE-MIT$'

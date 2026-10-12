@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/filmcraft-<version>-macos-<arch>.dmg          FilmCraft.app on a drag-to-Applications DMG
-#   $DIST/filmcraft-cli-<version>-macos-<arch>.zip      the headless CLI
+#   $DIST/redrob-cut-<version>-macos-<arch>.dmg          Redrob Cut.app on a drag-to-Applications DMG
+#   $DIST/redrob-cut-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 #
@@ -10,7 +10,8 @@
 #   MACOS_SIGN_IDENTITY   codesign identity (name or SHA-1). Default "-" = ad-hoc (local testing;
 #                         Gatekeeper will reject the result on other Macs). In CI, import-cert.sh sets it.
 #   MACOS_KEYCHAIN        keychain holding the identity (optional)
-# Notarization (env; all three needed, and a real identity):
+# Notarization (env; needs a real identity and one complete set):
+#   APPLE_NOTARY_API_KEY_P8_BASE64, APPLE_NOTARY_API_KEY_ID, APPLE_NOTARY_API_ISSUER_ID (API key), or
 #   APPLE_ID, APPLE_PASSWORD (app-specific password), APPLE_TEAM_ID
 set -euo pipefail
 # shellcheck source=../env.sh
@@ -23,7 +24,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --arch) ARCH="$2"; shift 2 ;;
     --skip-build) SKIP_BUILD=1; shift ;;
-    -h | --help) sed -n '2,16p' "$0"; exit 0 ;;
+    -h | --help) sed -n '2,17p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -39,20 +40,31 @@ export MACOSX_DEPLOYMENT_TARGET=11.0
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
-APP="$WORK/FilmCraft.app"
-DMG="$DIST/filmcraft-$VERSION-macos-$ARCH.dmg"
-CLI_ZIP="$DIST/filmcraft-cli-$VERSION-macos-$ARCH.zip"
+APP="$WORK/Redrob Cut.app"
+DMG="$DIST/redrob-cut-$VERSION-macos-$ARCH.dmg"
+CLI_ZIP="$DIST/redrob-cut-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
+NOTARY_AUTH=()
 if [ "$IDENTITY" = "-" ]; then
   warn "macOS: ad-hoc signing (no MACOS_SIGN_IDENTITY); artifacts are not notarized"
+elif [ -n "${APPLE_NOTARY_API_KEY_P8_BASE64:-}" ] && [ -n "${APPLE_NOTARY_API_KEY_ID:-}" ] &&
+  [ -n "${APPLE_NOTARY_API_ISSUER_ID:-}" ]; then
+  # App Store Connect API key (the redrob-labs organization secrets). Written 0600 to the
+  # runner's temp dir and removed on exit.
+  NOTARY_KEY="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/AuthKey_$APPLE_NOTARY_API_KEY_ID.p8"
+  (umask 077 && printf '%s' "$APPLE_NOTARY_API_KEY_P8_BASE64" | base64 --decode >"$NOTARY_KEY")
+  trap 'rm -f "$NOTARY_KEY"' EXIT
+  NOTARY_AUTH=(--key "$NOTARY_KEY" --key-id "$APPLE_NOTARY_API_KEY_ID" --issuer "$APPLE_NOTARY_API_ISSUER_ID")
+  NOTARIZE=1
 elif [ -n "${APPLE_ID:-}" ] && [ -n "${APPLE_PASSWORD:-}" ] && [ -n "${APPLE_TEAM_ID:-}" ]; then
+  NOTARY_AUTH=(--apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM_ID")
   NOTARIZE=1
 else
-  warn "macOS: APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID incomplete; signed but not notarized"
+  warn "macOS: no notarization credentials (APPLE_NOTARY_API_KEY_* or APPLE_ID/APPLE_PASSWORD/APPLE_TEAM_ID); signed but not notarized"
 fi
 
-echo "==> FilmCraft $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
+echo "==> Redrob Cut $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
 
 # ---- build -------------------------------------------------------------------------------------
 if [ "$SKIP_BUILD" = 0 ]; then
@@ -63,7 +75,7 @@ fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK/bin"
-for bin in filmcraft filmcraft-cli; do
+for bin in redrob-cut redrob-cut-cli; do
   inputs=()
   for t in "${TARGETS[@]}"; do inputs+=("$CARGO_TARGET_DIR/$t/release/$bin"); done
   lipo -create -output "$WORK/bin/$bin" "${inputs[@]}"
@@ -83,26 +95,26 @@ sign() {
 notarize() {
   local file="$1" out id status
   echo "==> notarizing $(basename "$file") (this can take a few minutes)"
-  out="$(xcrun notarytool submit "$file" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" \
-    --team-id "$APPLE_TEAM_ID" --wait --timeout 1h --output-format json)" || true
+  out="$(xcrun notarytool submit "$file" "${NOTARY_AUTH[@]}" \
+    --wait --timeout 1h --output-format json)" || true
   echo "$out"
   id="$(printf '%s' "$out" | plutil -extract id raw -o - - 2>/dev/null || true)"
   status="$(printf '%s' "$out" | plutil -extract status raw -o - - 2>/dev/null || true)"
   if [ "$status" != "Accepted" ]; then
     if [ -n "$id" ]; then
-      xcrun notarytool log "$id" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM_ID" || true
+      xcrun notarytool log "$id" "${NOTARY_AUTH[@]}" || true
     fi
     echo "error: notarization of $(basename "$file") failed (status: ${status:-unknown})" >&2
     exit 1
   fi
 }
 
-# ---- FilmCraft.app ----------------------------------------------------------------------------
+# ---- Redrob Cut.app ----------------------------------------------------------------------------
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/filmcraft" "$APP/Contents/MacOS/FilmCraft"
-cp "$ROOT/assets/app-icon/filmcraft.icns" "$APP/Contents/Resources/FilmCraft.icns"
+cp "$WORK/bin/redrob-cut" "$APP/Contents/MacOS/Redrob Cut"
+cp "$ROOT/assets/app-icon/redrob-cut.icns" "$APP/Contents/Resources/Redrob Cut.icns"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
   -e "s/@BUILD_SHA@/${FILMCRAFT_BUILD_SHA:-unknown}/g" \
   "$HERE/Info.plist.in" >"$APP/Contents/Info.plist"
@@ -113,13 +125,13 @@ copy_font_licences "$APP/Contents/Resources"
 
 # Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
 # Today the only nested code is the main executable; frameworks/helpers would be signed here too.
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/FilmCraft"
+sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/Redrob Cut"
 sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP"
 codesign --verify --strict --deep --verbose=2 "$APP"
 
 if [ "$NOTARIZE" = 1 ]; then
-  ditto -c -k --keepParent "$APP" "$WORK/FilmCraft-notarize.zip"
-  notarize "$WORK/FilmCraft-notarize.zip"
+  ditto -c -k --keepParent "$APP" "$WORK/RedrobCut-notarize.zip"
+  notarize "$WORK/RedrobCut-notarize.zip"
   xcrun stapler staple "$APP"
   xcrun stapler validate "$APP"
   spctl --assess --type execute -vvv "$APP"
@@ -129,7 +141,7 @@ fi
 echo "==> building $DMG"
 STAGE="$WORK/dmg"
 mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/FilmCraft.app"
+ditto "$APP" "$STAGE/Redrob Cut.app"
 ln -s /Applications "$STAGE/Applications"
 # Finder window layout: background, icon size and positions (packaging/macos/dmg/README.md).
 mkdir -p "$STAGE/.background"
@@ -139,7 +151,7 @@ rm -f "$DMG" "$WORK/raw.dmg"
 # makehybrid + convert builds the image without attaching a device, unlike `create -srcfolder`,
 # which is flaky on CI runners ("Resource busy") and hangs in sandboxed sessions.
 # The volume name has no version: .DS_Store finds the background through an alias that includes it.
-hdiutil makehybrid -hfs -hfs-volume-name "FilmCraft" -hfs-openfolder "$STAGE" -o "$WORK/raw.dmg" "$STAGE"
+hdiutil makehybrid -hfs -hfs-volume-name "Redrob Cut" -hfs-openfolder "$STAGE" -o "$WORK/raw.dmg" "$STAGE"
 hdiutil convert "$WORK/raw.dmg" -format UDZO -imagekey zlib-level=9 -o "$DMG"
 rm -f "$WORK/raw.dmg"
 sign "$DMG"
@@ -153,17 +165,17 @@ fi
 
 # ---- CLI ---------------------------------------------------------------------------------------
 echo "==> building $CLI_ZIP"
-CLI_DIR="$WORK/filmcraft-cli-$VERSION-macos-$ARCH"
+CLI_DIR="$WORK/redrob-cut-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"
-cp "$WORK/bin/filmcraft-cli" "$CLI_DIR/"
+cp "$WORK/bin/redrob-cut-cli" "$CLI_DIR/"
 copy_docs "$CLI_DIR"
-sign --options runtime "$CLI_DIR/filmcraft-cli"
-codesign --verify --strict --verbose=2 "$CLI_DIR/filmcraft-cli"
+sign --options runtime "$CLI_DIR/redrob-cut-cli"
+codesign --verify --strict --verbose=2 "$CLI_DIR/redrob-cut-cli"
 rm -f "$CLI_ZIP"
 ditto -c -k --keepParent "$CLI_DIR" "$CLI_ZIP"
 # A bare Mach-O can't carry a stapled ticket; Gatekeeper looks the notarization up online.
 if [ "$NOTARIZE" = 1 ]; then notarize "$CLI_ZIP"; fi
 
-"$WORK/bin/filmcraft-cli" --version
+"$WORK/bin/redrob-cut-cli" --version
 echo "==> done"
 ls -lh "$DMG" "$CLI_ZIP"

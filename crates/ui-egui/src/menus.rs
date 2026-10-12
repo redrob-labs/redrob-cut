@@ -129,14 +129,15 @@ pub const UI_COMMANDS: &[UiCommand] = &[
     uic!("mode.import", "Import", [], None),
     uic!("mode.edit", "Edit", [], None),
     uic!("mode.export", "Export", ["File", "Export"], Some("Cmd+M")),
-    uic!("help.discord", "Join the ArtCraft Discord…", ["Help"], None),
-    uic!("help.website", "ArtCraft Website", ["Help"], None),
-    uic!("help.appPage", "FilmCraft on getartcraft.com", ["Help"], None),
-    uic!("help.github", "FilmCraft on GitHub", ["Help"], None),
+    uic!("help.website", "Redrob Website", ["Help"], None),
+    uic!("help.appPage", "Redrob Cut on redrob.io", ["Help"], None),
+    uic!("help.github", "Source code on GitHub", ["Help"], None),
     uic!("help.reportIssue", "Report an Issue…", ["Help"], None),
+    uic!("account.connect", "Connect to Redrob…", ["Help"], None),
+    uic!("agent.addToRedrobCode", "Add Redrob Cut to Redrob Code", ["Help"], None),
     uic!("help.revealLogFiles", "Reveal Log Files…", ["Help"], None),
     uic!("help.systemCompatibilityReport", "System Compatibility Report…", ["Help"], None),
-    uic!("app.about", "About FilmCraft", ["Help"], None),
+    uic!("app.about", "About Redrob Cut", ["Help"], None),
     uic!("app.keyboardShortcuts", "Keyboard Shortcuts…", ["Edit"], Some("Cmd+Alt+K")),
     uic!("app.settings.general", "General…", ["Edit", "Preferences"], Some("Cmd+,")),
     uic!("app.settings.appearance", "Appearance…", ["Edit", "Preferences"], None),
@@ -152,6 +153,7 @@ pub const UI_COMMANDS: &[UiCommand] = &[
     uic!("app.settings.memory", "Memory…", ["Edit", "Preferences"], None),
     uic!("app.settings.playback", "Playback…", ["Edit", "Preferences"], None),
     uic!("app.settings.plugins", "Plugins…", ["Edit", "Preferences"], None),
+    uic!("app.settings.redrobAccount", "Redrob Account…", ["Edit", "Preferences"], None),
     uic!("app.settings.timeline", "Timeline…", ["Edit", "Preferences"], None),
     uic!("app.settings.trim", "Trim…", ["Edit", "Preferences"], None),
 ];
@@ -411,6 +413,16 @@ pub fn invoke(app: &mut FilmcraftApp, ctx: &egui::Context, id: &str, mut params:
         "app.about" => {
             app.dialog = Some(crate::Dialog::About);
             return Ok(Value::Null);
+        }
+        id if id.starts_with("agent.") => {
+            if let Some(r) = crate::agent::route(app, id, &params) {
+                return r;
+            }
+        }
+        id if id.starts_with("account.") => {
+            if let Some(r) = crate::account::route(app, id) {
+                return r;
+            }
         }
         id if crate::links::url_for(id).is_some() => {
             let url = crate::links::url_for(id).unwrap_or_default();

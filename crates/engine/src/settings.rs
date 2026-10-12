@@ -37,7 +37,7 @@ pub struct GeneralPrefs {
     /// `zh-cn`, `de`, `ru`, `fr`, or `system` (the default: the operating system's preferred language when the
     /// interface has it, otherwise English).
     pub interface_language: String,
-    /// "At Startup": `showHome` (FilmCraft: the demo project), `openMostRecent`, `emptyProject`.
+    /// "At Startup": `showHome` (Redrob Cut: the demo project), `openMostRecent`, `emptyProject`.
     pub at_startup: String,
     /// "When Opening a Project": `showOpenDialog` | `showHome`.
     pub when_opening_project: String,
@@ -171,7 +171,8 @@ impl AppearancePrefs {
     }
 }
 
-pub const DEFAULT_HIGHLIGHT: &str = "#2f6bdf";
+/// Redrob Blue (`blue-6`, the design system's `action-primary`): the themes' own accent.
+pub const DEFAULT_HIGHLIGHT: &str = "#2b52ff";
 
 /// Settings ▸ Audio Hardware (the cpal output on desktop).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -628,7 +629,7 @@ pub struct Field {
     pub indent: bool,
     /// Only editable while this boolean key is on.
     pub enabled_by: Option<&'static str>,
-    /// Whether FilmCraft acts on the value (false = remembered for parity, no effect yet).
+    /// Whether Redrob Cut acts on the value (false = remembered for parity, no effect yet).
     pub wired: bool,
 }
 
@@ -889,7 +890,7 @@ static CATEGORIES: &[Category] = &[
                     b("autoSave.recoveryJournal", "Keep a recovery copy of unsaved changes", true),
                     sub("autoSave.recoveryIntervalSeconds", "Update it at least every", int(1.0, 600.0, "second(s)"), "autoSave.recoveryJournal", true),
                     Row::Note(
-                        "Changes are copied in the background a moment after each edit. If FilmCraft quits unexpectedly, they are offered the next time it starts.",
+                        "Changes are copied in the background a moment after each edit. If Redrob Cut quits unexpectedly, they are offered the next time it starts.",
                     ),
                     Row::Custom("autoSaveStatus"),
                 ],
@@ -1044,7 +1045,7 @@ static CATEGORIES: &[Category] = &[
                 ],
             ),
             Row::Note(
-                "The media cache holds render previews of unsaved projects and other files FilmCraft can recreate. Deleting them is always safe; FilmCraft rebuilds them as needed.",
+                "The media cache holds render previews of unsaved projects and other files Redrob Cut can recreate. Deleting them is always safe; Redrob Cut rebuilds them as needed.",
             ),
         ],
     },
@@ -1070,7 +1071,7 @@ static CATEGORIES: &[Category] = &[
             b("playback.draftDecode", "Draft decoding at reduced playback resolution (H.264: faster, some frames less filtered)", true),
             f("playback.hardwareDecoding", "Hardware decoding", Kind::Choice(HW_DECODE), true),
             Row::Note(
-                "Hardware decoding: Auto uses the system's video decoder (VideoToolbox on macOS, Media Foundation on Windows, VA-API or NVDEC for H.264 and HEVC on Linux) for the streams it supports, and FilmCraft's own decoder for everything else or if the hardware fails. Media that is already open keeps its decoder until it is reopened.",
+                "Hardware decoding: Auto uses the system's video decoder (VideoToolbox on macOS, Media Foundation on Windows, VA-API or NVDEC for H.264 and HEVC on Linux) for the streams it supports, and Redrob Cut's own decoder for everything else or if the hardware fails. Media that is already open keeps its decoder until it is reopened.",
             ),
         ],
     },
@@ -1079,7 +1080,15 @@ static CATEGORIES: &[Category] = &[
         title: "Plugins",
         rows: &[
             Row::Group("Plugins", &[b("plugins.developerMode", "Enable developer mode", false)]),
-            Row::Note("No plugins are installed. Changes will take effect the next time you start FilmCraft."),
+            Row::Note("No plugins are installed. Changes will take effect the next time you start Redrob Cut."),
+        ],
+    },
+    Category {
+        id: "redrobAccount",
+        title: "Redrob Account",
+        rows: &[
+            Row::Note("Editing is free and never needs an account. AI features are billed to the Redrob workspace connected here."),
+            Row::Custom("redrobAccount"),
         ],
     },
     Category {
@@ -1171,7 +1180,7 @@ pub fn validate(key: &str, v: &Value) -> std::result::Result<(), String> {
                 Err(format!("`{key}` must be one of {}", opts.iter().map(|o| o.0).collect::<Vec<_>>().join(", ")))
             }
         }
-        Kind::Color if v.as_str().and_then(parse_hex).is_none() => Err(format!("`{key}` must be a colour like \"#2f6bdf\"")),
+        Kind::Color if v.as_str().and_then(parse_hex).is_none() => Err(format!("`{key}` must be a colour like \"#2b52ff\"")),
         _ => Ok(()),
     }
 }

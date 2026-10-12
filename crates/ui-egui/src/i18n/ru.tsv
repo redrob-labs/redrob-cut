@@ -1,10 +1,10 @@
 # Russian (ru) catalog. Columns separated by TAB: context <TAB> source <TAB> translation
 # Empty context is a plain UI string. Escapes: \n, \t, \\; preserve placeholders and trailing …
-# Original clean-room translations from the meaning of FilmCraft's English menu labels,
+# Original clean-room translations from the meaning of Redrob Cut's English menu labels,
 # using Russian video-editing vocabulary (Premiere-style). No proprietary localization resources were used.
 # Core menu coverage; other interface strings fall back to English.
 
-	About FilmCraft	О FilmCraft
+	About Redrob Cut	О Redrob Cut
 	Add Audio Submix Track	Добавить дорожку подмикширования звука
 	Add Caption at Playhead	Добавить субтитр в позиции курсора воспроизведения
 	Add Chapter Marker…	Добавить маркер главы…
@@ -30,7 +30,6 @@
 	Apply Default Transitions to Selection	Применить переходы по умолчанию к выделению
 	Apply Video Transition	Применить видеопереход
 	Arrange	Упорядочить
-	ArtCraft Website	Веб-сайт ArtCraft
 	Assembly	Сборка
 	Attach Proxies…	Прикрепить прокси…
 	Audio	Аудио
@@ -126,9 +125,7 @@
 	File	Файл
 	File…	Файл…
 	Fill frame	Заполнить кадр
-	FilmCraft Help…	Справка FilmCraft…
-	FilmCraft on GitHub	FilmCraft на GitHub
-	FilmCraft on getartcraft.com	FilmCraft на getartcraft.com
+	Redrob Cut Help…	Справка Redrob Cut…
 	Find Next	Найти далее
 	Find…	Найти…
 	Fit	По размеру
@@ -172,7 +169,6 @@
 	Insert Frame Hold Segment	Вставить сегмент стоп-кадра
 	Install Motion Graphics Template…	Установить шаблон анимированной графики…
 	Interpret Footage…	Интерпретировать материал…
-	Join the ArtCraft Discord…	Присоединиться к ArtCraft Discord…
 	Keyboard Shortcuts…	Сочетания клавиш…
 	Label	Метка
 	Labels…	Метки…
@@ -295,7 +291,7 @@
 	Select Previous Graphic	Выбрать предыдущий графический элемент
 	Select Previous Layer	Выбрать предыдущий слой
 	Selection Follows Playhead	Выделение следует за курсором воспроизведения
-	Selection as FilmCraft Project…	Выделение как проект FilmCraft…
+	Selection as Redrob Cut Project…	Выделение как проект Redrob Cut…
 	Selection…	Выделение…
 	Send Backward	Переместить назад
 	Send to Back	Переместить на задний план
@@ -356,3 +352,11 @@
 	Zoom to Sequence	Масштабировать по размеру эпизода
 	Next Appearance Mode	Следующий режим оформления
 	Project Notes	Заметки проекта
+
+	Redrob Website	Сайт Redrob
+	Redrob Cut on redrob.io	Redrob Cut на redrob.io
+	Source code on GitHub	Исходный код на GitHub
+	Connect to Redrob…	Подключиться к Redrob…
+	Redrob Account…	Аккаунт Redrob…
+	Agent	Агент
+	Add Redrob Cut to Redrob Code	Добавить Redrob Cut в Redrob Code

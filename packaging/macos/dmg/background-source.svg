@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="660" height="400" viewBox="0 0 660 400">
+  <!-- Source of background.svg: the same drawing with the product name as live text. Outline it
+       with usvg (README.md); background.svg is what generate.py renders. -->
+  <rect width="660" height="400" fill="#FFFFFF"/>
+  <!-- The product lockup (design system 10-logo.md): the Redrob primary lockup for a light ground,
+       untouched, then the product name in Pretendard 600, ink-primary, after a space-2 gap. -->
+  <image href="../../../assets/brand/redrob-logo-primary.png" x="40" y="40" width="160" height="32"/>
+  <text x="208" y="63" font-family="Pretendard SemiBold, Pretendard" font-weight="600" font-size="22" fill="#0A0B0C">Cut</text>
+  <!-- Drag hint between the app (326, 205) and Applications (574, 205), 10 pt clear of both
+       128 pt icon boxes. gray-5. -->
+  <line x1="402" y1="205" x2="492" y2="205" stroke="#AAB0BB" stroke-width="2" stroke-linecap="round"/>
+  <path d="M484,197 L494,205 L484,213" fill="none" stroke="#AAB0BB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
