@@ -1,3 +1,18 @@
+# Redrob Cut
+
+Redrob Cut is an agentic video editor: describe the cut and let the agent make it.
+
+한국어: [README.ko.md](./README.ko.md)
+
+> **Fork notice.** This repository is a hard fork of [storytold/filmcraft](https://github.com/storytold/filmcraft)
+> at tag `v0.6.0`. Where it was cut, what it does not own and how upstream is absorbed are in
+> [UPSTREAM.md](./UPSTREAM.md); the machine-readable pin is [`upstream-base.json`](./upstream-base.json).
+> Upstream's copyright is retained in [NOTICE](./NOTICE) with ours added below it. The ArtCraft name and
+> logos under `docs/brand/` are upstream's trademarks and are being replaced; see UPSTREAM.md.
+> The rest of this file is upstream's README and is rewritten as the product is rebranded.
+
+---
+
 <p align="center">
   <a href="https://getartcraft.com/">
     <picture>
