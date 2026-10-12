@@ -258,6 +258,7 @@ fn main() -> eframe::Result {
             // the AI features ask for it through `account::require` when they start.
             let account = device::DeviceAccount::new(
                 device::config_dir().map(|d| d.join("account.json")),
+                device::shared_account_path(),
                 std::sync::Arc::new(device::Https),
                 device::console_base(),
                 Some(cc.egui_ctx.clone()),
@@ -313,7 +314,7 @@ fn main() -> eframe::Result {
                 app.agent_services.factory = Some(Box::new(move || {
                     let bin = acp::find_binary().ok_or_else(|| acp::INSTALL_HINT.to_string())?;
                     // The connected workspace's key, as the variable Redrob Code reads for Redrob.
-                    let env: Vec<(&str, String)> = keys.lock().ok().and_then(|k| k.clone()).map(|k| vec![("REDROB_API_KEY", k.api_key)]).unwrap_or_default();
+                    let env: Vec<(&str, String)> = keys.current().map(|(k, _)| vec![("REDROB_API_KEY", k.api_key)]).unwrap_or_default();
                     let host = acp::AcpHost::start(&bin, &agent_setup::agent_cwd(), link.clone(), &env, ctx.clone())?;
                     Ok(Box::new(host) as Box<dyn filmcraft_ui_egui::agent::AgentHost>)
                 }));

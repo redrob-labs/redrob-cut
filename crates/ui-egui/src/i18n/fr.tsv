@@ -3553,6 +3553,7 @@
 	{time} left	{time} restantes
 	Workspace: {name}	Espace de travail : {name}
 	Key: {name}	Clé : {name}
+	Signed in with Redrob Launcher	Connecté avec Redrob Launcher
 	Disconnect	Déconnecter
 	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	La déconnexion supprime la clé de cet ordinateur. Révoquez-la sur console.redrob.ai pour l'invalider.
 	Connect a Redrob workspace	Connecter un espace de travail Redrob
