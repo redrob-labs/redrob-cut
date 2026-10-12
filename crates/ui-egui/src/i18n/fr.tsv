@@ -3557,3 +3557,20 @@
 	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	La déconnexion supprime la clé de cet ordinateur. Révoquez-la sur console.redrob.ai pour l'invalider.
 	Connect a Redrob workspace	Connecter un espace de travail Redrob
 	Redrob Account…	Compte Redrob…
+	Agent	Agent
+	Add Redrob Cut to Redrob Code	Ajouter Redrob Cut à Redrob Code
+	Add to Redrob Code	Ajouter à Redrob Code
+	Added Redrob Cut to Redrob Code ({path})	Redrob Cut ajouté à Redrob Code ({path})
+	Allow {tool}?	Autoriser {tool} ?
+	Ask Redrob Code to cut, arrange, caption or check this edit.	Demandez à Redrob Code de couper, d’arranger, de sous-titrer ou de vérifier ce montage.
+	Connect…	Connecter…
+	Lets Redrob Code in a terminal edit projects with this app's tools (adds it to ~/.config/redrob/redrob.json).	Permet à Redrob Code dans un terminal de modifier des projets avec les outils de cette app (l’ajoute à ~/.config/redrob/redrob.json).
+	Message Redrob Code	Message à Redrob Code
+	Redrob Code declined this request.	Redrob Code a refusé cette demande.
+	Redrob Code needs a Redrob workspace.	Redrob Code a besoin d’un espace de travail Redrob.
+	Send	Envoyer
+	Stopped.	Arrêté.
+	The agent runs in the desktop app only.	L’agent ne fonctionne que dans l’app de bureau.
+	The reply hit its length limit.	La réponse a atteint sa longueur maximale.
+	The turn ended: {reason}.	Le tour s’est terminé : {reason}.
+	Workspace changed. The next message starts the agent with it.	L’espace de travail a changé. Le prochain message démarre l’agent avec celui-ci.

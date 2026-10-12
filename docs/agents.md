@@ -5,6 +5,31 @@ FilmCraft from an agent. Part 2 covers developing FilmCraft as an agent.
 
 # Part 1: driving FilmCraft
 
+## Redrob Code (built in)
+
+Redrob Cut ships with an agent: the **Agent** panel (the first tab of the right column in the
+Editing workspace, or Window ▸ Agent) is a chat with [Redrob Code](https://code.redrob.ai). Type
+what you want done to the edit; Redrob Code works through the same MCP tools listed below, on the
+open window.
+
+- The app starts `redrob acp` (Agent Client Protocol on stdio) on the first message. It looks for
+  `redrob` in `REDROB_CODE_PATH`, then `PATH`, then `~/.redrob/bin`, `~/.local/bin`, `~/.bun/bin`.
+- The tools reach the agent as an MCP server named `redrob-cut`: this same executable, run as
+  `filmcraft mcp --connect 127.0.0.1:<port>`, on a free control port opened at launch and gated by
+  a per-launch token (`REDROB_CUT_CONTROL_TOKEN`, handed only to that server). Nothing is written
+  to your Redrob Code config for this.
+- Model calls are billed to the connected Redrob workspace (Help ▸ Connect to Redrob…). The first
+  message asks you to connect one; editing never does. The key reaches Redrob Code as
+  `REDROB_API_KEY`. `REDROB_CUT_MODEL` picks the model (default `redrob/auto`).
+- Commands for scripts and other agents: `agent.status`, `agent.send {text}`, `agent.stop`.
+
+**Redrob Code in a terminal.** Help ▸ Add Redrob Cut to Redrob Code (or the button in the Agent
+panel) adds `redrob-cut` to `~/.config/redrob/redrob.json` as a local server, `[<app>, "mcp"]`, the
+headless mode below, keeping everything else in that file. In this repository,
+`.redrob/redrob.json` registers the same two development servers as `.mcp.json`.
+
+Other agents (Claude Code, Codex, any MCP client) connect as before, through `filmcraft-cli mcp`.
+
 ## 1. MCP server
 
 `filmcraft-cli mcp` serves MCP on stdio. It has two modes:

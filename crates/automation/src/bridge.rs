@@ -15,10 +15,15 @@ const JOB_POLL: Duration = Duration::from_millis(250);
 
 type Conn = (BufReader<tokio::net::tcp::OwnedReadHalf>, tokio::net::tcp::OwnedWriteHalf);
 
+/// The control token a tokened app server expects (the built-in agent's MCP server is started
+/// with it). Unset for `filmcraft --control <port>`, which takes none.
+pub const CONTROL_TOKEN_ENV: &str = "REDROB_CUT_CONTROL_TOKEN";
+
 pub struct BridgeClient {
     addr: String,
     conn: Mutex<Option<Conn>>,
     next_id: AtomicU64,
+    token: Option<String>,
 }
 
 impl BridgeClient {
@@ -29,7 +34,8 @@ impl BridgeClient {
         if !matches!(host, "127.0.0.1" | "localhost" | "[::1]" | "::1") {
             return Err(AutomationError::BadRequest(format!("bridge address must be loopback, got `{addr}`")));
         }
-        Ok(Self { addr, conn: Mutex::new(None), next_id: AtomicU64::new(1) })
+        let token = std::env::var(CONTROL_TOKEN_ENV).ok().filter(|t| !t.is_empty());
+        Ok(Self { addr, conn: Mutex::new(None), next_id: AtomicU64::new(1), token })
     }
 
     /// Run engine command `id` in the app. A blocking export (`file.exportMedia` with
@@ -82,7 +88,11 @@ impl BridgeClient {
             let Some(conn) = guard.as_mut() else {
                 return Err(AutomationError::Bridge(format!("not connected to {}", self.addr)));
             };
-            let line = format!("{}\n", json!({"id": id, "method": method, "params": params}));
+            let mut req = json!({"id": id, "method": method, "params": params});
+            if let Some(t) = &self.token {
+                req["token"] = json!(t);
+            }
+            let line = format!("{req}\n");
             let res: Result<Value, AutomationError> = async {
                 conn.1.write_all(line.as_bytes()).await.map_err(|e| AutomationError::Bridge(e.to_string()))?;
                 let mut buf = String::new();

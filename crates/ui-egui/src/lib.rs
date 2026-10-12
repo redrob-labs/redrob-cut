@@ -30,6 +30,7 @@ macro_rules! tlf {
 }
 
 pub mod account;
+pub mod agent;
 pub mod automation;
 pub mod brand;
 mod cjk;
@@ -265,6 +266,10 @@ pub struct FilmcraftApp {
     pub hooks: HostHooks,
     /// The Redrob workspace account (desktop only; `None` on the web and in headless tests).
     pub account: Option<Box<dyn account::AccountService>>,
+    /// The Agent panel's conversation with Redrob Code.
+    pub agent: agent::AgentPanel,
+    /// The built-in agent and its config hook (desktop only; empty on the web and in tests).
+    pub agent_services: agent::AgentServices,
     pub dialog: Option<Dialog>,
     pub file_dialogs: panels::file_dialogs::FileDialogState,
     pub auto: automation::Registry,
@@ -503,6 +508,8 @@ impl FilmcraftApp {
             scrub: Default::default(),
             hooks: HostHooks::default(),
             account: None,
+            agent: Default::default(),
+            agent_services: Default::default(),
             // Unsaved changes left by a session that died are offered first thing.
             dialog: recovery.then_some(Dialog::Recovery),
             file_dialogs: Default::default(),
@@ -793,7 +800,9 @@ impl FilmcraftApp {
                     .into_iter()
                     .find(|k| self.ui.dock.contains(*k))
                     .unwrap_or(PanelKind::Program),
-                PanelKind::LumetriColor | PanelKind::EssentialGraphics | PanelKind::EssentialSound | PanelKind::Properties => PanelKind::Program,
+                PanelKind::LumetriColor | PanelKind::EssentialGraphics | PanelKind::EssentialSound | PanelKind::Properties | PanelKind::Agent => {
+                    [PanelKind::Properties, PanelKind::EssentialGraphics].into_iter().find(|k| self.ui.dock.contains(*k)).unwrap_or(PanelKind::Program)
+                }
                 PanelKind::Source
                 | PanelKind::EffectControls
                 | PanelKind::AudioClipMixer
@@ -1940,6 +1949,10 @@ impl eframe::App for FilmcraftApp {
         // Quitting with unsaved changes asks to save them first.
         if ctx.input(|i| i.viewport().close_requested()) && panels::clip_dialogs::intercept_quit(self) {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+        }
+        // The agent's reply and its permission questions arrive whether or not its tab is showing.
+        if self.agent.poll() {
+            ctx.request_repaint_after(std::time::Duration::from_millis(100));
         }
         let had_synthetic = !self.synthetic.is_empty();
         self.drain_control(ctx);

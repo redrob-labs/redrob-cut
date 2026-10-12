@@ -222,9 +222,7 @@ impl DeviceAccount {
         }
     }
 
-    /// The key an AI feature is started with, read at the moment it starts. The built-in agent
-    /// (next step of the port) is its first reader.
-    #[allow(dead_code)]
+    /// The key an AI feature is started with, read at the moment it starts (the built-in agent).
     pub fn key_source(&self) -> Arc<Mutex<Option<Stored>>> {
         self.stored.clone()
     }

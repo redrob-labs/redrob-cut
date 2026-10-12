@@ -5,6 +5,11 @@
 //! one error reply and the connection is closed, so nothing after it is executed. Lines are
 //! bounded ([`MAX_LINE`]) and so is the number of open connections ([`MAX_CONNECTIONS`]); junk
 //! never reaches the UI thread. See `docs/control-protocol.md`.
+//!
+//! A server started with a token (the built-in agent's, on a free port) also refuses every request
+//! whose `token` field is not that token, and closes the connection: another program on this
+//! machine cannot drive the window through it. `--control <port>` keeps the upstream tokenless
+//! protocol.
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::{TcpListener, TcpStream};
@@ -22,21 +27,25 @@ pub const MAX_LINE: usize = 4 * 1024 * 1024;
 /// Connections served at once; further ones get an error line and are closed.
 pub const MAX_CONNECTIONS: usize = 16;
 
-pub fn start(port: u16, ctx: egui::Context) -> Receiver<ControlRequest> {
+/// Listen on `127.0.0.1:port` (0 = a free port). Returns the request stream and the bound port
+/// (`None` when binding failed). With `token`, requests must carry it (see the module docs).
+pub fn start(port: u16, ctx: egui::Context, token: Option<String>) -> (Receiver<ControlRequest>, Option<u16>) {
     let (tx, rx) = channel::<ControlRequest>();
     let listener = match TcpListener::bind(("127.0.0.1", port)) {
         Ok(l) => l,
         Err(e) => {
             eprintln!("filmcraft: control server failed to bind 127.0.0.1:{port}: {e}");
-            return rx;
+            return (rx, None);
         }
     };
-    eprintln!("filmcraft: control server listening on 127.0.0.1:{port}");
-    std::thread::spawn(move || accept_loop(listener, tx, ctx));
-    rx
+    let bound = listener.local_addr().map(|a| a.port()).ok();
+    eprintln!("filmcraft: control server listening on 127.0.0.1:{}", bound.unwrap_or(port));
+    let token: Option<Arc<str>> = token.map(Arc::from);
+    std::thread::spawn(move || accept_loop(listener, tx, ctx, token));
+    (rx, bound)
 }
 
-fn accept_loop(listener: TcpListener, tx: Sender<ControlRequest>, ctx: egui::Context) {
+fn accept_loop(listener: TcpListener, tx: Sender<ControlRequest>, ctx: egui::Context, token: Option<Arc<str>>) {
     let open = Arc::new(AtomicUsize::new(0));
     for mut stream in listener.incoming().flatten() {
         if open.fetch_add(1, Ordering::SeqCst) >= MAX_CONNECTIONS {
@@ -46,12 +55,13 @@ fn accept_loop(listener: TcpListener, tx: Sender<ControlRequest>, ctx: egui::Con
         }
         let tx = tx.clone();
         let ctx = ctx.clone();
+        let token = token.clone();
         // The slot is given back when the guard drops: after `serve` returns, if it panics, or if
         // the thread can't be started (the closure, and with it the guard, is dropped).
         let slot = Slot(Arc::clone(&open));
         let spawned = std::thread::Builder::new().name("control-conn".into()).spawn(move || {
             let _slot = slot;
-            serve(stream, &tx, &ctx);
+            serve(stream, &tx, &ctx, token.as_deref());
         });
         if let Err(e) = spawned {
             eprintln!("filmcraft: control server could not start a connection thread: {e}");
@@ -68,9 +78,9 @@ impl Drop for Slot {
     }
 }
 
-fn serve(stream: TcpStream, tx: &Sender<ControlRequest>, ctx: &egui::Context) {
+fn serve(stream: TcpStream, tx: &Sender<ControlRequest>, ctx: &egui::Context, token: Option<&str>) {
     let Ok(read) = stream.try_clone() else { return };
-    serve_lines(read, stream, |method, params| {
+    serve_lines(read, stream, token, |method, params| {
         let (req, rrx) = ControlRequest::new(method, params);
         tx.send(req).ok()?;
         ctx.request_repaint();
@@ -84,6 +94,7 @@ enum Line {
         id: Value,
         method: String,
         params: Value,
+        token: Option<String>,
     },
     Blank,
     /// Not a request: reply with this error and close the connection.
@@ -108,7 +119,12 @@ fn parse_line(bytes: &[u8]) -> Line {
     let Some(method) = obj.get("method").and_then(Value::as_str) else {
         return Line::Reject("not a control request (missing string `method`); closing the connection".into());
     };
-    Line::Request { id: obj.get("id").cloned().unwrap_or(Value::Null), method: method.to_string(), params: obj.get("params").cloned().unwrap_or(json!({})) }
+    Line::Request {
+        id: obj.get("id").cloned().unwrap_or(Value::Null),
+        method: method.to_string(),
+        params: obj.get("params").cloned().unwrap_or(json!({})),
+        token: obj.get("token").and_then(Value::as_str).map(str::to_string),
+    }
 }
 
 /// Read one `\n`-terminated line of at most `max` bytes into `buf` (newline stripped).
@@ -138,7 +154,7 @@ fn read_bounded_line(reader: &mut impl BufRead, buf: &mut Vec<u8>, max: usize) -
 /// Serve requests from `read`, answering on `out`, until the peer closes, sends something that is
 /// not a request, or `handle` returns `None` (app gone). `handle` gets `(method, params)` and
 /// returns the reply object (the request's `id` is added here).
-fn serve_lines<R: Read, W: Write>(read: R, mut out: W, mut handle: impl FnMut(String, Value) -> Option<Value>) {
+fn serve_lines<R: Read, W: Write>(read: R, mut out: W, token: Option<&str>, mut handle: impl FnMut(String, Value) -> Option<Value>) {
     let mut reader = BufReader::new(read);
     let mut buf = Vec::new();
     loop {
@@ -148,7 +164,10 @@ fn serve_lines<R: Read, W: Write>(read: R, mut out: W, mut handle: impl FnMut(St
             Ok(true) => match parse_line(&buf) {
                 Line::Blank => continue,
                 Line::Reject(e) => e,
-                Line::Request { id, method, params } => {
+                Line::Request { token: given, .. } if token.is_some_and(|t| given.as_deref() != Some(t)) => {
+                    "missing or wrong control token; closing the connection".to_string()
+                }
+                Line::Request { id, method, params, .. } => {
                     let Some(mut r) = handle(method, params) else { return };
                     if let Some(o) = r.as_object_mut() {
                         o.insert("id".into(), id);
@@ -172,7 +191,7 @@ mod tests {
     fn run(input: &[u8]) -> (Vec<Value>, Vec<String>) {
         let mut out = Vec::new();
         let mut calls = Vec::new();
-        serve_lines(input, &mut out, |m, _p| {
+        serve_lines(input, &mut out, None, |m, _p| {
             calls.push(m);
             Some(json!({"ok": true, "result": null}))
         });
@@ -256,7 +275,7 @@ mod tests {
         let server = std::thread::spawn(move || {
             let (s, _) = listener.accept().unwrap();
             let read = s.try_clone().unwrap();
-            serve_lines(read, s, |_, _| Some(json!({"ok": true})));
+            serve_lines(read, s, None, |_, _| Some(json!({"ok": true})));
         });
         let mut c = TcpStream::connect(addr).unwrap();
         c.set_read_timeout(Some(Duration::from_secs(5))).unwrap();
@@ -275,7 +294,7 @@ mod tests {
         let listener = TcpListener::bind(("127.0.0.1", 0)).unwrap();
         let addr = listener.local_addr().unwrap();
         let (tx, _rx) = channel::<ControlRequest>();
-        std::thread::spawn(move || accept_loop(listener, tx, egui::Context::default()));
+        std::thread::spawn(move || accept_loop(listener, tx, egui::Context::default(), None));
         // Idle connections are accepted in order and held open.
         let held: Vec<TcpStream> = (0..16).map(|_| TcpStream::connect(addr).unwrap()).collect();
         let mut extra = TcpStream::connect(addr).unwrap();
@@ -284,5 +303,26 @@ mod tests {
         BufReader::new(&mut extra).read_line(&mut line).unwrap();
         assert!(line.contains("too many control connections"), "{line}");
         drop(held);
+    }
+
+    #[test]
+    fn a_tokened_server_runs_nothing_without_the_token() {
+        let run_with = |input: &[u8]| {
+            let mut out = Vec::new();
+            let mut calls = Vec::new();
+            serve_lines(input, &mut out, Some("s3cret"), |m, _p| {
+                calls.push(m);
+                Some(json!({"ok": true, "result": null}))
+            });
+            let replies: Vec<Value> = String::from_utf8(out).unwrap().lines().map(|l| serde_json::from_str::<Value>(l).unwrap()).collect();
+            (replies, calls)
+        };
+        let (r, calls) =
+            run_with(b"{\"id\":1,\"method\":\"a\",\"token\":\"s3cret\"}\n{\"id\":2,\"method\":\"b\"}\n{\"id\":3,\"method\":\"c\",\"token\":\"s3cret\"}\n");
+        assert_eq!(calls, ["a"], "the line without a token closes the connection before `c`");
+        assert_eq!(r.len(), 2);
+        assert_eq!(r[1]["ok"], false);
+        let (_, calls) = run_with(b"{\"id\":1,\"method\":\"a\",\"token\":\"guess\"}\n");
+        assert!(calls.is_empty());
     }
 }

@@ -3556,3 +3556,20 @@
 	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	切断するとこのコンピューターからキーが削除されます。無効にするには console.redrob.ai で取り消してください。
 	Connect a Redrob workspace	Redrob ワークスペースを接続
 	Redrob Account…	Redrob アカウント…
+	Agent	エージェント
+	Add Redrob Cut to Redrob Code	Redrob Cut を Redrob Code に追加
+	Add to Redrob Code	Redrob Code に追加
+	Added Redrob Cut to Redrob Code ({path})	Redrob Cut を Redrob Code に追加しました ({path})
+	Allow {tool}?	{tool} を許可しますか?
+	Ask Redrob Code to cut, arrange, caption or check this edit.	この編集のカット、並べ替え、字幕付け、チェックを Redrob Code に頼めます。
+	Connect…	接続…
+	Lets Redrob Code in a terminal edit projects with this app's tools (adds it to ~/.config/redrob/redrob.json).	ターミナルの Redrob Code がこのアプリのツールでプロジェクトを編集できるようにします (~/.config/redrob/redrob.json に追加)。
+	Message Redrob Code	Redrob Code へのメッセージ
+	Redrob Code declined this request.	Redrob Code はこのリクエストを断りました。
+	Redrob Code needs a Redrob workspace.	Redrob Code には Redrob ワークスペースが必要です。
+	Send	送信
+	Stopped.	停止しました。
+	The agent runs in the desktop app only.	エージェントはデスクトップアプリでのみ動作します。
+	The reply hit its length limit.	返答が長さの上限に達しました。
+	The turn ended: {reason}.	ターンが終了しました: {reason}。
+	Workspace changed. The next message starts the agent with it.	ワークスペースが変わりました。次のメッセージでそのワークスペースのエージェントが起動します。

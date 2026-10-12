@@ -9,7 +9,12 @@
 //!
 //! `--control <port>` (or `FILMCRAFT_CONTROL_PORT`) starts a localhost JSON-lines control server;
 //! see `filmcraft_ui_egui::control` for the methods. A port that is not a number is an error from
-//! either source.
+//! either source. Without it the app still opens one, on a free port and gated by a per-launch
+//! token, for the built-in agent (Redrob Code) alone; see [`agent_setup`].
+//!
+//! `filmcraft mcp [--connect HOST:PORT]` runs the MCP server on stdio instead of the window: the
+//! built-in agent starts it with `--connect`, Redrob Code in a terminal without (an in-process
+//! project).
 //!
 //! Auto-save and the crash-recovery journal run in every session (data in `--data-dir`, else
 //! `FILMCRAFT_DATA_DIR`, else the per-user application data folder). If a previous session died
@@ -22,6 +27,8 @@
 #![cfg_attr(all(target_os = "windows", not(debug_assertions)), windows_subsystem = "windows")]
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable))]
 
+mod acp;
+mod agent_setup;
 mod app_nap;
 mod appearance;
 mod args;
@@ -77,6 +84,11 @@ fn tell(text: &str, error: bool) {
 }
 
 fn main() -> eframe::Result {
+    // `filmcraft mcp ...`: the MCP server, no window. Before logging, so stdout stays the protocol's.
+    let argv: Vec<String> = std::env::args().skip(1).collect();
+    if argv.first().map(String::as_str) == Some("mcp") {
+        std::process::exit(agent_setup::serve_mcp(&argv[1..]));
+    }
     // First, so the panic hook and every start-up record are logged (`logging`).
     let logger = logging::install();
     // lossy, so a value that is not Unicode is reported like any other bad port instead of ignored
@@ -244,12 +256,21 @@ fn main() -> eframe::Result {
             app.hooks.open_url = Some(Box::new(|url: &str| open::that_detached(url).map_err(|e| e.to_string())));
             // Redrob workspace (device flow against console.redrob.ai). Editing never needs it;
             // the AI features ask for it through `account::require` when they start.
-            app.account = Some(Box::new(device::DeviceAccount::new(
+            let account = device::DeviceAccount::new(
                 device::config_dir().map(|d| d.join("account.json")),
                 std::sync::Arc::new(device::Https),
                 device::console_base(),
                 Some(cc.egui_ctx.clone()),
-            )));
+            );
+            let keys = account.key_source();
+            app.account = Some(Box::new(account));
+            // Redrob Code in a terminal can use this app's tools too (Agent panel, Help menu).
+            app.agent_services.add_to_redrob_code = Some(Box::new(|| {
+                let config = agent_setup::redrob_config_path().ok_or("no home folder to find Redrob Code's config in")?;
+                let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+                agent_setup::add_to_redrob_code(&config, &exe)?;
+                Ok(config.display().to_string())
+            }));
             app.hooks.clipboard_media = Some(Box::new(clipboard_media));
             // Settings ▸ General ▸ Interface Language ▸ System Language (#218).
             app.hooks.cursor_screen_position = Some(Box::new(filmcraft_platform::cursor::cursor_screen_position));
@@ -279,9 +300,23 @@ fn main() -> eframe::Result {
                 app.hooks.shortcuts_changed = Some(update);
                 app.ui.show_menu_bar = false;
             }
-            if let Some(port) = control_port {
-                let rx = control_server::start(port, cc.egui_ctx.clone());
-                app = app.with_control(rx);
+            // `--control PORT` keeps the upstream tokenless port; otherwise a free port and a fresh
+            // token that only the built-in agent's MCP server is handed.
+            let token = control_port.is_none().then(agent_setup::control_token);
+            let (rx, bound) = control_server::start(control_port.unwrap_or(0), cc.egui_ctx.clone(), token.clone());
+            app = app.with_control(rx);
+            // The built-in agent: Redrob Code over ACP, started by the Agent panel's first message
+            // (after `account::require`), with the connected workspace's key.
+            if let Some(port) = bound {
+                let link = acp::McpLink { addr: format!("127.0.0.1:{port}"), token };
+                let ctx = cc.egui_ctx.clone();
+                app.agent_services.factory = Some(Box::new(move || {
+                    let bin = acp::find_binary().ok_or_else(|| acp::INSTALL_HINT.to_string())?;
+                    // The connected workspace's key, as the variable Redrob Code reads for Redrob.
+                    let env: Vec<(&str, String)> = keys.lock().ok().and_then(|k| k.clone()).map(|k| vec![("REDROB_API_KEY", k.api_key)]).unwrap_or_default();
+                    let host = acp::AcpHost::start(&bin, &agent_setup::agent_cwd(), link.clone(), &env, ctx.clone())?;
+                    Ok(Box::new(host) as Box<dyn filmcraft_ui_egui::agent::AgentHost>)
+                }));
             }
             Ok(Box::new(app))
         }),

@@ -26,6 +26,9 @@ filmcraft-time = { workspace = true }
 filmcraft-gpu = { workspace = true }
 filmcraft-ui-egui = { workspace = true }
 filmcraft-platform = { workspace = true }
+# `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
+filmcraft-automation = { workspace = true }
+tokio = { version = "1", features = ["rt-multi-thread"] }
 egui = { workspace = true }
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11"] }
 serde_json = { workspace = true }
