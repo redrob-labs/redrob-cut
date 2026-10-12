@@ -3549,3 +3549,20 @@
 	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	断开连接会从此电脑移除密钥。要使其失效，请在 console.redrob.ai 上撤销。
 	Connect a Redrob workspace	连接 Redrob 工作区
 	Redrob Account…	Redrob 账户…
+	Agent	智能体
+	Add Redrob Cut to Redrob Code	将 Redrob Cut 添加到 Redrob Code
+	Add to Redrob Code	添加到 Redrob Code
+	Added Redrob Cut to Redrob Code ({path})	已将 Redrob Cut 添加到 Redrob Code（{path}）
+	Allow {tool}?	允许 {tool}？
+	Ask Redrob Code to cut, arrange, caption or check this edit.	让 Redrob Code 剪切、排列、添加字幕或检查此剪辑。
+	Connect…	连接…
+	Lets Redrob Code in a terminal edit projects with this app's tools (adds it to ~/.config/redrob/redrob.json).	让终端中的 Redrob Code 使用此应用的工具编辑项目（添加到 ~/.config/redrob/redrob.json）。
+	Message Redrob Code	给 Redrob Code 发消息
+	Redrob Code declined this request.	Redrob Code 拒绝了此请求。
+	Redrob Code needs a Redrob workspace.	Redrob Code 需要一个 Redrob 工作区。
+	Send	发送
+	Stopped.	已停止。
+	The agent runs in the desktop app only.	智能体仅在桌面应用中运行。
+	The reply hit its length limit.	回复已达到长度上限。
+	The turn ended: {reason}.	本轮已结束：{reason}。
+	Workspace changed. The next message starts the agent with it.	工作区已更改。下一条消息将用它启动智能体。
