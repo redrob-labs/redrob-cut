@@ -1,4 +1,4 @@
-//! Windows only: embed the app icon and version info (VERSIONINFO) into `filmcraft.exe`, so it
+//! Windows only: embed the app icon and version info (VERSIONINFO) into `redrob-cut.exe`, so it
 //! shows in Explorer, the taskbar, the Start menu and Alt-Tab.
 //!
 //! On every other target this does nothing (`winresource` is only a build-dependency on Windows
@@ -7,7 +7,7 @@
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=../../assets/app-icon/filmcraft.ico");
+    println!("cargo:rerun-if-changed=../../assets/app-icon/redrob-cut.ico");
     println!("cargo:rerun-if-env-changed=FILMCRAFT_REQUIRE_WINRES");
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
@@ -19,17 +19,17 @@ fn main() {
 mod windows {
     pub fn embed_resources() {
         let mut res = winresource::WindowsResource::new();
-        res.set_icon("../../assets/app-icon/filmcraft.ico")
-            .set("ProductName", "FilmCraft")
-            .set("FileDescription", "FilmCraft video editor")
-            .set("LegalCopyright", "Copyright (c) the FilmCraft contributors. MIT OR Apache-2.0.")
-            .set("OriginalFilename", "filmcraft.exe")
-            .set("InternalName", "filmcraft");
+        res.set_icon("../../assets/app-icon/redrob-cut.ico")
+            .set("ProductName", "Redrob Cut")
+            .set("FileDescription", "Redrob Cut video editor")
+            .set("LegalCopyright", "Copyright (c) the FilmCraft contributors; Janghoon Lee (Redrob) and contributors. MIT OR Apache-2.0.")
+            .set("OriginalFilename", "redrob-cut.exe")
+            .set("InternalName", "redrob-cut");
         if let Err(e) = res.compile() {
             if std::env::var_os("FILMCRAFT_REQUIRE_WINRES").is_some() {
                 panic!("embedding Windows resources failed: {e}");
             }
-            println!("cargo:warning=filmcraft.exe built without icon/version resources: {e}");
+            println!("cargo:warning=redrob-cut.exe built without icon/version resources: {e}");
         }
     }
 }
@@ -38,6 +38,6 @@ mod windows {
 #[cfg(not(windows))]
 mod windows {
     pub fn embed_resources() {
-        println!("cargo:warning=filmcraft.exe built without icon/version resources (cross-compiled from a non-Windows host)");
+        println!("cargo:warning=redrob-cut.exe built without icon/version resources (cross-compiled from a non-Windows host)");
     }
 }

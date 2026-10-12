@@ -32,8 +32,8 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
     let mut open = true;
     match d {
         Dialog::About => {
-            egui::Window::new(tl!("About FilmCraft"))
-                .id(egui::Id::new("About FilmCraft"))
+            egui::Window::new(tl!("About Redrob Cut"))
+                .id(egui::Id::new("About Redrob Cut"))
                 .open(&mut open)
                 .collapsible(false)
                 .resizable(false)
@@ -408,7 +408,7 @@ fn delete_tracks(app: &mut FilmcraftApp, ctx: &egui::Context) -> bool {
     keep
 }
 
-/// Help ▸ About FilmCraft, in three tabs: About (version and the ArtCraft community links),
+/// Help ▸ About Redrob Cut, in three tabs: About (version and the Redrob links),
 /// Contributors and Models (the credits compiled in from `contributors/contributors.json`, see
 /// `crate::credits` and docs/contributors.md).
 ///
@@ -452,11 +452,11 @@ fn about_tab(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
     use crate::links;
     let t = app.tokens;
     ui.set_width(380.0);
-    // ArtCraft wordmark (first-party trademark, docs/brand/).
-    let (r, _) = ui.allocate_exact_size(egui::vec2(ui.available_width(), 30.0), egui::Sense::hover());
-    crate::brand::paint_wordmark(ui, egui::pos2(r.min.x, r.center().y), 20.0, app.ui.dark);
+    // The product lockup (Redrob lockup + "Cut", assets/brand/) stands for the name: no heading
+    // repeats it. Its clear space is the margin above and below.
+    let (r, _) = ui.allocate_exact_size(egui::vec2(ui.available_width(), 40.0), egui::Sense::hover());
+    crate::brand::paint_lockup(ui, egui::pos2(r.min.x + 8.0, r.center().y), 24.0, app.ui.dark, t.text);
     ui.add_space(6.0);
-    ui.heading("FilmCraft");
     ui.label(tlf!("Version {version}", version = env!("CARGO_PKG_VERSION")));
     ui.label(tl!("An agentic, pure-Rust non-linear video editor by Redrob."));
     ui.add_space(10.0);

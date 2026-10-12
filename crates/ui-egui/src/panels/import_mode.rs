@@ -36,7 +36,8 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
             ui.painter(),
             Rect::from_min_size(r.min + vec2(16.0, 18.0), vec2(56.0, 56.0)),
             [crate::icons::Icon::Folder, crate::icons::Icon::Film, crate::icons::Icon::Sequence, crate::icons::Icon::Grid][i],
-            Color32::from_rgb(140, 150, 255),
+            // ink-brand (design token): the brand blue that reads on the theme's ground
+            t.hot_text,
         );
         if resp.clicked() {
             let _ = crate::menus::invoke(app, &ctx, cmd, json!({}));
@@ -45,9 +46,10 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
     }
     // Project links.
     let y = 90.0 + 150.0 + 36.0;
-    // ArtCraft wordmark (first-party trademark, docs/brand/), then the section title.
-    let logo = crate::brand::paint_wordmark(ui, rect.min + vec2(24.0, y), 15.0, app.ui.dark);
-    let tx = logo.map_or(rect.min.x + 24.0, |r| r.max.x + 12.0);
+    // The product lockup (Redrob lockup + "Cut", assets/brand/), then the section title.
+    let logo = crate::brand::paint_lockup(ui, rect.min + vec2(24.0, y), crate::brand::MIN_HEIGHT, app.ui.dark, t.text);
+    // the lockup keeps its clear space (0.3x of its height on each side, design system 10-logo.md)
+    let tx = logo.map_or(rect.min.x + 24.0, |r| r.max.x + 24.0);
     ui.painter().text(pos2(tx, rect.min.y + y), Align2::LEFT_CENTER, tl!("Links"), Tokens::semibold(15.0), t.text);
     let mut x = rect.min.x + 24.0;
     for (i, (id, label, url)) in crate::links::ALL.iter().enumerate() {

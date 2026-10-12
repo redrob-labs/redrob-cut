@@ -29,15 +29,37 @@ bump for no gain.
 
 ## What this fork does not own
 
-Upstream's `NOTICE` and [`docs/brand/LICENSE-brand.txt`](./docs/brand/LICENSE-brand.txt) state that the
-ArtCraft name, wordmark and mark under `docs/brand/` are trademarks of the ArtCraft Team, **not** covered
-by MIT OR Apache-2.0, and that forks and modified versions must remove them. `upstream-base.json` lists the
-prefix under `proprietaryPrefixes`; `proprietaryReplaced` flips to `true` when the brand pass replaces every
-file there with Redrob design-system sources, after which `scripts/check_upstream_boundary.py` fails if any
-file is ever byte-identical to upstream's again.
+Upstream's `NOTICE` and its `docs/brand/LICENSE-brand.txt` state that the ArtCraft name, wordmark and
+mark under `docs/brand/` are trademarks of the ArtCraft Team, **not** covered by MIT OR Apache-2.0, and that
+forks and modified versions must remove them. They are removed. `upstream-base.json` keeps the prefix under
+`proprietaryPrefixes` with `proprietaryReplaced: true`, so `scripts/check_upstream_boundary.py` fails if any
+of those files is ever byte-identical to upstream's again, and `scripts/check_brand.py` fails if any file
+under the prefix comes back at all (an upstream sync that re-adds them must delete them in the merge).
 
-The FilmCraft app icon under `assets/app-icon/` is original artwork licensed like the rest of the code
-(see its `LICENSE.txt`); it is replaced in the brand pass for product identity, not for licensing.
+The FilmCraft app icon was original artwork licensed like the code; it was replaced for product identity.
+Every icon is now derived from the Redrob design system's files in `assets/brand/` (pinned by
+`SHA256SUMS`) by `packaging/brand-assets.sh`.
+
+### Renamed, and kept on purpose
+
+What a person sees or installs is Redrob Cut's: the name, app id `ai.redrob.cut`, the executables
+`redrob-cut` and `redrob-cut-cli`, installers, data folders (`Redrob Cut` / `redrob-cut`), log files, the
+MCP server name, links, icons, the About and Home lockup, and the brand colours (`redrob_tokens`,
+generated from redrob-ui). `scripts/check_brand.py` keeps it that way.
+
+Kept as upstream's, because they are stored in files or read back as identifiers, or because renaming
+them would make every upstream sync conflict:
+
+- Cargo package and crate names (`filmcraft`, `filmcraft-cli`, `filmcraft_*`), log targets, thread names,
+  the `FILMCRAFT_*` environment variables.
+- File formats: the `.fcproj` extension and MIME type `application/x-filmcraft`, the `filmcraft.*` format
+  ids in project, preset and template files, the renderer names stored in
+  project settings, the AAF tag names and the XMP `CreatorTool` marker that interchange reads back, and
+  the `filmcraft://` MCP resource URIs.
+- Built-in decoder names (`FilmCraft H.264` and so on), test data and code comments in the lower-layer
+  crates. The name the app writes into exported files (MP4 encoder tag, MXF/AAF/OMF identification,
+  caption and LUT headers, the project `generator`) and the messages people read are Redrob Cut's.
+- Upstream's own documentation under `docs/` (except `docs/agents.md`), which describes upstream.
 
 Upstream's `release.yml` was removed rather than kept: it called a reusable workflow in upstream's own
 `craft-common-actions` repository with upstream's signing secrets. Our release workflow is written against
