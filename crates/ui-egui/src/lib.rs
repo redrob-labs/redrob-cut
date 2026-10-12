@@ -29,6 +29,7 @@ macro_rules! tlf {
     };
 }
 
+pub mod account;
 pub mod automation;
 pub mod brand;
 mod cjk;
@@ -194,6 +195,9 @@ pub enum Dialog {
     SequenceSettings,
     /// Set Transition Duration (double-click a transition in the Timeline).
     TransitionDuration,
+    /// Connect a Redrob workspace (device flow); opened by `account.connect` or by an AI feature
+    /// that needs the workspace key (`account::require`).
+    RedrobConnect,
 }
 
 #[derive(Default)]
@@ -259,6 +263,8 @@ pub struct FilmcraftApp {
     /// Audio during scrubbing (#211).
     pub scrub: scrub::ScrubAudio,
     pub hooks: HostHooks,
+    /// The Redrob workspace account (desktop only; `None` on the web and in headless tests).
+    pub account: Option<Box<dyn account::AccountService>>,
     pub dialog: Option<Dialog>,
     pub file_dialogs: panels::file_dialogs::FileDialogState,
     pub auto: automation::Registry,
@@ -496,6 +502,7 @@ impl FilmcraftApp {
             audio: None,
             scrub: Default::default(),
             hooks: HostHooks::default(),
+            account: None,
             // Unsaved changes left by a session that died are offered first thing.
             dialog: recovery.then_some(Dialog::Recovery),
             file_dialogs: Default::default(),
