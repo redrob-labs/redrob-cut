@@ -109,6 +109,7 @@ jobs:
             echo "Merge \`main\` back into \`develop\`. Until that lands, a branch cut from the default"
             echo "branch is missing whatever these changed."
             echo
+            # shellcheck disable=SC2016  # the backticks are markdown for the step summary, not expansion
             git log --format='- `%h` %s' origin/develop..origin/main
           } >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
           git log --oneline origin/develop..origin/main
