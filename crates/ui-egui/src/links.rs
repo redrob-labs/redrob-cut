@@ -1,28 +1,25 @@
-//! Community and project links (Help menu, About dialog, header Discord button, Home screen).
+//! Project links (Help menu, About dialog, Home screen).
 //!
-//! FilmCraft is part of the ArtCraft family: the community lives on the ArtCraft Discord, every
-//! app has a page on the ArtCraft website and a public GitHub repository.
+//! Redrob Cut is a Redrob product: the product page lives on the Redrob website and the source in
+//! the redrob-labs organisation on GitHub. There is no third-party community service wired in.
 
 /// The app's short name, used in the website and repository URLs.
-pub const APP: &str = "filmcraft";
+pub const APP: &str = "cut";
 
-/// The ArtCraft community Discord.
-pub const DISCORD: &str = "https://discord.gg/artcraft";
-/// The ArtCraft website.
-pub const WEBSITE: &str = "https://getartcraft.com";
-/// FilmCraft's page on the ArtCraft website.
-pub const APP_PAGE: &str = "https://getartcraft.com/apps/filmcraft";
-/// FilmCraft's source repository.
-pub const GITHUB: &str = "https://github.com/storytold/filmcraft";
-/// New issue on FilmCraft's repository.
-pub const ISSUES: &str = "https://github.com/storytold/filmcraft/issues";
+/// The Redrob website.
+pub const WEBSITE: &str = "https://redrob.io";
+/// Redrob Cut's page on the Redrob website.
+pub const APP_PAGE: &str = "https://redrob.io/cut";
+/// Redrob Cut's source repository.
+pub const GITHUB: &str = "https://github.com/redrob-labs/redrob-cut";
+/// New issue on Redrob Cut's repository.
+pub const ISSUES: &str = "https://github.com/redrob-labs/redrob-cut/issues";
 
 /// (command id, label, url) for every link, in menu order.
-pub const ALL: [(&str, &str, &str); 5] = [
-    ("help.discord", "Join the ArtCraft Discord…", DISCORD),
-    ("help.website", "ArtCraft Website", WEBSITE),
-    ("help.appPage", "FilmCraft on getartcraft.com", APP_PAGE),
-    ("help.github", "FilmCraft on GitHub", GITHUB),
+pub const ALL: [(&str, &str, &str); 4] = [
+    ("help.website", "Redrob Website", WEBSITE),
+    ("help.appPage", "Redrob Cut on redrob.io", APP_PAGE),
+    ("help.github", "Source code on GitHub", GITHUB),
     ("help.reportIssue", "Report an Issue…", ISSUES),
 ];
 
@@ -50,17 +47,22 @@ mod tests {
     use super::*;
 
     #[test]
-    fn urls_follow_the_artcraft_scheme() {
-        assert_eq!(APP_PAGE, format!("{WEBSITE}/apps/{APP}"));
-        assert_eq!(GITHUB, format!("https://github.com/storytold/{APP}"));
+    fn urls_follow_the_redrob_scheme() {
+        assert_eq!(APP_PAGE, format!("{WEBSITE}/{APP}"));
+        assert_eq!(GITHUB, "https://github.com/redrob-labs/redrob-cut");
+        assert_eq!(ISSUES, format!("{GITHUB}/issues"));
         assert!(ALL.iter().all(|(id, _, u)| id.starts_with("help.") && u.starts_with("https://")));
-        assert_eq!(url_for("help.discord"), Some(DISCORD));
+        assert_eq!(url_for("help.website"), Some(WEBSITE));
         assert_eq!(url_for("help.nope"), None);
+        // No third-party community service: every link stays on our own domains.
+        for (_, _, u) in ALL {
+            assert!(u.starts_with("https://redrob.io") || u.starts_with("https://github.com/redrob-labs/"), "{u}");
+        }
     }
 
     #[test]
     fn links_open_through_the_host_hook() {
-        // #642: on the desktop every link (Help menu, About, Discord button, Import screen) must
+        // #642: on the desktop every link (Help menu, About, Import screen) must
         // reach the host's browser opener; `ctx.open_url` alone is a no-op natively.
         use std::cell::RefCell;
         use std::rc::Rc;
@@ -77,8 +79,8 @@ mod tests {
             assert_eq!(r["url"], url, "{id}");
             assert_eq!(opened.borrow().last().map(String::as_str), Some(url), "{id}");
         }
-        open(&mut app, &ctx, DISCORD);
-        assert_eq!(opened.borrow().last().map(String::as_str), Some(DISCORD));
+        open(&mut app, &ctx, WEBSITE);
+        assert_eq!(opened.borrow().last().map(String::as_str), Some(WEBSITE));
         assert_eq!(opened.borrow().len(), ALL.len() + 1);
 
         // A failing opener falls back to `ctx.open_url` instead of losing the click.

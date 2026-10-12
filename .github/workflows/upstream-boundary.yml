@@ -22,3 +22,4 @@ jobs:
         with:
           fetch-depth: 0
       - run: python3 scripts/check_upstream_boundary.py
+      - run: python3 scripts/check_no_upstream_services.py
