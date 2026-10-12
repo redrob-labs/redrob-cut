@@ -1,0 +1,24 @@
+name: Upstream boundary
+
+# Fails on a stale upstream-base.json, a replaced upstream copyright line, anything under an
+# upstream-excluded subtree, and (once proprietaryReplaced is true) any upstream trademark file still
+# byte-identical to upstream. See UPSTREAM.md.
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boundary:
+    name: upstream boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: python3 scripts/check_upstream_boundary.py
