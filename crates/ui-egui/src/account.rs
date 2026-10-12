@@ -20,6 +20,8 @@ use crate::FilmcraftApp;
 pub struct Account {
     pub account_name: String,
     pub key_name: String,
+    /// The key is the computer's shared one, from Redrob Launcher: signing out happens there.
+    pub via_launcher: bool,
 }
 
 /// A connection the person is approving.
@@ -201,16 +203,20 @@ fn body(app: &mut FilmcraftApp, ui: &mut egui::Ui, prefix: &str) {
             ui.label(RichText::new(tlf!("Workspace: {name}", name = a.account_name)).color(t.text));
             ui.label(RichText::new(tlf!("Key: {name}", name = a.key_name)).small().color(t.text_dim));
             ui.add_space(4.0);
-            let b = ui.add_sized(vec2(140.0, 26.0), egui::Button::new(tl!("Disconnect")));
-            app.auto.add(&format!("{prefix}.disconnect"), b.rect, "Disconnect");
-            if b.clicked() {
-                action = Some(|s| s.disconnect());
+            if a.via_launcher {
+                ui.label(RichText::new(tl!("Signed in with Redrob Launcher")).small().color(t.text_dim));
+            } else {
+                let b = ui.add_sized(vec2(140.0, 26.0), egui::Button::new(tl!("Disconnect")));
+                app.auto.add(&format!("{prefix}.disconnect"), b.rect, "Disconnect");
+                if b.clicked() {
+                    action = Some(|s| s.disconnect());
+                }
+                ui.label(
+                    RichText::new(tl!("Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it."))
+                        .small()
+                        .color(t.text_dim),
+                );
             }
-            ui.label(
-                RichText::new(tl!("Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it."))
-                    .small()
-                    .color(t.text_dim),
-            );
         }
         (None, s) => {
             if let ConnectState::Failed(why) = s {
@@ -288,7 +294,7 @@ mod tests {
         assert_eq!(app.dialog, Some(crate::Dialog::RedrobConnect));
         assert_eq!(app.ui.account_feature.as_deref(), Some("Redrob Code"));
 
-        let (mut app, _) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Cut".into() }));
+        let (mut app, _) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Cut".into(), via_launcher: false }));
         assert!(require(&mut app, "Redrob Code"));
         assert_eq!(app.dialog, None);
 
@@ -310,7 +316,7 @@ mod tests {
         assert_eq!(*calls.borrow(), vec!["connect"]);
         assert!(route(&mut app, "account.nope").is_none());
 
-        let (mut app, calls) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Cut".into() }));
+        let (mut app, calls) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Cut".into(), via_launcher: false }));
         let s = route(&mut app, "account.status").unwrap().unwrap();
         assert_eq!(s, json!({"connected": true, "available": true, "accountName": "Acme", "keyName": "Redrob Cut", "state": "idle"}));
         assert!(s.to_string().find("rk_").is_none());

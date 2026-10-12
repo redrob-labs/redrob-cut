@@ -519,7 +519,7 @@ mod tests {
     struct Account(bool);
     impl crate::account::AccountService for Account {
         fn account(&self) -> Option<crate::account::Account> {
-            self.0.then(|| crate::account::Account { account_name: "W".into(), key_name: "k".into() })
+            self.0.then(|| crate::account::Account { account_name: "W".into(), key_name: "k".into(), via_launcher: false })
         }
         fn state(&mut self) -> crate::account::ConnectState {
             crate::account::ConnectState::Idle

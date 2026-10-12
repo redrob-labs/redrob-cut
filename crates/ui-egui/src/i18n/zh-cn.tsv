@@ -3545,6 +3545,7 @@
 	{time} left	剩余 {time}
 	Workspace: {name}	工作区：{name}
 	Key: {name}	密钥：{name}
+	Signed in with Redrob Launcher	已通过 Redrob Launcher 登录
 	Disconnect	断开连接
 	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	断开连接会从此电脑移除密钥。要使其失效，请在 console.redrob.ai 上撤销。
 	Connect a Redrob workspace	连接 Redrob 工作区

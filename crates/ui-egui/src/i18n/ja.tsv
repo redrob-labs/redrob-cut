@@ -3552,6 +3552,7 @@
 	{time} left	残り {time}
 	Workspace: {name}	ワークスペース: {name}
 	Key: {name}	キー: {name}
+	Signed in with Redrob Launcher	Redrob Launcher でサインイン済み
 	Disconnect	切断
 	Disconnecting removes the key from this computer. Revoke it on console.redrob.ai to invalidate it.	切断するとこのコンピューターからキーが削除されます。無効にするには console.redrob.ai で取り消してください。
 	Connect a Redrob workspace	Redrob ワークスペースを接続
