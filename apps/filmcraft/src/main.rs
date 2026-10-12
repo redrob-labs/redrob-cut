@@ -30,6 +30,7 @@ mod audio_in;
 mod control_server;
 #[cfg(target_os = "linux")]
 mod dev_icon;
+mod device;
 mod file_filters;
 #[cfg(any(target_os = "windows", test))]
 mod graphics;
@@ -241,6 +242,14 @@ fn main() -> eframe::Result {
             // feature, so `ctx.open_url` does nothing on the desktop. Detached, so a launcher
             // that waits for the browser never freezes the UI.
             app.hooks.open_url = Some(Box::new(|url: &str| open::that_detached(url).map_err(|e| e.to_string())));
+            // Redrob workspace (device flow against console.redrob.ai). Editing never needs it;
+            // the AI features ask for it through `account::require` when they start.
+            app.account = Some(Box::new(device::DeviceAccount::new(
+                device::config_dir().map(|d| d.join("account.json")),
+                std::sync::Arc::new(device::Https),
+                device::console_base(),
+                Some(cc.egui_ctx.clone()),
+            )));
             app.hooks.clipboard_media = Some(Box::new(clipboard_media));
             // Settings ▸ General ▸ Interface Language ▸ System Language (#218).
             app.hooks.cursor_screen_position = Some(Box::new(filmcraft_platform::cursor::cursor_screen_position));

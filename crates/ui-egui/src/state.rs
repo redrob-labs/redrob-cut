@@ -493,6 +493,9 @@ pub struct UiState {
     /// Settings dialog (open when Some): page and the values being edited.
     #[serde(default)]
     pub settings: Option<crate::panels::settings::SettingsDraft>,
+    /// The AI feature that opened the Connect dialog (its title names it). Not persisted.
+    #[serde(skip)]
+    pub account_feature: Option<String>,
     /// Audio Track Mixer: effects and sends section expanded.
     #[serde(default)]
     pub mixer_fx_open: bool,
@@ -977,6 +980,7 @@ impl Default for UiState {
             mixer_hidden: Vec::new(),
             mixer_meter_input_only: false,
             settings: None,
+            account_feature: None,
             audio_gain: AudioGainDraft::default(),
             add_tracks: AddTracksDraft::default(),
             delete_tracks: DeleteTracksDraft::default(),

@@ -88,6 +88,7 @@ fn categories_follow_premiere_order() {
             "memory",
             "playback",
             "plugins",
+            "redrobAccount",
             "timeline",
             "trim"
         ]

@@ -133,6 +133,7 @@ pub const UI_COMMANDS: &[UiCommand] = &[
     uic!("help.appPage", "Redrob Cut on redrob.io", ["Help"], None),
     uic!("help.github", "Source code on GitHub", ["Help"], None),
     uic!("help.reportIssue", "Report an Issue…", ["Help"], None),
+    uic!("account.connect", "Connect to Redrob…", ["Help"], None),
     uic!("help.revealLogFiles", "Reveal Log Files…", ["Help"], None),
     uic!("help.systemCompatibilityReport", "System Compatibility Report…", ["Help"], None),
     uic!("app.about", "About FilmCraft", ["Help"], None),
@@ -151,6 +152,7 @@ pub const UI_COMMANDS: &[UiCommand] = &[
     uic!("app.settings.memory", "Memory…", ["Edit", "Preferences"], None),
     uic!("app.settings.playback", "Playback…", ["Edit", "Preferences"], None),
     uic!("app.settings.plugins", "Plugins…", ["Edit", "Preferences"], None),
+    uic!("app.settings.redrobAccount", "Redrob Account…", ["Edit", "Preferences"], None),
     uic!("app.settings.timeline", "Timeline…", ["Edit", "Preferences"], None),
     uic!("app.settings.trim", "Trim…", ["Edit", "Preferences"], None),
 ];
@@ -410,6 +412,11 @@ pub fn invoke(app: &mut FilmcraftApp, ctx: &egui::Context, id: &str, mut params:
         "app.about" => {
             app.dialog = Some(crate::Dialog::About);
             return Ok(Value::Null);
+        }
+        id if id.starts_with("account.") => {
+            if let Some(r) = crate::account::route(app, id) {
+                return r;
+            }
         }
         id if crate::links::url_for(id).is_some() => {
             let url = crate::links::url_for(id).unwrap_or_default();

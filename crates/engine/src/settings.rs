@@ -1083,6 +1083,14 @@ static CATEGORIES: &[Category] = &[
         ],
     },
     Category {
+        id: "redrobAccount",
+        title: "Redrob Account",
+        rows: &[
+            Row::Note("Editing is free and never needs an account. AI features are billed to the Redrob workspace connected here."),
+            Row::Custom("redrobAccount"),
+        ],
+    },
+    Category {
         id: "timeline",
         title: "Timeline",
         rows: &[
