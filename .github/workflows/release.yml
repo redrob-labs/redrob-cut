@@ -395,15 +395,25 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: packaging
       - uses: actions/download-artifact@v4
         with:
           pattern: release-*
           path: artifacts
           merge-multiple: true
+      # Redrob Launcher reads this file beside the installers to learn that the release uses its
+      # shared sign-in (docs/release-manifest.md in redrob-launcher). Before the checksums, so the
+      # sums file lists it like every other asset.
+      - name: Launcher manifest
+        run: bash packaging/launcher-manifest.sh artifacts
       - name: Checksums
         working-directory: artifacts
         run: |
           sha256sum -- * | tee SHA256SUMS.txt
+      - name: Release assets are complete
+        run: python3 packaging/check_release_assets.py artifacts
       - name: Create or update the draft release
         working-directory: artifacts
         run: |
