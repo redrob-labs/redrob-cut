@@ -12,8 +12,12 @@ Editing workspace, or Window ▸ Agent) is a chat with [Redrob Code](https://cod
 what you want done to the edit; Redrob Code works through the same MCP tools listed below, on the
 open window.
 
-- The app starts `redrob acp` (Agent Client Protocol on stdio) on the first message. It looks for
-  `redrob` in `REDROB_CODE_PATH`, then `PATH`, then `~/.redrob/bin`, `~/.local/bin`, `~/.bun/bin`.
+- The app starts `redrob acp --attach` (Agent Client Protocol on stdio) on the first message. It
+  looks for `redrob` in `REDROB_CODE_PATH`, then `PATH`, then `~/.redrob/bin`, `~/.local/bin`,
+  `~/.bun/bin`. `--attach` (Redrob Code 0.6.0 or newer) makes it a thin client of the one Redrob
+  Code daemon shared by every Redrob app on the machine (`~/.redrob/run/server.json`, started on
+  demand with `redrob service start`) instead of running an engine of its own; the daemon stops by
+  itself after ten minutes with no client attached.
 - The tools reach the agent as an MCP server named `redrob-cut`: this same executable, run as
   `redrob-cut mcp --connect 127.0.0.1:<port>`, on a free control port opened at launch and gated by
   a per-launch token (`REDROB_CUT_CONTROL_TOKEN`, handed only to that server). Nothing is written
