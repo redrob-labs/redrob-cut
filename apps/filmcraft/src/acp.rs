@@ -1,5 +1,6 @@
-//! The built-in agent: Redrob Code over the Agent Client Protocol (`redrob acp`, JSON-RPC 2.0,
-//! one message per line on the child's stdio).
+//! The built-in agent: Redrob Code over the Agent Client Protocol (`redrob acp --attach`, JSON-RPC
+//! 2.0, one message per line on the child's stdio). The child is a thin client of the one Redrob
+//! Code daemon shared by every Redrob app on the machine, not an engine of its own.
 //!
 //! Only the handful of ACP methods the Agent palette needs are typed here; anything else is
 //! ignored (notifications) or declined (requests). The editing tools reach the agent as an MCP
@@ -123,6 +124,14 @@ impl Shared {
     }
 }
 
+/// Arguments for the `redrob` child. `--attach` makes it a thin client of the one shared Redrob
+/// Code daemon (`~/.redrob/run/server.json`, started on demand via `redrob service start`) instead
+/// of an engine of its own; the daemon exits on its own once no client has been attached for a
+/// while.
+fn acp_args(cwd: &str) -> [String; 4] {
+    ["acp".into(), "--attach".into(), "--cwd".into(), cwd.into()]
+}
+
 pub struct AcpHost {
     child: Child,
     shared: Arc<Mutex<Shared>>,
@@ -130,11 +139,11 @@ pub struct AcpHost {
 }
 
 impl AcpHost {
-    /// Spawn `redrob acp` in `cwd` and start the handshake; the session opens in the background
-    /// and any prompt sent before it is ready is queued.
+    /// Spawn `redrob acp --attach` in `cwd` and start the handshake; the session opens in the
+    /// background and any prompt sent before it is ready is queued.
     pub fn start(binary: &Path, cwd: &str, mcp: McpLink, env: &[(&str, String)], ctx: egui::Context) -> Result<Self, String> {
         let mut child = Command::new(binary)
-            .args(["acp", "--cwd", cwd])
+            .args(acp_args(cwd))
             .envs(env.iter().map(|(k, v)| (*k, v.as_str())))
             .current_dir(cwd)
             .stdin(Stdio::piped())
@@ -390,6 +399,11 @@ mod tests {
             assert_eq!(wanted_model(&json!([{"id": "model", "currentValue": "a/b", "options": [{"value": "a/b"}]}])), None);
         }
         assert_eq!(wanted_model(&Value::Null), None);
+    }
+
+    #[test]
+    fn attaches_to_the_shared_engine() {
+        assert_eq!(acp_args("/w"), ["acp", "--attach", "--cwd", "/w"]);
     }
 
     #[test]
