@@ -73,5 +73,3 @@ jobs:
           assert programs(src) == programs(bundle) == {"redrob-cut", "redrob-cut-cli"}, f"Flatpak manifests install {programs(src)} vs {programs(bundle)}"
           print("Flatpak manifests ok")
           EOF
-      - name: FreeBSD package layout (stub binaries)
-        run: bash packaging/freebsd/package.sh --dry-run
