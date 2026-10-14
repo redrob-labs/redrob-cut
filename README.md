@@ -37,7 +37,7 @@ app id (`ai.redrob.cut`), installers and everything a person sees are Redrob Cut
 ## Branches and contributing
 
 - Default branch `develop`, release branch `main`. Branch names follow the `feat/ fix/ chore/ docs/
-  test/ refactor/ perf/ sync/ hotfix/ release/` prefixes, checked by `.github/workflows/gitflow.yml`.
+  test/ refactor/ perf/ sync/ hotfix/ release/` prefixes, checked by the shared redrob-labs gitflow workflow (one type list for every repository: `feat fix chore docs test refactor perf ci build sync hotfix release`).
 - Upstream syncs land on `sync/upstream-<tag>` branches and merge with a merge commit only.
 - Organisation conventions: CONTRIBUTING.md and FORKS.md in [redrob-labs/.github](https://github.com/redrob-labs/.github).
 - Gates: `python3 scripts/check_upstream_boundary.py`, `scripts/check_no_upstream_services.py`,
