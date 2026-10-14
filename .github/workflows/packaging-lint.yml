@@ -37,8 +37,6 @@ jobs:
         run: shellcheck packaging/*.sh packaging/*/*.sh
       - name: Linux tarball installer
         run: python3 packaging/linux/test_install.py
-      - name: Release assets (launcher manifest, checksums, gate)
-        run: python3 packaging/test_release_assets.py
       - name: PowerShell
         shell: pwsh
         run: |

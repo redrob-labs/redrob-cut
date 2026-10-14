@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Build, sign and package Redrob Cut for Windows.
+  Build and package Redrob Cut for Windows.
 
 .DESCRIPTION
   Produces, in $env:DIST (default: dist/release):
@@ -8,8 +8,10 @@
     redrob-cut-<version>-windows-<arch>-portable.zip   redrob-cut.exe + redrob-cut-cli.exe + portable.txt
 
   The binaries link the C runtime statically (+crt-static), so neither the MSI nor the portable
-  zip needs the Visual C++ redistributable. Signing is delegated to sign.ps1 (skipped with a
-  warning when Artifact Signing is not configured).
+  zip needs the Visual C++ redistributable. This script does not sign: the release workflow signs
+  the staged executables (after -BuildOnly) and the MSI (after -SkipBuild) with the shared
+  redrob-labs/.github/actions/sign-windows action, so the portable zip carries signed executables
+  and the installer is signed last. A local run produces unsigned packages.
 
   Needs: Rust (MSVC toolchain + the target), the Windows SDK (rc.exe, signtool.exe),
   and WiX v5: dotnet tool install --global wix --version 5.0.2
@@ -67,11 +69,19 @@ if (-not $SkipBuild) {
   $env:FILMCRAFT_REQUIRE_WINRES = '1'
   Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p filmcraft -p filmcraft-cli --target $Target }
 }
-# The release workflow builds first and signs in a second invocation, so the short-lived OpenID
-# Connect login happens right before signing instead of expiring during a long build.
-if ($BuildOnly) { exit 0 }
-
 $Bin = Join-Path $TargetDir "$Target\release"
+$Stage = Join-Path $TargetDir "windows-package\$Arch"
+
+# The release workflow builds and stages first, signs the staged executables, then packages in a
+# second invocation, so the short-lived OpenID Connect login happens right before signing instead
+# of expiring during a long build. The stage is therefore filled in the build phase and only read
+# in the package phase.
+if (-not $SkipBuild) {
+  Remove-Item -Recurse -Force $Stage -ErrorAction SilentlyContinue
+  New-Item -ItemType Directory -Force -Path $Stage | Out-Null
+  Copy-Item (Join-Path $Bin 'redrob-cut.exe'), (Join-Path $Bin 'redrob-cut-cli.exe') $Stage
+}
+if ($BuildOnly) { exit 0 }
 
 # Check both binaries' PE headers before packaging. Machine (COFF header) must match -Arch, so an
 # x64 build can never ship labelled arm64. Subsystem (optional header): 2 = Windows GUI, 3 = console.
@@ -84,18 +94,12 @@ function Get-PeHeader([string] $Path) {
 }
 $Machine = switch ($Arch) { 'x64' { 0x8664 } 'x86' { 0x14C } 'arm64' { 0xAA64 } }
 foreach ($check in @(@('redrob-cut.exe', 2), @('redrob-cut-cli.exe', 3))) {
-  $h = Get-PeHeader (Join-Path $Bin $check[0])
+  if (-not (Test-Path (Join-Path $Stage $check[0]))) { throw "$($check[0]) is not staged in $Stage; run with -BuildOnly first" }
+  $h = Get-PeHeader (Join-Path $Stage $check[0])
   if ($h.Machine -ne $Machine) { throw "$($check[0]) is for machine 0x$('{0:X}' -f $h.Machine), expected 0x$('{0:X}' -f $Machine) ($Arch)" }
   if ($h.Subsystem -ne $check[1]) { throw "$($check[0]) has PE subsystem $($h.Subsystem), expected $($check[1])" }
   Write-Output "ok $($check[0]): $Arch, PE subsystem $($h.Subsystem)"
 }
-$Stage = Join-Path $TargetDir "windows-package\$Arch"
-Remove-Item -Recurse -Force $Stage -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Force -Path $Stage | Out-Null
-Copy-Item (Join-Path $Bin 'redrob-cut.exe'), (Join-Path $Bin 'redrob-cut-cli.exe') $Stage
-
-& (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'redrob-cut.exe') (Join-Path $Stage 'redrob-cut-cli.exe')
-
 # ---- MSI ---------------------------------------------------------------------------------------
 $Msi = Join-Path $Dist "redrob-cut-$Version-windows-$Arch.msi"
 Invoke-Native 'wix build' {
@@ -105,7 +109,6 @@ Invoke-Native 'wix build' {
 }
 # wix writes its debug symbols (.wixpdb) next to the MSI; keep them out of the release assets.
 Remove-Item -Force -ErrorAction SilentlyContinue ([IO.Path]::ChangeExtension($Msi, '.wixpdb'))
-& (Join-Path $PSScriptRoot 'sign.ps1') $Msi
 
 # ---- portable zip ------------------------------------------------------------------------------
 $Portable = Join-Path $TargetDir "windows-package\redrob-cut-$Version-windows-$Arch-portable"
