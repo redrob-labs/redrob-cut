@@ -83,7 +83,7 @@ platforms** G4, G9, G17; **performance** G16; **ecosystem** G11; **measurement**
 - **Evidence:** open issues: macOS 12 Monterey aborts on a missing VideoToolbox symbol (#468,
   #661, #655), Intel UHD graphics (`igvk64.dll`, #512), Windows 11 does not run or fails after setup
   (#380, #582, #413, #477), crash on new project + import (#439), "it just keeps crashing" (#687).
-  `.github/workflows/` holds release, packaging lint, FreeBSD and Windows ARM64 builds; **none runs
+  `.github/workflows/` holds release, packaging lint and Windows ARM64 builds; **none runs
   `cargo test` or `cargo xtask ci` on a pull request**, so 243 PRs merged since 10-05 were gated by
   contributors' local runs (main needed "green again after the batch merges" on 10-10).
 - **Impact:** a user who cannot start the app gets zero value; regressions land unnoticed.

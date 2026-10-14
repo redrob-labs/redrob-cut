@@ -224,7 +224,6 @@ jobs:
           dpkg-deb --info dist/release/*.deb
           dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-cut$|metainfo|applications'
           ldd target/release/redrob-cut
-          python3 -c "import yaml; m = yaml.safe_load(open('packaging/linux/flatpak/ai.redrob.cut.yml')); assert m['id'] == 'ai.redrob.cut'"
           for appimage in dist/release/*.AppImage; do
             chmod +x "$appimage"
             APPIMAGE_EXTRACT_AND_RUN=1 "$appimage" --version
@@ -244,8 +243,7 @@ jobs:
     name: Draft GitHub Release
     needs: [version, macos, windows, linux]
     # Only a version tag publishes; a manual dispatch stops before this job. Three platforms, all
-    # of which must succeed: Flatpak, web and FreeBSD builds were dropped from the release
-    # (2026-10-13) as not worth their build time and flakiness for the people the app is for.
+    # of which must succeed.
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     environment: release
