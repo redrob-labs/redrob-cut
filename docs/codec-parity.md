@@ -50,7 +50,7 @@ contents). Percent is ready-for-real-work for that codec: depth, profiles, speed
 ## Summary
 
 - **Ahead of Premiere:** VP9, Opus, APV decode / encode; bit-exact software decoders everywhere,
-  including Linux and FreeBSD, where Premiere does not run.
+  including Linux, where Premiere does not run.
 - **Behind, by user impact:** 10-bit / 4:2:2 H.264 and HEVC in software ([G3](gaps.md#g3-10-bit-and-422-camera-media-needs-hardware)),
   E-AC-3, camera RAW, HEVC and AV1 software encoding, MPEG-2 / JPEG 2000 encoding for broadcast
   and DCP, DV, WMV.

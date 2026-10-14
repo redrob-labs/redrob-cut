@@ -150,10 +150,10 @@ Evidence for the cross-cutting rows:
 - **Stability ~45%.** Never-crash rules enforced by lints; hostile-input fuzzing. But open
   launch crashes on macOS 12 (missing VideoToolbox symbol, #468 / #661, #655), Intel UHD graphics
   (#512), Windows 11 (#380, #582), a generic "keeps crashing" (#687), and **no workflow runs the
-  test suite on pull requests** (`.github/workflows` has release, packaging lint, FreeBSD and
-  Windows ARM64 builds only); `cargo xtask ci` runs locally only.
-- **Platforms ~60%.** Releases for macOS, Windows (x64, ARM64), Linux (AppImage, Flatpak, deb,
-  tar) and FreeBSD; Linux is something Premiere doesn't run on at all. Runtime testing is still
+  test suite on pull requests** (`.github/workflows` has release, packaging lint and Windows
+  ARM64 builds only); `cargo xtask ci` runs locally only.
+- **Platforms ~60%.** Releases for macOS, Windows (x64, ARM64), Linux (AppImage, deb, rpm,
+  tar); Linux is something Premiere doesn't run on at all. Runtime testing is still
   mostly macOS; Windows and Linux reports dominate the issue list. The web build runs but its shell
   is incomplete. No mobile.
 - **Plugins ~5%.** No VST3 / Audio Units, no OpenFX, no Premiere / After Effects plug-in API, no
