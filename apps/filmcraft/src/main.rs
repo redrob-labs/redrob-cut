@@ -1,5 +1,9 @@
 //! Redrob Film desktop app.
 //!
+//! The window is a shell ([`shell`]) hosting two editors as modes: Edit (the timeline editor,
+//! `FilmcraftApp`) and Effects (the compositor, `EffectcraftApp`), with a shared AI dock
+//! ([`ai`]), hand-offs between them ([`handoff`]) and one project bundle ([`bundle`]).
+//!
 //! Usage: `filmcraft [--control <port>] [--demo|--empty] [--recover|--no-recover] [--data-dir <dir>]
 //! [project.fcproj | media files…]`; `--help` prints the options, `--version` the version. An
 //! unknown option is an error (exit code 2), not a file to open.
@@ -29,11 +33,13 @@
 
 mod acp;
 mod agent_setup;
+mod ai;
 mod app_nap;
 mod appearance;
 mod args;
 mod audio;
 mod audio_in;
+mod bundle;
 mod control_server;
 #[cfg(target_os = "linux")]
 mod dev_icon;
@@ -41,9 +47,11 @@ mod device;
 mod file_filters;
 #[cfg(any(target_os = "windows", test))]
 mod graphics;
+mod handoff;
 mod logging;
 #[cfg(target_os = "macos")]
 mod native_menu;
+mod shell;
 mod window_raise;
 
 use args::{Cli, Launch};
@@ -305,7 +313,10 @@ fn main() -> eframe::Result {
             // token that only the built-in agent's MCP server is handed.
             let token = control_port.is_none().then(agent_setup::control_token);
             let (rx, bound) = control_server::start(control_port.unwrap_or(0), cc.egui_ctx.clone(), token.clone());
-            app = app.with_control(rx);
+            // The shell sits on the channel first (its own `mode.*` commands, the catalogue, a
+            // `ui.*` refusal while Effects is on screen) and forwards the rest to the Edit editor.
+            let (edit_tx, edit_rx) = std::sync::mpsc::channel();
+            app = app.with_control(edit_rx);
             // The built-in agent: Redrob Code over ACP, started by the Agent panel's first message
             // (after `account::require`), with the connected workspace's key.
             if let Some(port) = bound {
@@ -319,7 +330,8 @@ fn main() -> eframe::Result {
                     Ok(Box::new(host) as Box<dyn filmcraft_ui_egui::agent::AgentHost>)
                 }));
             }
-            Ok(Box::new(app))
+            // One window, two modes: the Edit editor built above, Effects on its first switch.
+            Ok(Box::new(shell::ShellApp::new(app, Some(rx), edit_tx)))
         }),
     );
     // The window could not be created (no usable GPU / graphics driver, no display): say so

@@ -31,6 +31,17 @@ filmcraft-time = { workspace = true }
 filmcraft-gpu = { workspace = true }
 filmcraft-ui-egui = { workspace = true }
 filmcraft-platform = { workspace = true }
+# The shell's hand-offs: a composition as a timeline source (`MediaSource` over the effects renderer).
+filmcraft-media = { workspace = true }
+filmcraft-frame = { workspace = true }
+filmcraft-color = { workspace = true }
+# Effects mode: effectcraft hosted as the second editor of the one window (`shell.rs`).
+effectcraft-ui-egui = { workspace = true }
+effectcraft-host = { workspace = true }
+effectcraft-engine = { workspace = true }
+effectcraft-project = { workspace = true }
+effectcraft-render = { workspace = true }
+effectcraft-time = { workspace = true }
 # `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
 filmcraft-automation = { workspace = true }
 tokio = { version = "1", features = ["rt-multi-thread"] }
