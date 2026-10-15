@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Brand gate: Redrob Cut shows Redrob's name and marks, and nothing of upstream's.
+"""Brand gate: Redrob Film shows Redrob's name and marks, and nothing of upstream's.
 
 1. No file under a proprietary upstream prefix (upstream-base.json `proprietaryPrefixes`).
 2. The brand sources in assets/brand/ match assets/brand/SHA256SUMS byte for byte, and every app
@@ -22,7 +22,11 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # The product names as people read them. Lowercase `filmcraft` is upstream's crate and identifier
 # namespace (thread names, file-format ids, log targets) and stays; the installable names are
 # checked through the packaging patterns below.
-FORBIDDEN = re.compile(r"FilmCraft|Filmcraft|ArtCraft|[Ss]toryteller|Learning Machines|(?i:discord)|(?:Exec|TryExec)=filmcraft|<binary>filmcraft|^command: filmcraft")
+FORBIDDEN = re.compile(
+    r"FilmCraft|Filmcraft|ArtCraft|[Ss]toryteller|Learning Machines|(?i:discord)|(?:Exec|TryExec)=filmcraft|<binary>filmcraft|^command: filmcraft"
+    # the product's former name (Redrob Cut, renamed to Redrob Film)
+    r"|Redrob Cut|redrob-cut|redrob_cut|ai\.redrob\.cut|REDROB_CUT|RedrobCut"
+)
 SURFACES = (
     "crates/ui-egui/src/", "apps/filmcraft/src/", "apps/filmcraft-cli/src/", "apps/filmcraft-web/src/",
     "apps/filmcraft-web/web/", "crates/engine/src/", "crates/automation/src/", "packaging/", ".github/workflows/",
@@ -67,7 +71,7 @@ def main() -> int:
     for f in tracked:
         if f.startswith("assets/app-icon/") and not f.endswith((".attribution", "LICENSE.txt", "README.md")):
             name = pathlib.Path(f).name
-            if not (name.startswith("redrob-cut") or name.startswith("ai.redrob.cut")):
+            if not (name.startswith("redrob-film") or name.startswith("ai.redrob.film")):
                 errors.append(f"{f}: not an icon packaging/brand-assets.sh makes")
 
     for f in tracked:
