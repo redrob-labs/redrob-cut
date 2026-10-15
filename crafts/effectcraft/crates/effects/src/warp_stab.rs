@@ -29,12 +29,12 @@ use std::collections::HashMap;
 use std::hash::Hasher;
 use std::sync::{Arc, Mutex, OnceLock};
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
 use redrob_effects_track::Homography;
 use redrob_effects_track::stabilize::{Framing, Method, Plan, Ripple, StabResult, StabSettings, WarpAnalysis, plan};
-use rayon::prelude::*;
 
 use crate::{Buf, EffectCtx, EffectSpec, Params, num, p, popup, slider};
 

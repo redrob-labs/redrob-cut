@@ -1,10 +1,10 @@
 //! Generate and Noise effects that synthesise images.
 
+use rayon::prelude::*;
 use redrob_effects_color::{BlendMode, blend_pixel};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Px;
-use rayon::prelude::*;
 
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};
 

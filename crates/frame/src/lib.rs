@@ -11,9 +11,9 @@ pub mod pool;
 
 use std::sync::Arc;
 
+use rayon::prelude::*;
 use redrob_film_color::{ColorInfo, DecodeTable, Matrix, Range, linear_to_srgb_u8, normalize_c, normalize_y, srgb_u8_to_linear_table, to_linear, ycbcr_to_rgb};
 use redrob_film_time::Tick;
-use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 /// Chroma subsampling of planar Y'CbCr.

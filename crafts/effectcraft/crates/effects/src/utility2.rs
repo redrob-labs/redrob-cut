@@ -4,8 +4,8 @@
 //! effects can process them, and restores them afterwards (Expand Range) with the same Gain and
 //! Gamma; the two modes are exact inverses.
 
-use redrob_effects_keyframe::Value;
 use rayon::prelude::*;
+use redrob_effects_keyframe::Value;
 
 use crate::util::{premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

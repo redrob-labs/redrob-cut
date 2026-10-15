@@ -3,11 +3,11 @@
 
 mod support;
 
+use proptest::prelude::*;
 use redrob_film_interchange::{ExportOptions, Format, detect, import};
 use redrob_film_media::Generator;
 use redrob_film_project::{Keyframe, Label, Marker, MarkerId, MarkerKind, MediaRef, Param, ParamValue, Project, TrackKind, TransitionAlign};
 use redrob_film_time::{FrameRate, TICKS_PER_SECOND, Tick};
-use proptest::prelude::*;
 use support::*;
 
 fn rt(v: f64, rate: f64) -> String {

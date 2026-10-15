@@ -191,7 +191,9 @@ fn round_trip(name: &str, signal: ColorSignal, want_sei: bool) {
     let (mut max_code, mut max_ramp_code) = (0u16, 0u16);
     let mut distinct_min = usize::MAX;
     for f in &out {
-        let redrob_film_frame::PixelData::Yuv16 { planes: p, bits, .. } = &f.frame.data else { panic!("{name}: 16-bit planes, got {}", f.frame.format_label()) };
+        let redrob_film_frame::PixelData::Yuv16 { planes: p, bits, .. } = &f.frame.data else {
+            panic!("{name}: 16-bit planes, got {}", f.frame.format_label())
+        };
         assert_eq!(*bits, 10, "{name}: decoded bit depth");
         assert_eq!((f.frame.width as usize, f.frame.height as usize), (W, H));
         assert!(p.iter().all(|pl| pl.iter().all(|c| *c < 1024)), "{name}: codes are 10-bit values, not MSB-aligned");

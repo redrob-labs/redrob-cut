@@ -3,13 +3,13 @@
 
 use std::sync::Arc;
 
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::{Footage, FootageKind, ItemId, ItemKind};
 use redrob_effects_engine::render::FootageSource;
 use redrob_effects_render::Image;
 use redrob_effects_time::Tick;
 use redrob_effects_ui_egui::EffectcraftApp;
-use egui_kittest::Harness;
 use serde_json::json;
 
 const WHY: &str = "H.264 (High 4:2:2) isn't supported by the built-in decoder: chroma_format_idc 2 (only 4:2:0 is implemented)";

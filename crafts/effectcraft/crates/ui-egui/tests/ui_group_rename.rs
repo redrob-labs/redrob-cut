@@ -1,10 +1,10 @@
 //! Enter renames the selected effect, text animator, mask or shape group, not only the layer
 //! (#1061). Enter commits, Escape cancels.
 
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::EffectcraftApp;
 use egui::{Event, Key, Modifiers};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::EffectcraftApp;
 use serde_json::json;
 
 struct Fx {

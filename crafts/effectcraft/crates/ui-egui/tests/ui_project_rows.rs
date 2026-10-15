@@ -1,13 +1,13 @@
 //! Project panel rows: a folder's twirl and an item's label swatch take their own clicks, over
 //! the row's click / drag area (#152).
 
+use egui::{Color32, Event, Modifiers, Pos2, Rect, pos2};
+use egui_kittest::Harness;
+use egui_kittest::kittest::Queryable;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::color::Label;
 use redrob_effects_engine::project::{Footage, FootageKind, ItemId, ItemKind};
 use redrob_effects_ui_egui::{Dialog, EffectcraftApp};
-use egui::{Color32, Event, Modifiers, Pos2, Rect, pos2};
-use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
 use serde_json::json;
 
 /// A closed folder holding a comp, and a solid at the project root: (harness, folder, comp, solid).

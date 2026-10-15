@@ -1,7 +1,7 @@
 //! The compositor's working image: premultiplied linear-light RGBA f32, row-major.
 
-use redrob_film_geom::Affine;
 use rayon::prelude::*;
+use redrob_film_geom::Affine;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Image {

@@ -7,8 +7,8 @@
 
 use std::f64::consts::{PI, TAU};
 
-use redrob_film_project::EffectInstance;
 use rayon::prelude::*;
+use redrob_film_project::EffectInstance;
 
 use super::*;
 

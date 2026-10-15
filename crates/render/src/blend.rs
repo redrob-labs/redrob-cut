@@ -4,8 +4,8 @@
 //! artists expect from every editing app), so their math runs on sRGB-encoded straight colour and
 //! the result is converted back to linear. Formulas follow the W3C Compositing and Blending spec.
 
-use redrob_film_color::{linear_to_srgb, srgb_to_linear};
 use rayon::prelude::*;
+use redrob_film_color::{linear_to_srgb, srgb_to_linear};
 
 use crate::image::Image;
 

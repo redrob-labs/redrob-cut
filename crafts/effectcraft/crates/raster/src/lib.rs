@@ -13,8 +13,8 @@ pub mod inpaint;
 pub mod scopes;
 pub mod warp;
 
-use redrob_effects_color::{BlendMode, blend_pixel};
 use rayon::prelude::*;
+use redrob_effects_color::{BlendMode, blend_pixel};
 
 pub use blur::{box_blur, directional_blur, gaussian_blur, radial_blur};
 pub use channels3d::AuxChannels;

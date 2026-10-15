@@ -1,9 +1,9 @@
 //! Round-trip property tests: write(parse(write(doc))) is stable and parse(write(doc)) == doc for
 //! documents each format can represent exactly.
 
+use proptest::prelude::*;
 use redrob_film_captions::{Cue, Document, Format, WriteOptions, parse, scc, write};
 use redrob_film_time::{FrameRate, TICKS_PER_SECOND, Tick};
-use proptest::prelude::*;
 
 const MS: i64 = TICKS_PER_SECOND / 1000;
 

@@ -494,7 +494,8 @@ pub fn portable_data_dir(exe_dir: &Path) -> Option<PathBuf> {
 /// an upstream install and this one never share auto-saves, presets or logs.
 pub fn default_data_dir() -> Option<PathBuf> {
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
-    if let Some(d) = env("REDROB_FILM_DATA_DIR").or_else(|| env("FILMCRAFT_DATA_DIR")) { // legacy: the pre-rename variable still works
+    if let Some(d) = env("REDROB_FILM_DATA_DIR").or_else(|| env("FILMCRAFT_DATA_DIR")) {
+        // legacy: the pre-rename variable still works
         return Some(d);
     }
     if let Some(d) = std::env::current_exe().ok().and_then(|exe| exe.parent().and_then(portable_data_dir)) {

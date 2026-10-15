@@ -47,10 +47,10 @@ use redrob_effects_project::{Comp, ItemId, Project};
 use redrob_effects_raster::Image;
 use redrob_effects_render::{ExprHost, FootageSource};
 
-pub use redrob_effects_project::render_queue;
-pub use redrob_effects_project::render_queue::StorageQuota;
 pub use out::Sink;
 pub(crate) use pipeline::Cx;
+pub use redrob_effects_project::render_queue;
+pub use redrob_effects_project::render_queue::StorageQuota;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ExportError {

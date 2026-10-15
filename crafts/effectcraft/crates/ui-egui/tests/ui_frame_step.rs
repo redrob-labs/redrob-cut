@@ -1,11 +1,11 @@
 //! Stepping the current time from the keyboard: Page Down / Page Up and Cmd+Right / Cmd+Left
 //! Arrow move one frame, with Shift ten.
 
+use egui::{Event, Key, Modifiers};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
-use egui::{Event, Key, Modifiers};
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn key(h: &mut Harness<'_, EffectcraftApp>, key: Key, modifiers: Modifiers) {

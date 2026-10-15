@@ -843,7 +843,14 @@ pub(crate) fn parent_fixes(s: &Session, cid: ItemId, ids: &[LayerId], parent: Op
                     let speeds_finite = scale.keys.iter().flat_map(|key| key.in_ease.iter().chain(&key.out_ease)).all(|ease| (ease.speed * factor).is_finite());
                     (values_finite && speeds_finite).then_some(pose)
                 });
-                fixes.push(ParentFix { layer: layer.id, m: redrob_effects_geom::Mat3::IDENTITY, rotation: 0.0, scale: [1.0; 2], position_3d: Some(m), pose_3d });
+                fixes.push(ParentFix {
+                    layer: layer.id,
+                    m: redrob_effects_geom::Mat3::IDENTITY,
+                    rotation: 0.0,
+                    scale: [1.0; 2],
+                    position_3d: Some(m),
+                    pose_3d,
+                });
             }
         }
     }

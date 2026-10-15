@@ -1,8 +1,8 @@
 //! Opt-in visual review of every built-in panel, workspaces and common dialogs.
 //! Original fixture; captures are review outputs, not shipped assets.
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::{Dialog, EffectcraftApp, dock::PanelKind};
-use egui_kittest::Harness;
 use serde_json::json;
 
 #[test]

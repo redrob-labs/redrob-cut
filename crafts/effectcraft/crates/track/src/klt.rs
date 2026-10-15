@@ -12,8 +12,8 @@
 //! Frames are analysed in luma at a reduced resolution ([`GrayPyramid::from_image`] takes an
 //! integer box-downsampling factor). Coordinates follow [`Plane`]: pixel `i` covers `[i, i + 1)`.
 
-use redrob_effects_raster::Image;
 use rayon::prelude::*;
+use redrob_effects_raster::Image;
 
 use crate::plane::Plane;
 

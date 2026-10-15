@@ -245,8 +245,9 @@ fn tracking_session() -> (Session, ClipId) {
         None,
     );
     let seq = p.new_sequence("s", redrob_film_project::SequenceSettings { width: 320, height: 240, frame_rate: rate, ..Default::default() }, 1, 0, None);
-    let ti =
-        p.make_track_item(item, redrob_film_project::TrackKind::Video, Tick::ZERO, redrob_film_time::TimeRange::new(Tick::ZERO, rate.tick_of(48)), rate).unwrap();
+    let ti = p
+        .make_track_item(item, redrob_film_project::TrackKind::Video, Tick::ZERO, redrob_film_time::TimeRange::new(Tick::ZERO, rate.tick_of(48)), rate)
+        .unwrap();
     let clip = ti.id;
     p.sequence_mut(seq).unwrap().video_tracks[0].items.push(ti);
     let mut s = Session { project: std::sync::Arc::new(p), ..Default::default() };

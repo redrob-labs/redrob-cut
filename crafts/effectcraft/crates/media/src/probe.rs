@@ -3,9 +3,9 @@
 use std::path::Path;
 use std::sync::Arc;
 
+use image::metadata::Orientation;
 use redrob_effects_project::{AlphaMode, Footage, FootageKind};
 use redrob_effects_time::{FrameRate, Tick};
-use image::metadata::Orientation;
 
 use crate::{MediaError, Result, ext_of, rate_from_fc};
 

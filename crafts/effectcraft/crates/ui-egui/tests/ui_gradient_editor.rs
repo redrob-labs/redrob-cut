@@ -4,16 +4,16 @@
 //! and Escape change nothing; on an animated gradient only the keyframe at that time changes, with
 //! a warning when its stop counts no longer match a neighbour's.
 
+use egui::accesskit::Role;
+use egui::{Event, Key, Modifiers, PointerButton, Pos2, pos2};
+use egui_kittest::Harness;
+use egui_kittest::kittest::{NodeT, Queryable};
 use redrob_effects_engine::Session;
 use redrob_effects_engine::keyframe::{Gradient, Value};
 use redrob_effects_engine::project::{LayerId, PropGroup};
 use redrob_effects_engine::time::Tick;
 use redrob_effects_ui_egui::panels::gradient_editor::Track;
 use redrob_effects_ui_egui::{Dialog, EffectcraftApp};
-use egui::accesskit::Role;
-use egui::{Event, Key, Modifiers, PointerButton, Pos2, pos2};
-use egui_kittest::Harness;
-use egui_kittest::kittest::{NodeT, Queryable};
 use serde_json::json;
 
 const WARNING: &str = "These adjacent keyframes cannot interpolate because their stop counts differ.";

@@ -4,12 +4,12 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Condvar, Mutex, OnceLock};
 
+use image::metadata::Orientation;
 use redrob_effects_project::{AlphaMode, Footage, FootageKind, ItemId};
 use redrob_effects_raster::{Image, Px};
 use redrob_effects_render::{FloatCurve, FootageSource};
 use redrob_effects_time::{FrameRate, TICKS_PER_SECOND, Tick};
 use redrob_film_media::{FrameRequest, SharedSource};
-use image::metadata::Orientation;
 
 use crate::convert::{AlphaOp, dynamic_to_image, frame_to_image_in, frame_to_image_scaled, turned};
 use crate::gif_anim::{self, Anim};

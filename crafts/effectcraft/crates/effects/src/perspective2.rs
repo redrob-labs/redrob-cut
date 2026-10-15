@@ -4,11 +4,11 @@
 
 use std::f64::consts::PI;
 
+use rayon::prelude::*;
 use redrob_effects_color::luminance;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::util::{Plane, fit_layer, gauss_plane, premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, LayerPixels, num, p, popup, slider};

@@ -147,7 +147,8 @@ fn opus_end_trimming_and_10ms_frames() {
     let f = make(&ff, "ogg_opus_trim.ogg");
     let (src, ours, want, ch, rate) = decode_both(&ff, &f, &["-c:a", "libopus"]);
     // 1.2345 s is not a whole number of 10 ms packets: the last page's granule trims the end
-    let t = redrob_film_ogg::OpusTiming::of(&src.file().streams[0], redrob_film_opus::OpusHead::parse(&src.file().streams[0].headers[0]).unwrap().pre_skip as u32);
+    let t =
+        redrob_film_ogg::OpusTiming::of(&src.file().streams[0], redrob_film_opus::OpusHead::parse(&src.file().streams[0].headers[0]).unwrap().pre_skip as u32);
     let decoded: i64 = t.durations.iter().map(|&d| d as i64).sum::<i64>() - t.pre_skip as i64;
     assert!(t.total < decoded, "end trimmed: {} < {}", t.total, decoded);
     assert_eq!(t.total, 59_256, "1.2345 s at 48 kHz");

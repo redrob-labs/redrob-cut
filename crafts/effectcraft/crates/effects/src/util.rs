@@ -2,9 +2,9 @@
 //! Gaussian blur, O(1)-per-pixel min/max filters, box means for guided filtering), channel
 //! pickers, a small deterministic RNG and per-pixel helpers.
 
+use rayon::prelude::*;
 use redrob_effects_color::{luminance, rgb_to_hsl};
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 /// A single-channel `f32` image (row-major).
 #[derive(Clone, Debug, Default, PartialEq)]

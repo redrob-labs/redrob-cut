@@ -2663,7 +2663,8 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
             let durations: Vec<Tick> = items
                 .iter()
                 .map(|&item| {
-                    let is_still = app.session.project.item(item).and_then(|i| i.as_media()).is_some_and(|m| m.info.kind == redrob_film_media::MediaKind::Still);
+                    let is_still =
+                        app.session.project.item(item).and_then(|i| i.as_media()).is_some_and(|m| m.info.kind == redrob_film_media::MediaKind::Still);
                     app.session.project.item(item).map(|i| i.duration()).filter(|d| d.0 > 0 && !is_still).unwrap_or(still)
                 })
                 .collect();

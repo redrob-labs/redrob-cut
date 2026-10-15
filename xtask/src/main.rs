@@ -348,6 +348,11 @@ fn root() -> std::path::PathBuf {
     std::path::Path::new(env!("CARGO_MANIFEST_DIR")).parent().expect("xtask lives in the workspace").to_path_buf()
 }
 
+/// The workspace's build directory (`CARGO_TARGET_DIR`, or `<root>/target`).
+fn target_dir() -> std::path::PathBuf {
+    std::env::var_os("CARGO_TARGET_DIR").map(std::path::PathBuf::from).unwrap_or_else(|| root().join("target"))
+}
+
 fn main() -> ExitCode {
     let task = std::env::args().nth(1).unwrap_or_default();
     let r = match task.as_str() {

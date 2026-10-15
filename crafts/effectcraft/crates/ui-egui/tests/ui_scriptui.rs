@@ -2,10 +2,10 @@
 //! windows (clicks reach the script's handlers), the branching History panel, and the Window /
 //! File ▸ Scripts menus listing scripts (egui_kittest, UI logic only).
 
-use redrob_effects_ui_egui::EffectcraftApp;
-use redrob_effects_ui_egui::dock::PanelKind;
 use egui::{Event, Rect, pos2, vec2};
 use egui_kittest::Harness;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::dock::PanelKind;
 use serde_json::json;
 
 fn harness() -> Harness<'static, EffectcraftApp> {
@@ -116,8 +116,8 @@ fn panels_open_at_quit_dock_again_at_launch() {
 /// preset in its list eases the selected keyframes in one undo step.
 #[test]
 fn ease_presets_panel_eases_the_selected_keys_from_its_list() {
-    use redrob_effects_engine::keyframe::{Ease, Interp};
     use egui_kittest::kittest::Queryable;
+    use redrob_effects_engine::keyframe::{Ease, Interp};
     let mut h = harness();
     let s = &mut h.state_mut().session;
     let l = s.execute("layer.newSolid", json!({"name": "Box", "color": "#e04020", "width": 80, "height": 80})).unwrap()["layer"].as_u64().unwrap();
@@ -141,7 +141,8 @@ fn ease_presets_panel_eases_the_selected_keys_from_its_list() {
         h.input_mut().events.push(Event::PointerButton { pos: item, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() });
     }
     h.run_steps(3);
-    let op = h.state().session.active_comp().unwrap().layer(redrob_effects_engine::project::LayerId(l)).unwrap().props.prop("transform/opacity").unwrap().clone();
+    let op =
+        h.state().session.active_comp().unwrap().layer(redrob_effects_engine::project::LayerId(l)).unwrap().props.prop("transform/opacity").unwrap().clone();
     let eased = Ease { speed: 0.0, influence: 0.5 };
     assert_eq!((op.keys[0].out_interp, op.keys[0].out_ease[0]), (Interp::Bezier, eased));
     assert_eq!((op.keys[1].in_interp, op.keys[1].in_ease[0]), (Interp::Bezier, eased));

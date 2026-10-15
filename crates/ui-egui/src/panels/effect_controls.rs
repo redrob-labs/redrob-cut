@@ -1103,10 +1103,14 @@ pub(crate) fn graph_rows(
         if !(-0.01..=1.01).contains(&f) {
             continue;
         }
-        let eases_out =
-            !matches!(k.interp, redrob_film_project::Interpolation::Linear | redrob_film_project::Interpolation::Hold | redrob_film_project::Interpolation::EaseIn);
-        let eases_in =
-            !matches!(k.interp, redrob_film_project::Interpolation::Linear | redrob_film_project::Interpolation::Hold | redrob_film_project::Interpolation::EaseOut);
+        let eases_out = !matches!(
+            k.interp,
+            redrob_film_project::Interpolation::Linear | redrob_film_project::Interpolation::Hold | redrob_film_project::Interpolation::EaseIn
+        );
+        let eases_in = !matches!(
+            k.interp,
+            redrob_film_project::Interpolation::Linear | redrob_film_project::Interpolation::Hold | redrob_film_project::Interpolation::EaseOut
+        );
         let comps = graph_components(&k.value);
         for (ci, &v) in comps.iter().enumerate() {
             if !v.is_finite() {

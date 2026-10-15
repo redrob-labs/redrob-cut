@@ -12,11 +12,11 @@
 
 use std::sync::Arc;
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::channels3d::{BACKGROUND_DEPTH, crypto_hash};
 use redrob_effects_raster::{AuxChannels, Image, Px, gaussian_blur};
-use rayon::prelude::*;
 
 use crate::util::{Plane, gauss_plane, hash1, premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

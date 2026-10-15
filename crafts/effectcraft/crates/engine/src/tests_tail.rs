@@ -320,7 +320,8 @@ fn variable_font_axes_animator() {
         let comp = s.project.comp(cid).unwrap();
         let ctx = redrob_effects_render::EvalCtx::new(&s.project, cid, comp, s.time());
         let l = comp.layer(LayerId(t)).unwrap();
-        let x0: Vec<f64> = redrob_effects_render::text::glyph_paths(&ctx, l).iter().map(|(p, _)| redrob_effects_text::kurbo::Shape::bounding_box(p).x0).collect();
+        let x0: Vec<f64> =
+            redrob_effects_render::text::glyph_paths(&ctx, l).iter().map(|(p, _)| redrob_effects_text::kurbo::Shape::bounding_box(p).x0).collect();
         x0[1] - x0[0]
     };
     let before = area(&s);

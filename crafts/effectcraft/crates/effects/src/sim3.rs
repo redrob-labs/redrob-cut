@@ -22,10 +22,10 @@
 //! map layer (luminance → length, horizontal/vertical gradient → lean), and shades them with a
 //! Kajiya–Kay-style strand model (diffuse ∝ sin(tangent, light), specular from the half vector).
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::sim::{Acc, Post, SPS, Shape, Sprite, SpritePlan, Tint, combine, splat, steps_at};
 use crate::util::{SimCache, hash1, params_key, point_in_poly, unpremul};

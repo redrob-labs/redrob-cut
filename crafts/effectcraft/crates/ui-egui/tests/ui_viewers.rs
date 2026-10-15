@@ -2,13 +2,13 @@
 //! comp goes to an unlocked viewer (a new one when every viewer is locked); a click on another
 //! viewer makes it the active one; closing a viewer forgets it.
 
+use egui::{Event, pos2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::ItemId;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::{PanelKind, Zone};
 use redrob_effects_ui_egui::panels::viewers;
-use egui::{Event, pos2};
-use egui_kittest::Harness;
 use serde_json::{Value, json};
 
 fn invoke(h: &mut Harness<'_, EffectcraftApp>, id: &str, p: Value) {

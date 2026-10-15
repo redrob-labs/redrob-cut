@@ -25,13 +25,13 @@
 
 use std::sync::Arc;
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Image;
 use redrob_effects_segment::MaskModel;
 use redrob_effects_track::roto::refine::MatteParams;
 use redrob_effects_track::roto::{FrameSeg, RotoData, SegOpts, Stroke, StrokeKind, rle};
-use rayon::prelude::*;
 
 use crate::roto::{self, Chain, FROZEN, FrozenCache, INPUT_KEY};
 use crate::warp_stab::param;

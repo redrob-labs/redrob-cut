@@ -9,9 +9,9 @@
 
 use std::sync::{Arc, Mutex};
 
+use egui::{Align2, Color32, Rect, Sense, Stroke, pos2, vec2};
 use redrob_effects_engine::color::Label;
 use redrob_effects_engine::project::{Item, ItemId, ItemKind};
-use egui::{Align2, Color32, Rect, Sense, Stroke, pos2, vec2};
 use serde_json::json;
 
 use crate::icons::{self, Icon};

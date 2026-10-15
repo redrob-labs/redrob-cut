@@ -5,13 +5,13 @@
 //! Every edit is an engine command (`mask.*`, `path.freeTransform`, `keys.set`,
 //! `keys.setSpatialTangents`, `prop.set`).
 
+use egui::{Color32, Pos2, Rect, Stroke, StrokeKind, vec2};
 use redrob_effects_engine::geom::{Mat3, vec2 as gv2};
 use redrob_effects_engine::keyframe::ShapePath;
 use redrob_effects_engine::project::{GroupKind, Layer, LayerId};
 use redrob_effects_engine::render::EvalCtx;
 use redrob_effects_engine::time::Tick;
 use redrob_effects_engine::{KeyRef, VertexRef};
-use egui::{Color32, Pos2, Rect, Stroke, StrokeKind, vec2};
 use serde_json::json;
 
 use super::viewer::ViewerMap;

@@ -3,13 +3,13 @@
 //! in After Effects (#227); stopwatches the same way (#284). Also the label swatch's menu and the
 //! layer bar past its source (#290).
 
+use egui::{Color32, Event, Modifiers, Pos2, Rect, pos2, vec2};
+use egui_kittest::Harness;
+use egui_kittest::kittest::Queryable;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::color::Label;
 use redrob_effects_engine::project::LayerId;
 use redrob_effects_ui_egui::EffectcraftApp;
-use egui::{Color32, Event, Modifiers, Pos2, Rect, pos2, vec2};
-use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
 use serde_json::json;
 
 /// Comp "Main" with solids A (top) to D (bottom); returns their ids top to bottom.

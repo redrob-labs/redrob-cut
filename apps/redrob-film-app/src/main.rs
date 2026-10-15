@@ -221,7 +221,8 @@ fn main() -> eframe::Result {
             app.integrated_titlebar = cfg!(target_os = "macos");
             if let Some(rs) = cc.wgpu_render_state.clone()
                 && std::env::var_os("REDROB_FILM_CPU_COMPOSITE").is_none()
-                && std::env::var_os("FILMCRAFT_CPU_COMPOSITE").is_none() // legacy: the pre-rename variable still works
+                && std::env::var_os("FILMCRAFT_CPU_COMPOSITE").is_none()
+            // legacy: the pre-rename variable still works
             {
                 app.set_wgpu(rs);
             }

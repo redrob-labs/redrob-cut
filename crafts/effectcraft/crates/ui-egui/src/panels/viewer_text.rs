@@ -14,6 +14,7 @@
 //! Every change runs an engine command (`text.*`, `layer.setText`, `edit.*`), so it's undoable and
 //! agents can do the same over the control channel.
 
+use egui::{Color32, Pos2, Rect, Stroke, StrokeKind, vec2};
 use redrob_effects_engine::commands::text_edit::layer_doc;
 use redrob_effects_engine::geom::{Mat3, vec2 as gv2};
 use redrob_effects_engine::keyframe::{Kerning, TextDoc};
@@ -21,7 +22,6 @@ use redrob_effects_engine::project::{Layer, LayerId, LayerSource};
 use redrob_effects_engine::render::EvalCtx;
 use redrob_effects_engine::text::kurbo::Point;
 use redrob_effects_engine::text::{TextLayout, layout_doc};
-use egui::{Color32, Pos2, Rect, Stroke, StrokeKind, vec2};
 use serde_json::{Value, json};
 
 use super::viewer::ViewerMap;

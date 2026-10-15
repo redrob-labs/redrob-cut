@@ -15,11 +15,11 @@
 //!   Levels a histogram; Lumetri's curves, Colorama's output cycle, Glow's colour map and
 //!   Reshape's correspondence points have visual editors ([`super::fx_editors`]).
 
+use egui::{Align2, Color32, Rect, Sense, Stroke, pos2, vec2};
 use redrob_effects_engine::geom::Mat3;
 use redrob_effects_engine::keyframe::Value;
 use redrob_effects_engine::project::{GroupKind, Layer, Node, ParamUi, PropGroup, Property};
 use redrob_effects_engine::render::EvalCtx;
-use egui::{Align2, Color32, Rect, Sense, Stroke, pos2, vec2};
 use serde_json::json;
 
 use super::fx_widgets as fw;
@@ -1125,7 +1125,8 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
         return;
     };
     let Some(cid) = app.session.active_comp_id() else { return };
-    let comp = app.session.project.comp_arc(cid).unwrap_or_else(|| redrob_effects_engine::project::Comp::new(1, 1, Default::default(), Default::default()).into());
+    let comp =
+        app.session.project.comp_arc(cid).unwrap_or_else(|| redrob_effects_engine::project::Comp::new(1, 1, Default::default(), Default::default()).into());
     let comp_name = app.session.project.item(cid).map(|i| i.name.clone()).unwrap_or_default();
     let snap_project = app.session.project.clone();
     let snap_expr = app.session.expr.clone();

@@ -2,10 +2,10 @@
 //! with wgpu and writes PNGs when `EC_SNAPSHOT_DIR` is set (`cargo test -p redrob-effects-ui-egui
 //! --test ui_3d -- --ignored`); the other test only runs the UI logic.
 
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::render::three_d::View3D;
 use redrob_effects_ui_egui::EffectcraftApp;
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn app() -> EffectcraftApp {

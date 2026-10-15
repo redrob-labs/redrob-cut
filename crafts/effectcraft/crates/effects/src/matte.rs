@@ -1,10 +1,10 @@
 //! Matte effects: chokers (grey-scale morphology and blur/threshold stages) and edge-aware matte
 //! refinement (guided filter, He et al. 2010).
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::gaussian_blur;
-use rayon::prelude::*;
 
 use crate::util::{Plane, gauss_plane, guided_filter, morph_frac, morph_plane, premul, set_alpha, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

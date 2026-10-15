@@ -2,11 +2,11 @@
 //! (Auto Levels / Contrast / Color, Equalize), Shadow/Highlight, Selective Color, Color Balance
 //! (HLS), Color Link, Broadcast Colors and the CC toners/offsets/kernel.
 
+use rayon::prelude::*;
 use redrob_effects_color::{BlendMode, blend_pixel, hsl_to_rgb, luminance, rgb_to_hsl};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Image;
-use rayon::prelude::*;
 
 use crate::util::{Plane, gauss_plane, lerp3, premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

@@ -215,6 +215,7 @@ fn desktop_file_content(app_id: &str, name: &str, exe: &str) -> String {
     out.push_str("StartupNotify=true\n");
     out.push_str(&format!("StartupWMClass={app_id}\n"));
     out.push_str("Categories=AudioVideo;Video;AudioVideoEditing;\n");
+    out.push_str("MimeType=application/x-redrob-film;application/x-redrob-effects;\n");
     out.push_str("Keywords=video;editor;film;timeline;color;grading;nle;\n");
     out
 }

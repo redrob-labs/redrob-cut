@@ -10,13 +10,13 @@
 use std::sync::mpsc::TryRecvError;
 use std::sync::{Arc, Mutex};
 
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::offload::{Inbox, Offload, Post, WorkerRequest};
 use redrob_effects_engine::remote::{FrameMsg, FrameReply, FrameServer, Mirror};
 use redrob_effects_engine::render::RenderOpts;
 use redrob_effects_ui_egui::frames::{FrameImage, FrameKey, Frames, RemoteDone, RemoteFrame, RemoteFrames, RemoteJob, RenderSource};
 use redrob_effects_ui_egui::{ControlRequest, EffectcraftApp};
-use egui_kittest::Harness;
 use serde_json::json;
 
 /// A frame worker in the same process: messages go through JSON like `postMessage`; rendered

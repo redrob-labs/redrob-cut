@@ -6,11 +6,11 @@
 //! reveals a back side); the maths is our own. Completion 0 leaves the layer untouched;
 //! completion 100 leaves it fully transparent (or showing the revealed / back-side layer).
 
+use rayon::prelude::*;
 use redrob_effects_color::rgb_to_hsl;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::util::{Plane, fit_layer, gauss_plane, layer_or_self, lerp4, smoothstep, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

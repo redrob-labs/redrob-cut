@@ -2,14 +2,14 @@
 //! automation ids, the on-viewer effect point control appears for the selected effect, and the
 //! crosshair / eyedropper picks set parameters from a viewer click.
 
+use egui_kittest::Harness;
+use egui_kittest::kittest::Queryable;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::keyframe::Value as KV;
 use redrob_effects_engine::project::{Layer, LayerId};
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
 use redrob_effects_ui_egui::state::FxPick;
-use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
 use serde_json::json;
 
 struct Ids {

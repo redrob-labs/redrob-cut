@@ -4,11 +4,11 @@
 
 use std::io::Write;
 
+use rayon::prelude::*;
 use redrob_effects_project::Comp;
 use redrob_effects_project::render_queue::{AudioFormat, Channels, OutputFormat, ProResProfile};
 use redrob_effects_time::{FrameRate, Tick};
 use redrob_film_isobmff::{Brand, FourCc, Mp4Writer, PcmConfig, SampleEntry, TrackConfig, WriteSample, WriterOptions};
-use rayon::prelude::*;
 
 use crate::{Cx, ExportError, Report, Result, State, batch_size, wants_audio};
 

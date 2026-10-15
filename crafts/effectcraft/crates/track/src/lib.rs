@@ -31,8 +31,8 @@ pub mod solve;
 pub mod stabilize;
 pub mod subspace;
 
-use redrob_effects_raster::Image;
 use rayon::prelude::*;
+use redrob_effects_raster::Image;
 use serde::{Deserialize, Serialize};
 
 pub use plane::{Channel, Plane};

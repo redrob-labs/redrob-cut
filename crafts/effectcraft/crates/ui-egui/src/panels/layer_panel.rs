@@ -12,10 +12,10 @@
 //! Edge tools paint their strokes here (see [`super::roto_tool`]).
 
 use crate::i18n::{tr, tr_args};
+use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use redrob_effects_engine::effects::paint;
 use redrob_effects_engine::project::{Layer, LayerId};
 use redrob_effects_engine::render::{EvalCtx, RenderOpts, Renderer};
-use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
 use crate::state::Tool;
@@ -93,7 +93,8 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
         app.auto.add("layerPanel.empty", rect, "Layer panel (empty)");
         return;
     };
-    let comp = app.session.project.comp_arc(cid).unwrap_or_else(|| redrob_effects_engine::project::Comp::new(1, 1, Default::default(), Default::default()).into());
+    let comp =
+        app.session.project.comp_arc(cid).unwrap_or_else(|| redrob_effects_engine::project::Comp::new(1, 1, Default::default(), Default::default()).into());
     let time = app.session.time();
     let fx_count = layer.effects().map(|f| f.groups().count()).unwrap_or(0);
     let view = app.ui.layer_view.map(|v| v.min(fx_count)).unwrap_or_else(|| default_view(&layer, app.ui.tool));

@@ -1,9 +1,9 @@
 //! Colour, keying and matte effects.
 
+use rayon::prelude::*;
 use redrob_film_color::{Matrix, hsl_to_rgb, rgb_to_hsl, rgb_to_ycbcr};
 use redrob_film_project::EffectInstance;
 use redrob_film_project::effect::LIGHT_IDS;
-use rayon::prelude::*;
 
 use super::*;
 

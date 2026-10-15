@@ -38,8 +38,9 @@ pub(crate) fn params(id: &str, vals: &[(&str, Value)]) -> Params {
 /// (CPU, GPU) particles of effect `id` at layer time `t`.
 fn states(id: &str, p: &Params, t: f64, host: &Host) -> (Vec<SimParticle>, Vec<SimParticle>) {
     let ctx = |env| EffectCtx { params: p, time: t, layer_size: [320.0, 240.0], seed: 5, adjustment: false, env };
-    let run =
-        |c: &EffectCtx| if id == "ec.sim.particleplayground" { redrob_effects_effects::playground_state(c) } else { redrob_effects_effects::particle_state(id, c) };
+    let run = |c: &EffectCtx| {
+        if id == "ec.sim.particleplayground" { redrob_effects_effects::playground_state(c) } else { redrob_effects_effects::particle_state(id, c) }
+    };
     let cpu = run(&ctx(EffectEnv::default())).expect("cpu state");
     let gpu = run(&ctx(EffectEnv { host: Some(host), ..Default::default() })).expect("gpu state");
     (cpu, gpu)

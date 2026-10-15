@@ -2,13 +2,13 @@
 
 use std::sync::Arc;
 
+use egui::{Event, Id, Key, Modifiers, vec2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::config::{ConfigStore, DirConfig, MemoryConfig};
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::{DockNode, PanelKind, SplitSize};
 use redrob_effects_ui_egui::state::Tool;
-use egui::{Event, Id, Key, Modifiers, vec2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 #[test]

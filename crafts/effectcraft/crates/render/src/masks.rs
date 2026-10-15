@@ -1,12 +1,12 @@
 //! Layer masks: path coverage with expansion, feather, opacity, invert, combined by mode.
 
+use rayon::prelude::*;
 use redrob_effects_effects::Buf;
 use redrob_effects_geom::{Mat3, vec2};
 use redrob_effects_keyframe::Value;
 use redrob_effects_path::{FillRule, StrokeStyle};
 use redrob_effects_project::{FeatherFalloff, GroupKind, Layer, MaskMode, MaskMotionBlur};
 use redrob_effects_raster::{Mask, box_blur, gaussian_blur};
-use rayon::prelude::*;
 
 use crate::eval::EvalCtx;
 

@@ -1,13 +1,13 @@
 //! Headless checks for on-canvas text editing in the viewer and the Character / Paragraph panels
 //! acting on the selection (egui_kittest, UI logic only: no GPU needed).
 
+use egui::{Event, Key, Modifiers, PointerButton, Pos2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::commands::text_edit::layer_doc;
 use redrob_effects_engine::project::LayerId;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
-use egui::{Event, Key, Modifiers, PointerButton, Pos2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn app() -> EffectcraftApp {

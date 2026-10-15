@@ -678,7 +678,12 @@ mod tests {
         fn supports_effect(&self, id: &str) -> bool {
             redrob_effects_effects::GPU_EFFECTS.contains(&id)
         }
-        fn effects(&self, chain: &[redrob_effects_render::FxStep], buf: &redrob_effects_effects::Buf, levels: Option<f32>) -> Option<redrob_effects_effects::Buf> {
+        fn effects(
+            &self,
+            chain: &[redrob_effects_render::FxStep],
+            buf: &redrob_effects_effects::Buf,
+            levels: Option<f32>,
+        ) -> Option<redrob_effects_effects::Buf> {
             use std::hash::{Hash, Hasher};
             let mut h = std::collections::hash_map::DefaultHasher::new();
             for s in chain {

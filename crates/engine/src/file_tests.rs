@@ -49,8 +49,9 @@ fn saved_file_is_versioned_and_save_copy_keeps_state() {
 #[test]
 fn legacy_project_opens_and_first_save_keeps_a_backup() {
     let d = temp_dir("legacy");
-    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../format/tests/fixtures/v1-edit.rfilm");
-    let path = d.join("old.rfilm");
+    // legacy: an upstream-era project keeps its pre-rename extension and still opens
+    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../format/tests/fixtures/v1-edit.fcproj");
+    let path = d.join("old.fcproj"); // legacy:
     std::fs::copy(&fixture, &path).unwrap();
     let p = path.to_string_lossy().to_string();
     let mut s = Session::default();

@@ -2,14 +2,14 @@
 //! interest drawing, rulers and guides, snapping, the shape Pen and motion-path key drags
 //! (egui_kittest, UI logic only).
 
+use egui::{Event, Pos2, Rect, pos2, vec2};
+use egui_kittest::Harness;
+use egui_kittest::kittest::Queryable;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::commands::shape_tool::PaintKind;
 use redrob_effects_engine::project::LayerId;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::state::Tool;
-use egui::{Event, Pos2, Rect, pos2, vec2};
-use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
 use serde_json::json;
 
 fn app() -> EffectcraftApp {
@@ -129,7 +129,8 @@ fn viewer_click_ignores_inactive_solo_layers() {
     let s = &mut h.state_mut().session;
     s.execute("layer.setSwitch", json!({"layers": [front.0], "switch": "solo", "value": true})).unwrap();
     let cid = s.active_comp_id().unwrap();
-    std::sync::Arc::make_mut(&mut s.project).comp_mut(cid).unwrap().layer_mut(front).unwrap().in_point = redrob_effects_engine::time::Tick::from_seconds_f64(1.0);
+    std::sync::Arc::make_mut(&mut s.project).comp_mut(cid).unwrap().layer_mut(front).unwrap().in_point =
+        redrob_effects_engine::time::Tick::from_seconds_f64(1.0);
     h.run_steps(3);
     let at = screen(&h, [320.0, 180.0]);
     click(&mut h, at);

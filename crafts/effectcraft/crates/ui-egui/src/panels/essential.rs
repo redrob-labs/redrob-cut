@@ -21,10 +21,10 @@
 //! `essential.instance.<id>.value`, `essential.export`…).
 
 use crate::i18n::{tr, tr_args};
+use egui::{Rect, RichText};
 use redrob_effects_engine::keyframe::Value as KV;
 use redrob_effects_engine::project::essential::{self, ControlType, EgControl, EgKind};
 use redrob_effects_engine::project::{ItemId, ItemKind, LayerSource, ParamUi, Property};
-use egui::{Rect, RichText};
 use serde_json::{Value, json};
 
 use crate::panels::DragPayload;

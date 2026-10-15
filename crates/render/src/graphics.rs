@@ -1,10 +1,10 @@
 //! Text and vector graphics drawn with `redrob-film-text`: the Timecode / Clip Name burn-ins and
 //! (see below) graphic clips' text and shape layers.
 
+use rayon::prelude::*;
 use redrob_film_color::srgb_to_linear;
 use redrob_film_geom::Vec2;
 use redrob_film_text::{Align, Mask, ParagraphStyle, TextStyle, layout, render};
-use rayon::prelude::*;
 
 use crate::image::Image;
 

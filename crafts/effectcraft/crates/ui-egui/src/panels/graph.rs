@@ -5,12 +5,12 @@
 //!
 //! Every edit is an engine command (`keys.set`, `keys.setEase`, `keys.select`, `keys.*`).
 
+use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use redrob_effects_engine::KeyRef;
 use redrob_effects_engine::keyframe::{Interp, Value, side_ease};
 use redrob_effects_engine::project::{Comp, Layer, LayerId, Property};
 use redrob_effects_engine::render::EvalCtx;
 use redrob_effects_engine::time::Tick;
-use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
 use super::timeline::TMap;

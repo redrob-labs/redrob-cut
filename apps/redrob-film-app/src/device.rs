@@ -119,7 +119,8 @@ impl KeySource {
 
 /// `account.json`'s directory for this platform.
 pub fn config_dir() -> Option<PathBuf> {
-    if let Some(d) = [CONFIG_DIR_ENV, LEGACY_CONFIG_DIR_ENV].iter().find_map(|k| std::env::var_os(k).filter(|d| !d.is_empty())) { // legacy:
+    if let Some(d) = [CONFIG_DIR_ENV, LEGACY_CONFIG_DIR_ENV].iter().find_map(|k| std::env::var_os(k).filter(|d| !d.is_empty())) {
+        // legacy:
         return Some(PathBuf::from(d));
     }
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);

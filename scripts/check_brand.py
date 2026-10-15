@@ -49,8 +49,9 @@ COMMENT = re.compile(r"^\s*(//|#|<!--|\*|/\*|;|REM\b)")
 
 # 4. Upstream IDENTIFIERS (not names): crate names, file extensions, env-var prefixes, URI schemes,
 # MIME types and the XML root. tools/rename_crates.py and the de-upstream change renamed them; the
-# only place an old one may still appear is an explicit legacy READ path, whose line carries a
-# `// legacy:` (or `# legacy:`) marker, plus the attribution files and the scripts that know them.
+# only place an old one may still appear is an explicit legacy READ path, whose line (or the line
+# before or after it) carries a `// legacy:` (`# legacy:`, `<!-- legacy:`) marker, plus the
+# attribution files and the scripts that know them.
 IDENT_SKIP_FILES = (
     "NOTICE", "ATTRIBUTION.md", "LICENSE-APACHE", "LICENSE-MIT", "UPSTREAM.md", "UPSTREAM.ko.md", "upstream-base.json",
     "CHANGELOG.md", "crafts/effectcraft/NOTICE", "crafts/effectcraft/ATTRIBUTION.md", "crafts/effectcraft/LICENSE-APACHE",
@@ -109,8 +110,13 @@ def tracked_identifier_errors(tracked):
             text = (ROOT / f).read_text()
         except (UnicodeDecodeError, OSError):
             continue
-        for n, line in enumerate(text.split("\n"), 1):
-            if not ident.search(line) or LEGACY.search(line) or LEGACY_FIXTURE.search(line):
+        lines = text.split("\n")
+        for n, line in enumerate(lines, 1):
+            if not ident.search(line) or LEGACY_FIXTURE.search(line):
+                continue
+            # the marker may sit on the line itself or, where rustfmt moved a trailing comment, on
+            # the line before or after
+            if any(LEGACY.search(l) for l in lines[max(0, n - 2) : n + 1]):
                 continue
             if not ident.search(IDENT_KEEP.sub("", line)):
                 continue

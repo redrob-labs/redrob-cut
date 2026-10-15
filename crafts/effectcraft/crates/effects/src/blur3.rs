@@ -10,10 +10,10 @@
 //!   a small translation search (sum of squared differences on luma) and substituted with
 //!   feathered patch blending. Deterministic; neighbours come from [`crate::EffectHost::self_at`].
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::util::Plane;
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

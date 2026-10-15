@@ -3,13 +3,13 @@
 //! colour map and Reshape's correspondence points (Effect Controls buttons and viewer handles).
 //! Each edit goes through `prop.set` and undoes in one step.
 
+use egui::{Event, Pos2, pos2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::keyframe::Value as KV;
 use redrob_effects_engine::project::{LayerId, Node, PropGroup};
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
-use egui::{Event, Pos2, pos2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn harness(s: Session) -> Harness<'static, EffectcraftApp> {

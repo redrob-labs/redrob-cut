@@ -4,9 +4,9 @@
 //! maths is `redrob_effects_raster::scopes`; agents read the same numbers with `scopes.analyze`.
 
 use crate::i18n::tr;
+use egui::{Align2, Color32, Rect, Stroke, pos2, vec2};
 use redrob_effects_engine::commands::panels_cmds::scope_frame;
 use redrob_effects_engine::raster::scopes::{self, ColorStandard, Scope, ScopeKind, ScopeOpts};
-use egui::{Align2, Color32, Rect, Stroke, pos2, vec2};
 use serde::{Deserialize, Serialize};
 
 use super::panel_kit as kit;

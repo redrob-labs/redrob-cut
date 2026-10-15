@@ -1,11 +1,11 @@
 //! Long menus and lists scroll instead of running off the window, with a scroll bar to drag
 //! (egui_kittest, UI logic only).
 
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::EffectcraftApp;
 use egui::{Event, Pos2, Rect, pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::EffectcraftApp;
 use serde_json::json;
 
 fn harness(w: f32, h: f32) -> Harness<'static, EffectcraftApp> {

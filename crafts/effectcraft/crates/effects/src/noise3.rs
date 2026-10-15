@@ -12,10 +12,10 @@
 //! cross-fading two evolution offsets one cycle apart; Turbulent Noise's Turbulence Factor makes
 //! finer layers evolve and drift faster than coarse ones.
 
+use rayon::prelude::*;
 use redrob_effects_color::{BlendMode, blend_pixel};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
-use rayon::prelude::*;
 
 use crate::generate::{fade, lattice};
 use crate::{Buf, EffectCtx, EffectSpec, ParamSpec, num, p, popup, slider};

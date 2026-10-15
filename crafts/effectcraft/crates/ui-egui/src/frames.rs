@@ -27,12 +27,12 @@ use std::collections::{BTreeSet, HashMap, HashSet, VecDeque};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 
+use rayon::prelude::*;
 use redrob_effects_engine::project::{Comp, ItemId, ItemKind, LayerSource, Node, Project, PropGroup};
 use redrob_effects_engine::render::disk_cache::{self, DiskCache};
 use redrob_effects_engine::render::{CancellableFootage, ExprHost, FootageSource, LayerCache, RenderOpts, Renderer};
 use redrob_effects_engine::time::Tick;
 use redrob_effects_gpu::{DisplayFrame, Gpu};
-use rayon::prelude::*;
 
 /// Comp identities (and the project snapshots behind them) the RAM preview keeps frames of.
 const MAX_KEEPERS: usize = 64;

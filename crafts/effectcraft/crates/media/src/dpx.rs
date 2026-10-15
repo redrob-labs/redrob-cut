@@ -10,8 +10,8 @@
 //! encoding, signed or float samples, Y'CbCr, packed 10/12-bit, transposed images) is refused
 //! with an error naming it. Every field is read with bounds checks.
 
-use redrob_effects_project::{AlphaMode, Footage};
 use rayon::prelude::*;
+use redrob_effects_project::{AlphaMode, Footage};
 
 use crate::{MediaError, Result};
 

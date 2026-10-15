@@ -63,11 +63,11 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
+use rayon::prelude::*;
 use redrob_film_isobmff::{Brand, Mp4Writer, PcmConfig, SampleEntry, TrackConfig, WriteSample, WriterOptions};
 use redrob_film_project::{ItemId, Project};
 use redrob_film_render::SourceProvider;
 use redrob_film_time::FrameRate;
-use rayon::prelude::*;
 
 use crate::audio_out::AudioOut;
 use crate::mxf_out::{MxfMux, MxfSetup};

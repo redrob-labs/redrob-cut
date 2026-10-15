@@ -1276,7 +1276,8 @@ mod tests {
         a
     };
     static FAKE_TOPOLOGY: Topology = Topology { outline: &FAKE_OUTLINE, landmarks: &FAKE_LANDMARKS };
-    static FAKE_INFO: redrob_effects_segment::ModelInfo = redrob_effects_segment::ModelInfo { id: "fake", name: "Fake", ..redrob_effects_segment::FACE_LANDMARKER };
+    static FAKE_INFO: redrob_effects_segment::ModelInfo =
+        redrob_effects_segment::ModelInfo { id: "fake", name: "Fake", ..redrob_effects_segment::FACE_LANDMARKER };
 
     impl Fake {
         fn face(t: usize) -> Face {

@@ -19,10 +19,10 @@
 //!   and for float footage (OpenEXR, float TIFF), whose linear values are encoded once
 //!   ([`Pipe::float_curve`]).
 
+use rayon::prelude::*;
 use redrob_effects_color::{ColorSpace, Conversion};
 use redrob_effects_project::{Footage, HdrMode, ProjectSettings};
 use redrob_effects_raster::Image;
-use rayon::prelude::*;
 
 /// The colour pipeline of a project (see the module docs).
 #[derive(Clone, Copy, Debug, PartialEq)]

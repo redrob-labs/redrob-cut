@@ -13,6 +13,7 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::remote::{FrameMsg, FrameReply, FrameServer, Mirror};
 use redrob_effects_engine::render::RenderOpts;
@@ -22,7 +23,6 @@ use redrob_effects_gpu::Gpu;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::control::{self, ControlRequest, Outcome};
 use redrob_effects_ui_egui::frames::{FrameImage, FrameKey, Frames, RemoteDone, RemoteFrame, RemoteFrames, RemoteJob, RenderSource};
-use egui_kittest::Harness;
 use serde_json::{Value, json};
 
 fn rt<T: serde::Serialize + for<'de> serde::Deserialize<'de>>(v: &T) -> T {

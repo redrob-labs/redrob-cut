@@ -9,10 +9,10 @@
 //! Shared here (also used by `sim2`): a band-bucketed rasteriser for many small items
 //! ([`raster`]), particle sprites ([`Sprite`]) and transfer-mode compositing ([`combine`]).
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::generate::value_noise;
 use crate::util::{SimCache, hash1, params_key, params_key_except, unpremul};

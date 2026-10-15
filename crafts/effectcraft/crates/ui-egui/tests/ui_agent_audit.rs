@@ -6,12 +6,12 @@
 //!   it draws: egui's interactive widget rects of the frame are matched against the registered
 //!   automation elements, and any widget no element covers is a gap.
 
+use egui::Rect;
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::control::{self, ControlRequest, Outcome};
 use redrob_effects_ui_egui::dock::PanelKind;
-use egui::Rect;
-use egui_kittest::Harness;
 use serde_json::{Value, json};
 
 fn session() -> Session {

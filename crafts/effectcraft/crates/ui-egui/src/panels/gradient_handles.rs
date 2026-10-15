@@ -8,10 +8,10 @@
 //!
 //! Automation ids: `viewer.gradientPoint.<uid>` (the Start Point / End Point property's uid).
 
+use egui::{Color32, Rect, Sense, Stroke, vec2};
 use redrob_effects_engine::geom::Mat3;
 use redrob_effects_engine::project::{Layer, LayerId, Node, PropGroup, Property};
 use redrob_effects_engine::render::EvalCtx;
-use egui::{Color32, Rect, Sense, Stroke, vec2};
 use serde_json::json;
 
 use super::fx_widgets as fw;

@@ -508,7 +508,8 @@ fn create_vr_environment_and_extract_cubemap() {
         let c = s.project.comp(ItemId(*f)).unwrap();
         assert_eq!((c.width, c.height), (64, 64));
         assert!(c.layers.iter().any(|l| l.is_camera()));
-        let nested = c.layers.iter().find(|l| matches!(l.source, redrob_effects_project::LayerSource::Comp { item } if item == main)).expect("the scene, nested");
+        let nested =
+            c.layers.iter().find(|l| matches!(l.source, redrob_effects_project::LayerSource::Comp { item } if item == main)).expect("the scene, nested");
         assert!(nested.switches.collapse && nested.is_3d(), "collapsed 3D precomp");
         let _ = &aname;
     }

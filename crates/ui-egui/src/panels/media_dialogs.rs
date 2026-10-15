@@ -348,8 +348,12 @@ fn link_media(app: &mut FilmcraftApp, ctx: &egui::Context) {
             }
         }
         Some("locate") => {
-            let exts: Vec<&str> =
-                redrob_film_media::VIDEO_EXTENSIONS.iter().chain(redrob_film_media::AUDIO_EXTENSIONS).chain(redrob_film_media::STILL_EXTENSIONS).copied().collect();
+            let exts: Vec<&str> = redrob_film_media::VIDEO_EXTENSIONS
+                .iter()
+                .chain(redrob_film_media::AUDIO_EXTENSIONS)
+                .chain(redrob_film_media::STILL_EXTENSIONS)
+                .copied()
+                .collect();
             let mut params = match_params(&d);
             params["item"] = json!(item);
             let hint = RelinkHint { command: "media.relink".into(), params };

@@ -56,7 +56,8 @@ pub fn current() -> &'static DataDir {
 
 /// Resolve the data directory from the environment (`env`) and the executable's folder.
 pub fn resolve(env: impl Fn(&str) -> Option<OsString>, exe_dir: Option<&Path>) -> DataDir {
-    if let Some(d) = env("REDROB_EFFECTS_CONFIG_DIR").or_else(|| env("EFFECTCRAFT_CONFIG_DIR")) { // legacy: the pre-rename variable still works
+    if let Some(d) = env("REDROB_EFFECTS_CONFIG_DIR").or_else(|| env("EFFECTCRAFT_CONFIG_DIR")) {
+        // legacy: the pre-rename variable still works
         return DataDir { dir: Some(PathBuf::from(d)), mode: Mode::Override, warning: None };
     }
     let platform = platform_dir(&env);

@@ -39,9 +39,9 @@ pub mod rle;
 
 use std::collections::BTreeMap;
 
+use rayon::prelude::*;
 use redrob_effects_raster::Image;
 use redrob_effects_segment::{MaskModel, Prompt};
-use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 pub use gmm::Gmm;

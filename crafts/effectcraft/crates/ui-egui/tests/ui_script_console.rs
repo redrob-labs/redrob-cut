@@ -1,9 +1,9 @@
 //! Window ▸ Script Console: the panel shows, runs JavaScript through `script.run` (persistent
 //! context) and logs output, results and errors (egui_kittest, UI logic only).
 
+use egui_kittest::Harness;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
-use egui_kittest::Harness;
 
 fn click(h: &mut Harness<'_, EffectcraftApp>, id: &str) {
     let e = h.state().auto.find(id).unwrap_or_else(|| panic!("no {id}")).clone();

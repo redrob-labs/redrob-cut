@@ -11,6 +11,7 @@ use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::{Arc, Mutex, OnceLock};
 
+use rayon::prelude::*;
 use redrob_film_geom::{Affine, Vec2};
 use redrob_film_project::graphic::{LayerContent, LayerSpec, LinearGradient, ShapeProps, TextProps, eval_layer};
 use redrob_film_project::graphic_design::{GraphicMeta, PinNode, remap_time, resolve_pins, roll_offset};
@@ -18,7 +19,6 @@ use redrob_film_project::{EffectInstance, TrackItem};
 use redrob_film_text::raster::{Xform, apply, fill_into, xform_scale};
 use redrob_film_text::{Align, Caps, Layout, Mask, ParagraphStyle, StrokeKind, StyleRun, TextStyle, layout_rich, mask, render};
 use redrob_film_time::Tick;
-use rayon::prelude::*;
 
 use crate::graphics::{premul_linear, premul_linear_lerp};
 use crate::image::Image;
@@ -651,7 +651,13 @@ mod tests {
         let rate = redrob_film_time::FrameRate::FPS_25;
         let g = p.add_item("G", redrob_film_project::Label::Rose, redrob_film_project::ItemKind::Graphic { width: 400, height: 300, rate }, None);
         let mut it = p
-            .make_track_item(g, redrob_film_project::TrackKind::Video, Tick::ZERO, redrob_film_time::TimeRange::new(Tick::ZERO, Tick::from_seconds_f64(5.0)), rate)
+            .make_track_item(
+                g,
+                redrob_film_project::TrackKind::Video,
+                Tick::ZERO,
+                redrob_film_time::TimeRange::new(Tick::ZERO, Tick::from_seconds_f64(5.0)),
+                rate,
+            )
             .unwrap();
         it.effects.extend(layers);
         it

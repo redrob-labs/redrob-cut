@@ -8,7 +8,9 @@ use std::sync::Arc;
 
 use redrob_film_bitstream::{BitWriter, escape_rbsp};
 use redrob_film_color::{ColorInfo, ColorSpace, Matrix, Primaries, Range, Transfer};
-use redrob_film_isobmff::{Av1Config, AvcConfig, Brand, CodecConfig, HevcConfig, HevcNalArray, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions};
+use redrob_film_isobmff::{
+    Av1Config, AvcConfig, Brand, CodecConfig, HevcConfig, HevcNalArray, Mp4Writer, SampleEntry, TrackConfig, WriteSample, WriterOptions,
+};
 use redrob_film_matroska::{MkvWriter, MuxOptions, TrackKind, TrackSpec};
 use redrob_film_media::MediaSource;
 

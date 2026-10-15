@@ -1,13 +1,13 @@
 //! Existing EffectCraft workspaces use shared transactions without changing their saved schema.
 use craft_ui::docking::{Action, Placement, Zone};
+use egui::{Event, Modifiers, PointerButton, Rect, pos2, vec2};
+use egui_kittest::Harness;
+use egui_kittest::kittest::{NodeT, Queryable};
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::{
     EffectcraftApp,
     dock::{self, DockNode, Layout, PanelKind, SplitSize, StackEntry},
 };
-use egui::{Event, Modifiers, PointerButton, Rect, pos2, vec2};
-use egui_kittest::Harness;
-use egui_kittest::kittest::{NodeT, Queryable};
 use serde_json::json;
 
 #[test]

@@ -20,9 +20,9 @@
 //! premultiplied working image: a masked effect is `lerp(original, effected, coverage)` per
 //! channel, an opacity mask scales the layer's premultiplied pixels.
 
+use rayon::prelude::*;
 use redrob_film_project::{EffectInstance, Mask, MaskMode};
 use redrob_film_time::Tick;
-use rayon::prelude::*;
 
 use crate::image::Image;
 

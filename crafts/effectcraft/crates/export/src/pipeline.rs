@@ -541,7 +541,12 @@ mod tests {
         fn supports_effect(&self, _id: &str) -> bool {
             false
         }
-        fn effects(&self, _chain: &[redrob_effects_render::FxStep], _buf: &redrob_effects_effects::Buf, _levels: Option<f32>) -> Option<redrob_effects_effects::Buf> {
+        fn effects(
+            &self,
+            _chain: &[redrob_effects_render::FxStep],
+            _buf: &redrob_effects_effects::Buf,
+            _levels: Option<f32>,
+        ) -> Option<redrob_effects_effects::Buf> {
             None
         }
     }

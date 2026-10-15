@@ -60,10 +60,10 @@ pub mod viewers;
 pub mod waveform;
 
 use crate::i18n::tr;
+use egui::Rect;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::Comp;
 use redrob_effects_engine::time::Tick;
-use egui::Rect;
 
 use crate::EffectcraftApp;
 use crate::dock::PanelKind;

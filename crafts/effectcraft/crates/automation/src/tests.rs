@@ -1074,7 +1074,11 @@ impl redrob_effects_engine::Exporter for SlowExporter {
     fn formats(&self) -> Vec<redrob_effects_engine::project::render_queue::OutputFormat> {
         redrob_effects_engine::project::render_queue::OutputFormat::ALL.to_vec()
     }
-    fn export(&self, job: &redrob_effects_engine::ExportJob, progress: &mut dyn FnMut(u64, u64) -> bool) -> Result<redrob_effects_engine::ExportResult, String> {
+    fn export(
+        &self,
+        job: &redrob_effects_engine::ExportJob,
+        progress: &mut dyn FnMut(u64, u64) -> bool,
+    ) -> Result<redrob_effects_engine::ExportResult, String> {
         std::fs::write(job.path, b"partial").map_err(|e| e.to_string())?;
         let n = 2000;
         for k in 0..=n {

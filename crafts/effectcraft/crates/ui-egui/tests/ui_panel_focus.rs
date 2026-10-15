@@ -2,12 +2,12 @@
 //! its Composition panel even when it was closed (#90); adding an effect, or double-clicking one
 //! in the Timeline, brings up Effect Controls (#87).
 
+use egui::{Event, Pos2, pos2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::ItemId;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::{DockNode, PanelKind};
-use egui::{Event, Pos2, pos2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 /// Comp "Main" (open) holding a solid, and comp "Other" (not open).

@@ -2,9 +2,9 @@
 //! folders and for the dissolves whose output the golden images pin (Cross Dissolve, Dip to
 //! Black/White, Film/Additive Dissolve, Wipe).
 
+use rayon::prelude::*;
 use redrob_film_geom::Affine;
 use redrob_film_project::{EffectInstance, ParamValue};
-use rayon::prelude::*;
 
 use crate::image::Image;
 

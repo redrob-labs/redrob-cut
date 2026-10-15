@@ -545,7 +545,11 @@ fn media_image(project: &Project, seq: &Sequence, item: &TrackItem, t: Tick, src
         Some((next_time, wgt)) => match src.video_frame(FrameRequest { time: next_time, scale: want }) {
             Ok(f2) if f2.width == frame.width && f2.height == frame.height => {
                 let b = colorman::decode(project, item.item, &f2, n, &seq.settings.color);
-                if item.time_interpolation == redrob_film_project::TimeInterpolation::OpticalFlow { flow::interpolate(&img, &b, wgt) } else { img.lerp(&b, wgt) }
+                if item.time_interpolation == redrob_film_project::TimeInterpolation::OpticalFlow {
+                    flow::interpolate(&img, &b, wgt)
+                } else {
+                    img.lerp(&b, wgt)
+                }
             }
             _ => img,
         },

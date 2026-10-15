@@ -1,10 +1,10 @@
 //! Headless checks for the M13.5 long-tail UI: horizontal scrolling of the Timeline outline and
 //! Project panel columns (egui_kittest, UI logic only).
 
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::EffectcraftApp;
 use egui::{Event, Pos2, Rect, pos2, vec2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::EffectcraftApp;
 use serde_json::json;
 
 fn harness(w: f32) -> Harness<'static, EffectcraftApp> {

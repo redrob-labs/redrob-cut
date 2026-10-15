@@ -87,7 +87,8 @@ fn a_project_opened_with_a_cycle_can_still_be_edited_and_repaired() {
     // what a damaged project file would hold: the sequence on its own track
     let mut p = (*s.project).clone();
     let rate = p.sequence(a).unwrap().settings.frame_rate;
-    let it = p.make_track_item(a, TrackKind::Video, Tick(900 * redrob_film_time::TICKS_PER_SECOND), TimeRange::new(Tick::ZERO, rate.tick_of(24)), rate).unwrap();
+    let it =
+        p.make_track_item(a, TrackKind::Video, Tick(900 * redrob_film_time::TICKS_PER_SECOND), TimeRange::new(Tick::ZERO, rate.tick_of(24)), rate).unwrap();
     let bad = it.id;
     p.sequence_mut(a).unwrap().video_tracks[0].items.push(it);
     s.project = Arc::new(p);

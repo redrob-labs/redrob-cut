@@ -573,7 +573,13 @@ pub(crate) fn data_footage(services: &dyn crate::Services, path: &str) -> Option
         if ext == "json" {
             serde_json::from_str::<Value>(text.trim_start_matches('\u{feff}')).map_err(|e| format!("invalid JSON: {e}"))?;
         }
-        Ok(redrob_effects_project::Footage { path: path.to_string(), kind: FootageKind::Data, codec: ext.to_uppercase(), data: Some(text), ..Default::default() })
+        Ok(redrob_effects_project::Footage {
+            path: path.to_string(),
+            kind: FootageKind::Data,
+            codec: ext.to_uppercase(),
+            data: Some(text),
+            ..Default::default()
+        })
     })())
 }
 

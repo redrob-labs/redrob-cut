@@ -24,10 +24,10 @@ mod text;
 #[cfg(test)]
 mod tests;
 
+use rayon::prelude::*;
 use redrob_film_geom::{Affine, Vec2};
 use redrob_film_project::{EffectInstance, ParamValue, Project, Sequence, TrackItem};
 use redrob_film_time::{Tick, TimeDisplay, format_time};
-use rayon::prelude::*;
 
 use crate::effects::FxCtx;
 use crate::image::Image;

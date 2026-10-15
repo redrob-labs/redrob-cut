@@ -2,11 +2,11 @@
 //! blurs (Channel, Compound, CC Vector), bokeh (Camera Lens Blur), radial streaks and small
 //! utilities (Reduce Interlace Flicker, CC Cross Blur).
 
+use rayon::prelude::*;
 use redrob_effects_color::luminance;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px, gaussian_blur};
-use rayon::prelude::*;
 
 use crate::util::{Plane, gauss_plane, premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

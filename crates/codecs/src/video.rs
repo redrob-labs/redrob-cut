@@ -697,7 +697,9 @@ pub fn apv_to_video_frame(f: redrob_film_apv::Frame) -> VideoFrame {
     use std::sync::Arc;
     let chroma = match f.chroma {
         redrob_film_apv::ChromaFormat::Yuv422 => redrob_film_frame::Chroma::C422,
-        redrob_film_apv::ChromaFormat::Monochrome | redrob_film_apv::ChromaFormat::Yuv444 | redrob_film_apv::ChromaFormat::Yuv4444 => redrob_film_frame::Chroma::C444,
+        redrob_film_apv::ChromaFormat::Monochrome | redrob_film_apv::ChromaFormat::Yuv444 | redrob_film_apv::ChromaFormat::Yuv4444 => {
+            redrob_film_frame::Chroma::C444
+        }
     };
     let mut color = redrob_film_color::ColorInfo { matrix: redrob_film_frame::default_matrix(f.width, f.height), ..redrob_film_color::ColorInfo::REC709 };
     if let Some(m) = redrob_film_color::Matrix::from_code(f.color.matrix) {
@@ -800,7 +802,12 @@ pub fn dnx_to_video_frame(f: redrob_film_dnx::Frame) -> VideoFrame {
         let to8 = |p: Vec<u16>| Arc::new(p.into_iter().map(|v| v as u8).collect::<Vec<u8>>());
         redrob_film_frame::PixelData::Yuv8 { planes: [to8(y), to8(cb), to8(cr)], chroma, alpha: f.alpha.map(to8) }
     } else {
-        redrob_film_frame::PixelData::Yuv16 { planes: [Arc::new(y), Arc::new(cb), Arc::new(cr)], chroma, bits: f.bit_depth as u32, alpha: f.alpha.map(Arc::new) }
+        redrob_film_frame::PixelData::Yuv16 {
+            planes: [Arc::new(y), Arc::new(cb), Arc::new(cr)],
+            chroma,
+            bits: f.bit_depth as u32,
+            alpha: f.alpha.map(Arc::new),
+        }
     };
     VideoFrame { width: f.width, height: f.height, data, color, par, pts: redrob_film_time::Tick::ZERO }
 }
@@ -863,7 +870,8 @@ pub fn mpeg2_to_video_frame(p: redrob_film_mpeg2v::Picture) -> VideoFrame {
     let info = &p.info;
     let mut color = redrob_film_color::ColorInfo { matrix: redrob_film_frame::default_matrix(p.width, p.height), ..redrob_film_color::ColorInfo::REC709 };
     if info.width <= 1024 && info.height <= 576 {
-        color.primaries = if info.height == 576 || info.height == 608 { redrob_film_color::Primaries::Bt601_625 } else { redrob_film_color::Primaries::Bt601_525 };
+        color.primaries =
+            if info.height == 576 || info.height == 608 { redrob_film_color::Primaries::Bt601_625 } else { redrob_film_color::Primaries::Bt601_525 };
     }
     if let Some((prim, transfer, matrix)) = info.colour {
         if let Some(m) = redrob_film_color::Matrix::from_code(matrix) {

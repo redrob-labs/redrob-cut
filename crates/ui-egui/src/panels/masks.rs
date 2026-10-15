@@ -522,9 +522,10 @@ fn pen_overlay(app: &mut FilmcraftApp, ui: &mut egui::Ui, pic: Rect, frame: (u32
     if commit {
         let path = draft_path(&d.points);
         app.ui.mask_pen = None;
-        let r = app
-            .session
-            .execute("masks.add", json!({"clip": draft.clip, "effect": draft.effect, "shape": "bezier", "path": redrob_film_engine::masks::path_to_json(&path)}));
+        let r = app.session.execute(
+            "masks.add",
+            json!({"clip": draft.clip, "effect": draft.effect, "shape": "bezier", "path": redrob_film_engine::masks::path_to_json(&path)}),
+        );
         if let Err(e) = r {
             app.ui.status = e.to_string();
         } else {

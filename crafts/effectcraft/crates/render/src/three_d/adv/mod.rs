@@ -16,8 +16,8 @@ pub mod raster;
 pub mod scene;
 pub mod shade;
 
-use redrob_effects_project::Layer;
 use rayon::prelude::*;
+use redrob_effects_project::Layer;
 
 pub use dof::depth_of_field;
 pub use raster::Target;

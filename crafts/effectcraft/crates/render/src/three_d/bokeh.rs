@@ -7,8 +7,8 @@
 //! (tilted towards or away from the camera) is blurred progressively: the buffer is blurred at a
 //! few kernel sizes and every pixel blends the two that bracket its own circle of confusion.
 
-use redrob_effects_raster::Image;
 use rayon::prelude::*;
+use redrob_effects_raster::Image;
 use serde::{Deserialize, Serialize};
 
 /// Camera iris (Camera Options ▸ Iris …).

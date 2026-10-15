@@ -1,8 +1,8 @@
 //! Right-click actions in the blank Project and Timeline areas, and on Timeline property names.
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::{Dialog, EffectcraftApp, dock::PanelKind};
 use egui::{Event, Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use egui_kittest::{Harness, kittest::Queryable as _};
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::{Dialog, EffectcraftApp, dock::PanelKind};
 use serde_json::json;
 
 fn harness() -> Harness<'static, EffectcraftApp> {

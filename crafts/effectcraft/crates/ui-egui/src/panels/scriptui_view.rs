@@ -9,9 +9,9 @@
 //! script through `scriptui.mouse` when a listener wants them (`Widget::mouse`).
 
 use crate::i18n::tr;
+use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, UiBuilder, pos2, vec2};
 use redrob_effects_engine::Services;
 use redrob_effects_engine::scriptui::{DrawOp, ImageRef, PathSeg, ScriptWindow, Widget, WidgetKind, WindowKind, layout};
-use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, UiBuilder, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::EffectcraftApp;

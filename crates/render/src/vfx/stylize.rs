@@ -2,9 +2,9 @@
 
 use std::collections::VecDeque;
 
+use rayon::prelude::*;
 use redrob_film_project::EffectInstance;
 use redrob_film_time::Tick;
-use rayon::prelude::*;
 
 use super::*;
 

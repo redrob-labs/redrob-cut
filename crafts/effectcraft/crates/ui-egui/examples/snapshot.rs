@@ -15,8 +15,8 @@
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
-use redrob_effects_ui_egui::{ControlRequest, EffectcraftApp};
 use egui_kittest::Harness;
+use redrob_effects_ui_egui::{ControlRequest, EffectcraftApp};
 use serde_json::{Value, json};
 
 struct Args {

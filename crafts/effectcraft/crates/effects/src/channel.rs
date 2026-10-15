@@ -1,10 +1,10 @@
 //! Channel effects: channel routing (Set/Shift Channels, Channel Combiner, Set Matte), morphology
 //! (Minimax), per-channel arithmetic, solid compositing and un-matting.
 
+use rayon::prelude::*;
 use redrob_effects_color::{BlendMode, blend_pixel, hsl_to_rgb, luminance, rgb_to_hsl};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
-use rayon::prelude::*;
 
 use crate::util::{Plane, SRC_NAMES, Src, join, layer_or_self, morph_plane, pick, premul, src_at, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

@@ -1,10 +1,10 @@
 //! Blur & Sharpen, Stylize, Perspective, Channel, Noise and Transition effects.
 
+use rayon::prelude::*;
 use redrob_effects_color::luminance;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, gaussian_blur, hash_noise};
-use rayon::prelude::*;
 
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};
 

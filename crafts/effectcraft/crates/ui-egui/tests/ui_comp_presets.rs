@@ -1,9 +1,9 @@
 //! Composition Settings: saving, picking and deleting your own presets (egui_kittest).
 
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::{Dialog, EffectcraftApp};
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, pos2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::{Dialog, EffectcraftApp};
 use serde_json::json;
 
 fn harness() -> Harness<'static, EffectcraftApp> {

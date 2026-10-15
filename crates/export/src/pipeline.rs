@@ -5,11 +5,11 @@
 
 use std::sync::Arc;
 
+use rayon::prelude::*;
 use redrob_film_geom::Vec2;
 use redrob_film_project::{ItemId, Project};
 use redrob_film_render::{Image, RenderOptions, SourceProvider};
 use redrob_film_time::FrameRate;
-use rayon::prelude::*;
 
 use crate::settings::{ExportEffects, Placement, Scaling, TextOverlay};
 use crate::{ExportError, ExportSettings, FrameRenderer, GpuRendering, Result, build_frame_renderer, note_gpu_fallback, note_gpu_frame};

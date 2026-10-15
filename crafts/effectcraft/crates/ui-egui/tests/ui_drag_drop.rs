@@ -7,15 +7,15 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+use egui::{Event, Modifiers, Pos2, Rect, pos2, vec2};
+use egui_kittest::Harness;
+use egui_kittest::kittest::Queryable;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::keyframe::Value as KV;
 use redrob_effects_engine::time::Tick;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
 use redrob_effects_ui_egui::panels::viewer::{comp_to_screen, last_fit};
-use egui::{Event, Modifiers, Pos2, Rect, pos2, vec2};
-use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
 use serde_json::json;
 
 /// Comp "Main" (4 s at 30 fps, current time 1 s) with solids Top, Middle and Bottom, and comp

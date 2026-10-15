@@ -1096,7 +1096,8 @@ fn new_comp_from_selection_is_one_undo_step_with_the_dialog_options() {
 #[test]
 fn comps_made_from_the_same_footage_get_numbered_names_as_duplicate_does() {
     let mut s = Session::default();
-    let add = |s: &mut Session, name: &str, kind: ItemKind| std::sync::Arc::make_mut(&mut s.project).add_item(name, redrob_effects_color::Label::None, None, kind);
+    let add =
+        |s: &mut Session, name: &str, kind: ItemKind| std::sync::Arc::make_mut(&mut s.project).add_item(name, redrob_effects_color::Label::None, None, kind);
     let still = || {
         ItemKind::Footage(redrob_effects_project::Footage {
             kind: redrob_effects_project::FootageKind::Still,

@@ -7,9 +7,9 @@
 
 use std::io::Cursor;
 
+use image::{AnimationDecoder, DynamicImage, codecs::gif::GifDecoder};
 use redrob_effects_project::{AlphaMode, Footage, FootageKind};
 use redrob_effects_time::{FrameRate, Tick};
-use image::{AnimationDecoder, DynamicImage, codecs::gif::GifDecoder};
 
 use crate::{MediaError, Result};
 

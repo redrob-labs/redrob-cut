@@ -2,12 +2,12 @@
 //! is focused, the wheel, the Zoom and Hand tools), and the Roto Brush explains itself in the
 //! Composition panel (egui_kittest, UI logic only).
 
+use egui::{Event, Pos2, Rect, pos2, vec2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
 use redrob_effects_ui_egui::state::Tool;
-use egui::{Event, Pos2, Rect, pos2, vec2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn app() -> EffectcraftApp {

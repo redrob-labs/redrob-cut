@@ -1204,8 +1204,14 @@ fn convert_one_expr(s: &mut Session, cid: ItemId, lid: LayerId, uid: Uid) -> Res
     let fd = comp.frame_duration();
     let mut t = layer.in_point;
     while t < layer.out_point {
-        let ctx =
-            redrob_effects_render::EvalCtx { project: &s.project, comp_id: cid, comp: &comp, time: t, expr: s.expr.as_deref(), footage: Some(s.footage.as_ref()) };
+        let ctx = redrob_effects_render::EvalCtx {
+            project: &s.project,
+            comp_id: cid,
+            comp: &comp,
+            time: t,
+            expr: s.expr.as_deref(),
+            footage: Some(s.footage.as_ref()),
+        };
         keys.push(Keyframe::new(layer.layer_time(t), ctx.value(&layer, &pr)));
         t += fd;
     }

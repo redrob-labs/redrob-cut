@@ -3,11 +3,11 @@
 //! Timeline reaches the last of thousands of layers; the Progress panel lists the footage check
 //! started by a lazy open.
 
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::perf::{LargeSpec, large_project};
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn spec() -> LargeSpec {
@@ -41,8 +41,16 @@ fn project_panel_scrolls_and_reveals_the_selection() {
     let rows = drawn(&h);
     assert!(rows > 5 && rows < 80, "only the rows in view are drawn: {rows}");
     // Selecting an item (a command, an agent) scrolls it into view.
-    let footage =
-        h.state().session.project.items.values().filter(|i| matches!(i.kind, redrob_effects_engine::project::ItemKind::Footage(_))).map(|i| i.id.0).max().unwrap();
+    let footage = h
+        .state()
+        .session
+        .project
+        .items
+        .values()
+        .filter(|i| matches!(i.kind, redrob_effects_engine::project::ItemKind::Footage(_)))
+        .map(|i| i.id.0)
+        .max()
+        .unwrap();
     h.state_mut().session.execute("project.select", json!({"items": [footage]})).unwrap();
     h.run_steps(3);
     assert!(h.state().auto.find(&format!("project.item.{footage}")).is_some(), "selected item scrolled into view");

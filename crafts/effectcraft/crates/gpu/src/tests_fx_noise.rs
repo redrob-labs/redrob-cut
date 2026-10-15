@@ -245,7 +245,8 @@ fn dust_strict_threshold_boundaries() {
         params.values.insert("radius".into(), n(radius));
         for (median, original, threshold, replaced) in cases {
             params.values.insert("threshold".into(), n(threshold as f64));
-            let ctx = || redrob_effects_effects::EffectCtx { params: &params, time: 0.0, layer_size: size, seed: 0, adjustment: false, env: Default::default() };
+            let ctx =
+                || redrob_effects_effects::EffectCtx { params: &params, time: 0.0, layer_size: size, seed: 0, adjustment: false, env: Default::default() };
             let mut img = redrob_effects_raster::Image::filled(7, 7, median);
             img.set(3, 3, original);
             let buf = redrob_effects_effects::Buf { img, offset: [0.0; 2], scale: 1.0 };

@@ -1,7 +1,7 @@
 use super::*;
+use proptest::prelude::*;
 use redrob_film_project::{Label, Project, SequenceSettings, TrackKind};
 use redrob_film_time::FrameRate;
-use proptest::prelude::*;
 
 const R: FrameRate = FrameRate::FPS_24;
 

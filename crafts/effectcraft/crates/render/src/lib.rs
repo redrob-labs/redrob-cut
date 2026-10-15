@@ -27,6 +27,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 pub use auto::{AutoKey, AutoPick};
 pub use cache::{CacheStats, LayerCache, LayerStore, PrefetchStore};
+pub use eval::{EvalCtx, ExprHost, effect_bounds, source_size};
+use rayon::prelude::*;
 use redrob_effects_color::BlendMode;
 use redrob_effects_effects::{Buf, EffectCtx, EffectEnv, EffectHost, LayerPixels, Params};
 use redrob_effects_geom::{Mat3, Mat4, vec2};
@@ -34,8 +36,6 @@ use redrob_effects_project::{Comp, Footage, FootageKind, FrameBlend, GroupKind, 
 pub use redrob_effects_raster::Image;
 use redrob_effects_raster::{WarpOpts, composite_warp};
 use redrob_effects_time::{FrameRate, TICKS_PER_SECOND, Tick};
-pub use eval::{EvalCtx, ExprHost, effect_bounds, source_size};
-use rayon::prelude::*;
 
 /// How a [`FootageSource`] hands over float footage (OpenEXR, float TIFF), whose values are
 /// linear light: encoded with a curve, as the compositor takes footage, or as stored. Other

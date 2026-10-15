@@ -187,7 +187,8 @@ fn mxf_formats_and_presets() {
 /// the PCM is sample-exact against what we wrote.
 #[test]
 fn ffmpeg_oracle_op1a_and_op_atom() {
-    let (Some(ffprobe), Some(ffmpeg)) = (redrob_film_testkit::ffprobe_or_skip("MXF export probe"), redrob_film_testkit::ffmpeg_or_skip("MXF export decode")) else {
+    let (Some(ffprobe), Some(ffmpeg)) = (redrob_film_testkit::ffprobe_or_skip("MXF export probe"), redrob_film_testkit::ffmpeg_or_skip("MXF export decode"))
+    else {
         return;
     };
     let (p, seq, m) = project();

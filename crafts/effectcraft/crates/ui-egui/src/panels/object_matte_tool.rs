@@ -8,10 +8,10 @@
 //! click: segmenting on every pointer move would be far too slow for a hover preview (a model
 //! pass or a graph cut per move), so the matte itself appears once the prompt is set.
 
+use egui::{Color32, Pos2, Rect, Stroke, StrokeKind};
 use redrob_effects_engine::geom::vec2 as gv2;
 use redrob_effects_engine::project::Layer;
 use redrob_effects_engine::render::EvalCtx;
-use egui::{Color32, Pos2, Rect, Stroke, StrokeKind};
 use serde_json::json;
 
 use super::viewer::{ViewerMap, fx2c, layers_at};

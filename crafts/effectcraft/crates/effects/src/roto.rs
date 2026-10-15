@@ -26,13 +26,13 @@
 use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::sync::{Arc, Mutex, OnceLock, RwLock, Weak};
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Image;
 use redrob_effects_segment::MaskModel;
 use redrob_effects_track::roto::refine::{self, MatteParams};
 use redrob_effects_track::roto::{self as rb, RotoData, SegOpts, rle};
-use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::warp_stab::param;

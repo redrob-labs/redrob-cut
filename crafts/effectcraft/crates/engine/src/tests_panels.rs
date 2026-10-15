@@ -485,7 +485,8 @@ fn disc_frame(f: u32) -> Image {
 
 fn iou_with(path_set: &[redrob_effects_keyframe::ShapePath], truth: &Image) -> f64 {
     let paths: Vec<_> = path_set.iter().map(redrob_effects_path::to_kurbo).collect();
-    let cov = redrob_effects_path::fill_coverage(&paths, &redrob_effects_geom::Mat3::IDENTITY, truth.width, truth.height, redrob_effects_path::FillRule::EvenOdd);
+    let cov =
+        redrob_effects_path::fill_coverage(&paths, &redrob_effects_geom::Mat3::IDENTITY, truth.width, truth.height, redrob_effects_path::FillRule::EvenOdd);
     let (mut i, mut u) = (0.0, 0.0);
     for (c, p) in cov.data.iter().zip(&truth.data) {
         let (a, b) = (*c >= 0.5, p[3] >= 0.5);

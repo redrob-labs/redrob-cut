@@ -398,7 +398,8 @@ impl MpegSource {
         color = redrob_film_color::ColorInfo::REC709;
         match v.kind {
             VKind::Mpeg2 => {
-                let info = redrob_film_mpeg2v::probe(&first).ok_or_else(|| CodecError::Decode("no MPEG video sequence header at the first I picture".into()))?;
+                let info =
+                    redrob_film_mpeg2v::probe(&first).ok_or_else(|| CodecError::Decode("no MPEG video sequence header at the first I picture".into()))?;
                 let header = crate::video::mpeg2_sequence_header(&first).unwrap_or_default();
                 // field order from the first frames' picture coding extensions
                 let mut d = redrob_film_mpeg2v::Decoder::new();

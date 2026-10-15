@@ -9,10 +9,10 @@
 //! op to the GPU when [`FxOp::gpu_ok`] says the shader covers it (finite numbers, no minifying
 //! resample), otherwise the clip is rendered on the CPU as before.
 
+use rayon::prelude::*;
 use redrob_film_color::{hsl_to_rgb, linear_to_srgb, luma709, rgb_to_hsl};
 use redrob_film_geom::Affine;
 use redrob_film_project::EffectInstance;
-use rayon::prelude::*;
 
 use crate::effects::{FxCtx, b, choice, color, dec, enc, f, gaussian_boxes, grade_space, on, point, text};
 use crate::image::Image;

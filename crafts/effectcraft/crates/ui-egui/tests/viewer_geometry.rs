@@ -1,14 +1,14 @@
 //! Inspect the actual viewer's painted colors and pointer-driven control geometry.
 
+use egui::{Color32, Event, Rect, Shape, pos2, vec2};
+use egui_kittest::Harness;
+use egui_kittest::kittest::Queryable;
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::{
     EffectcraftApp,
     panels::viewer,
     theme::{self, ThemeKind},
 };
-use egui::{Color32, Event, Rect, Shape, pos2, vec2};
-use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
 use serde_json::json;
 
 fn harness(width: f32, kind: ThemeKind) -> Harness<'static, EffectcraftApp> {

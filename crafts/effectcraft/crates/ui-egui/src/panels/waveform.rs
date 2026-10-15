@@ -7,10 +7,10 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
+use egui::{Color32, Painter, Rect, Stroke, pos2};
 use redrob_effects_engine::project::{ItemId, ItemKind, Layer, LayerSource, Project, Property};
 use redrob_effects_engine::render::audio::db_to_gain;
 use redrob_effects_engine::time::Tick;
-use egui::{Color32, Painter, Rect, Stroke, pos2};
 
 use super::timeline::TMap;
 use crate::EffectcraftApp;

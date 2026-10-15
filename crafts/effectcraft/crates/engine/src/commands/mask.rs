@@ -243,8 +243,10 @@ fn vertex_groups(s: &Session, p: &Value) -> Result<std::collections::BTreeMap<(u
 
 fn select_vertices(s: &mut Session, p: &Value) -> Result<Value> {
     let g = vertex_groups(s, &json!({"vertices": p.get("vertices").cloned().unwrap_or(json!([]))}))?;
-    let sel: Vec<VertexRef> =
-        g.into_iter().flat_map(|((l, m), is)| is.into_iter().map(move |i| VertexRef { layer: redrob_effects_project::LayerId(l), mask: m, index: i })).collect();
+    let sel: Vec<VertexRef> = g
+        .into_iter()
+        .flat_map(|((l, m), is)| is.into_iter().map(move |i| VertexRef { layer: redrob_effects_project::LayerId(l), mask: m, index: i }))
+        .collect();
     if b_p(p, "add").unwrap_or(false) {
         for v in sel {
             if let Some(i) = s.state.selected_vertices.iter().position(|x| *x == v) {

@@ -2,10 +2,10 @@
 
 mod support;
 
+use proptest::prelude::*;
 use redrob_film_interchange::{ExportOptions, Format, ImportOptions, ReelMode, detect, export, export_edl_per_track, import, import_with};
 use redrob_film_project::{ItemKind, MediaRef, TrackKind, TransitionAlign};
 use redrob_film_time::{FrameRate, Tick, fields_to_frames};
-use proptest::prelude::*;
 use support::*;
 
 const DF_DISSOLVES: &str = "TITLE: Harbour Cut

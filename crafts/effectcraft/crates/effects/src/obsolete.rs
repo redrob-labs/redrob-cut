@@ -1,10 +1,10 @@
 //! Obsolete-category effects: Basic 3D (tilt/swivel the layer in a simple perspective space
 //! with an optional specular highlight) and Gaussian Blur (Legacy).
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::gaussian_blur;
-use rayon::prelude::*;
 
 use crate::util::layer_rect;
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

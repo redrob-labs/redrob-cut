@@ -202,8 +202,13 @@ mod tests {
         };
         let red = add(&mut p, &g);
         let t = add(&mut p, &tone);
-        let seq =
-            p.new_sequence("s", SequenceSettings { width: 320, height: 180, frame_rate: redrob_film_time::FrameRate::FPS_24, ..Default::default() }, 1, 1, None);
+        let seq = p.new_sequence(
+            "s",
+            SequenceSettings { width: 320, height: 180, frame_rate: redrob_film_time::FrameRate::FPS_24, ..Default::default() },
+            1,
+            1,
+            None,
+        );
         let r = redrob_film_time::FrameRate::FPS_24;
         let _v = p.make_track_item(red, TrackKind::Video, Tick::ZERO, TimeRange::new(Tick::ZERO, r.tick_of(24)), r).unwrap();
         let a = p.make_track_item(t, TrackKind::Audio, Tick::ZERO, TimeRange::new(Tick::ZERO, r.tick_of(24)), r).unwrap();

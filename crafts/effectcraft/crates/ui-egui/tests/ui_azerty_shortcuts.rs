@@ -1,8 +1,8 @@
 //! Layout collisions must not dispatch both the physical and logical shortcuts.
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::EffectcraftApp;
 use egui::{Event, Key, Modifiers, vec2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::EffectcraftApp;
 use serde_json::json;
 
 #[test]

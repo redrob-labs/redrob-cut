@@ -1,10 +1,10 @@
 //! Distort effects: inverse-mapped warps (each output pixel samples the source).
 
+use rayon::prelude::*;
 use redrob_effects_geom::{Mat3, vec2};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Image;
-use rayon::prelude::*;
 
 use crate::util::layer_rect;
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

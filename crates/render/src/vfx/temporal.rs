@@ -11,8 +11,8 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use redrob_film_project::{EffectInstance, TrackMethod};
 use rayon::prelude::*;
+use redrob_film_project::{EffectInstance, TrackMethod};
 
 use super::*;
 use crate::track::{Gray, Prepared, track_step};

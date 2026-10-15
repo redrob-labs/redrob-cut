@@ -1,11 +1,11 @@
 //! Shared pane resizing in the full application, including application shortcut ownership.
 
+use egui::{Event, Id, Key, Modifiers, PointerButton, Rect, pos2, vec2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::{DockNode, PanelKind, SplitSize};
 use redrob_effects_ui_egui::theme::ThemeKind;
-use egui::{Event, Id, Key, Modifiers, PointerButton, Rect, pos2, vec2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn snapshots(h: &mut Harness<'_, EffectcraftApp>, directory: Option<&std::path::Path>, phase: &str) {

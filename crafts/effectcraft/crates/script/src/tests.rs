@@ -366,10 +366,8 @@ fn layers_items_and_markers() {
     let (_, c) = comp_named(&s, "Outer");
     assert_eq!(c.markers.len(), 1);
     assert!(
-        c.layers
-            .iter()
-            .any(|l| l.name == "Key"
-                && matches!(l.source, redrob_effects_engine::project::LayerSource::Light { kind: redrob_effects_engine::project::LightKind::Spot }))
+        c.layers.iter().any(|l| l.name == "Key"
+            && matches!(l.source, redrob_effects_engine::project::LayerSource::Light { kind: redrob_effects_engine::project::LightKind::Spot }))
     );
 }
 

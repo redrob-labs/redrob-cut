@@ -2,10 +2,10 @@
 //! Arithmetic) and CC Composite. Second layers come from layer parameters through the effect
 //! host; with no layer chosen the effect uses the layer itself, as After Effects does.
 
+use rayon::prelude::*;
 use redrob_effects_color::{BlendMode, blend_pixel, hsl_to_rgb, luminance, rgb_to_hsl};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
-use rayon::prelude::*;
 
 use crate::util::{layer_or_self, lerp4, premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

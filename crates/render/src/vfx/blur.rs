@@ -1,7 +1,7 @@
 //! Blur & Sharpen effects.
 
-use redrob_film_project::EffectInstance;
 use rayon::prelude::*;
+use redrob_film_project::EffectInstance;
 
 use super::*;
 use crate::effects::gaussian;

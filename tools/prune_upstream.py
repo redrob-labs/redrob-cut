@@ -8,7 +8,7 @@ upstream's repository furniture and is removed so no user or contributor meets i
 
 KEPT: crates/, assets/fonts/ (compiled into the UI), extensions/ and examples/plugins/ (compiled
 into the script engine and its tests), docs/preferences.md and docs/agents.md (include_str! in
-tests), LICENSE-APACHE, LICENSE-MIT, NOTICE, ATTRIBUTION.md (the licences require them),
+tests), contributors/ (the UI crate's build.rs compiles the credits from it), LICENSE-APACHE, LICENSE-MIT, NOTICE, ATTRIBUTION.md (the licences require them),
 clippy.toml and rustfmt.toml (nearest-config lookup for the subtree crates), Cargo.upstream.toml
 (read by tools/merge_effectcraft.py).
 
@@ -34,7 +34,6 @@ REMOVE_DIRS = [
     ".github",
     "apps",
     "assets/app-icon",
-    "contributors",
     "packaging",
     "xtask",
 ]

@@ -46,8 +46,11 @@ mod tests {
     #[cfg(not(any(target_os = "windows", target_os = "macos")))]
     #[test]
     fn camera_files_are_visible_in_every_capitalization() {
-        let filters: Vec<_> = extensions(&["mp4", "mov", "m2ts", "wav", "rfilm"]).iter().map(|ext| glob::Pattern::new(&format!("*.{ext}")).unwrap()).collect();
-        for name in ["camera.mp4", "camera.MP4", "camera.Mp4", "clip.MOV", "clip.moV", "take.M2TS", "sound.WaV", "Edit.FCPROJ", "Edit.FcProj"] {
+        let exts = ["mp4", "mov", "m2ts", "wav", "rfilm", "fcproj"]; // legacy: the open dialog also lists the pre-rename project extension
+        let filters: Vec<_> = extensions(&exts).iter().map(|ext| glob::Pattern::new(&format!("*.{ext}")).unwrap()).collect();
+        let visible = ["camera.mp4", "camera.MP4", "camera.Mp4", "clip.MOV", "clip.moV", "take.M2TS", "sound.WaV", "Edit.RFILM", "Edit.RFilm"];
+        let legacy = ["Edit.FCPROJ", "Edit.FcProj"]; // legacy:
+        for name in visible.into_iter().chain(legacy) {
             assert!(filters.iter().any(|f| f.matches(name)), "the picker hides {name}");
         }
         for name in ["camera.mp4.bak", "camera.mp44", "camera.xmp4", "notes.txt", "mp4"] {

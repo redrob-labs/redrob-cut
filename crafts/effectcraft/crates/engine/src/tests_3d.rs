@@ -238,8 +238,11 @@ fn demo_has_3d_showcase() {
     assert!(c.layers.iter().any(|l| l.is_camera()));
     assert!(c.layers.iter().any(|l| l.is_light()));
     assert!(c.layers.iter().filter(|l| l.switches.three_d).count() >= 4);
-    let img =
-        s.render(cid, redrob_effects_time::Tick::from_seconds_f64(4.0), redrob_effects_render::RenderOpts { scale: 0.125, motion_blur: false, ..Default::default() });
+    let img = s.render(
+        cid,
+        redrob_effects_time::Tick::from_seconds_f64(4.0),
+        redrob_effects_render::RenderOpts { scale: 0.125, motion_blur: false, ..Default::default() },
+    );
     let lit = img.data.iter().filter(|p| p[3] > 0.99 && p[0] + p[1] + p[2] > 0.3).count();
     assert!(lit > 2_000, "{lit}");
 }

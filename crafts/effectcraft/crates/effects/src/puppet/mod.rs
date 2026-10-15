@@ -20,11 +20,11 @@ pub mod mesh;
 
 use std::sync::{Arc, Mutex};
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::build::Ids;
 use redrob_effects_project::{GroupKind, ParamUi, PropGroup, Property};
 use redrob_effects_raster::Image;
-use rayon::prelude::*;
 
 use crate::{Buf, EffectCtx, EffectSpec, Params, p, slider};
 pub use mesh::{Mesh, MeshOpts};

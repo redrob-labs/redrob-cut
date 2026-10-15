@@ -21,9 +21,9 @@
 //! Morph Cut morphs with dense optical flow ([`crate::flow`]) but has no face tracking, and the
 //! Smart Tools / Text transitions are procedural stand-ins (no content analysis, no typed text).
 
+use rayon::prelude::*;
 use redrob_film_project::{EffectInstance, ParamValue};
 use redrob_film_time::Tick;
-use rayon::prelude::*;
 
 use crate::image::Image;
 

@@ -4,12 +4,12 @@
 //! point in one undo step and doesn't move the layer. Uses only APIs that existed before the
 //! handles, so it runs (and fails) on the code without them.
 
+use egui::{Event, Modifiers, PointerButton, Pos2, pos2, vec2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::{LayerId, PropGroup};
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::panels::viewer::comp_to_screen;
-use egui::{Event, Modifiers, PointerButton, Pos2, pos2, vec2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 /// The Gradient Fill group in shape contents `g`, through nested groups.

@@ -6,12 +6,12 @@
 //! Values stay gamma-encoded: like After Effects, footage pixels enter the working space as they
 //! are encoded in the file. Alpha follows the footage's [`AlphaMode`] interpretation.
 
+use rayon::prelude::*;
 use redrob_effects_project::{AlphaMode, Footage};
 use redrob_effects_raster::{Image, Px};
 use redrob_effects_render::FloatCurve;
 use redrob_film_color::{Matrix, Range};
 use redrob_film_frame::{Chroma, PixelData, VideoFrame};
-use rayon::prelude::*;
 
 /// How to turn a (colour, alpha) sample into a premultiplied pixel.
 #[derive(Clone, Copy)]

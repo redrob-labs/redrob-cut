@@ -659,8 +659,8 @@ pub fn plan(a: &WarpAnalysis, s: &StabSettings) -> Plan {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use redrob_effects_raster::Image;
     use rayon::prelude::*;
+    use redrob_effects_raster::Image;
 
     /// A synthetic analysis: a slow pan plus per-frame jitter.
     fn shaky(n: usize) -> (WarpAnalysis, Vec<[f64; 2]>) {

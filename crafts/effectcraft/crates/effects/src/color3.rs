@@ -2,10 +2,10 @@
 //! PS Arbitrary Map and Lumetri Color (Basic Correction, Creative, Curves, Color Wheels,
 //! Vignette).
 
+use rayon::prelude::*;
 use redrob_effects_color::{hsl_to_rgb, luminance, rgb_to_hsl};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
-use rayon::prelude::*;
 
 use crate::util::{Plane, gauss_plane, layer_rect, lerp, premul, smoothstep, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

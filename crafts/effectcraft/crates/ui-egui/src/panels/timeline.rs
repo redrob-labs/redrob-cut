@@ -6,12 +6,12 @@
 //! keyframe navigator, scrubbable values). Right: time navigator, ruler with work area and cache
 //! bar, layer duration bars, keyframes, the CTI, and the value graph editor.
 
+use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use redrob_effects_engine::color::BlendMode;
 use redrob_effects_engine::keyframe::{Interp, Value};
 use redrob_effects_engine::project::{Comp, GroupKind, ItemId, Layer, LayerId, LayerSource, MatteKind, Node, ParamUi, PropGroup, Property};
 use redrob_effects_engine::render::EvalCtx;
 use redrob_effects_engine::time::Tick;
-use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
 use crate::i18n::tr;
@@ -715,7 +715,8 @@ fn prop_visible(p: &Property, layer: &Layer) -> bool {
         return false;
     }
     // One-node cameras (and lights with auto-orient off) have no Point of Interest.
-    if p.match_id == "poi" && (layer.is_camera() || layer.is_light()) && layer.auto_orient != redrob_effects_engine::project::AutoOrient::TowardsPointOfInterest {
+    if p.match_id == "poi" && (layer.is_camera() || layer.is_light()) && layer.auto_orient != redrob_effects_engine::project::AutoOrient::TowardsPointOfInterest
+    {
         return false;
     }
     // Separate Dimensions: X/Y/Z Position replace Position.
@@ -749,8 +750,8 @@ fn display_name(app: &EffectcraftApp, l: &Layer) -> String {
 fn search_rows(l: &Layer, q: &str) -> Vec<Row> {
     fn group_row(l: &Layer, g: &PropGroup, depth: usize, parent: &PropGroup) -> Row {
         let fx = matches!(g.kind, GroupKind::Effect { .. }).then_some(g.enabled);
-        let eye =
-            (parent.match_id == redrob_effects_engine::project::styles::GROUP && g.match_id != redrob_effects_engine::project::styles::BLENDING).then_some(g.enabled);
+        let eye = (parent.match_id == redrob_effects_engine::project::styles::GROUP && g.match_id != redrob_effects_engine::project::styles::BLENDING)
+            .then_some(g.enabled);
         Row { layer: l.id, depth, kind: RowKind::Group { uid: g.uid, name: g.name.clone(), open: true, has_children: !g.children.is_empty(), fx, eye } }
     }
     fn all(l: &Layer, g: &PropGroup, depth: usize, out: &mut Vec<Row>) {
@@ -1486,7 +1487,8 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
     // Audio-only preview (Video off in the Preview panel): the current time stays put, so that
     // line says why and where the sound is instead (#1118).
     if let Some(af) = app.video_preview_off() {
-        let at = af.map(|f| format!(" · {}", redrob_effects_engine::time::format_timecode_ae(f + fr.frame_at(comp.display_start), fr, false))).unwrap_or_default();
+        let at =
+            af.map(|f| format!(" · {}", redrob_effects_engine::time::format_timecode_ae(f + fr.frame_at(comp.display_start), fr, false))).unwrap_or_default();
         let msg = format!("{}{at}", crate::i18n::tr("Video preview off: audio only"));
         p.text(pos2(tc_rect.min.x, tc_rect.max.y + 8.0), Align2::LEFT_CENTER, msg, Tokens::ui(10.5), t.cache_green);
     } else {
@@ -3819,11 +3821,9 @@ fn prop_menu(
 
 /// Whether `layer` shows vector footage (SVG, PDF, AI, EPS).
 pub(crate) fn vector_footage_layer(project: &redrob_effects_engine::project::Project, layer: &Layer) -> bool {
-    layer
-        .source
-        .item()
-        .and_then(|item| project.item(item))
-        .is_some_and(|item| matches!(&item.kind, redrob_effects_engine::project::ItemKind::Footage(footage) if redrob_effects_engine::vector::is_vector(footage)))
+    layer.source.item().and_then(|item| project.item(item)).is_some_and(
+        |item| matches!(&item.kind, redrob_effects_engine::project::ItemKind::Footage(footage) if redrob_effects_engine::vector::is_vector(footage)),
+    )
 }
 
 /// Whether the Collapse Transformations / Continuously Rasterize switch applies: precomps, shape and text

@@ -188,7 +188,8 @@ fn hevc_export_with_audio() {
     assert!(file.track_of_kind(redrob_film_isobmff::TrackKind::Video).is_some());
     let at = file.track_of_kind(redrob_film_isobmff::TrackKind::Audio).expect("an audio track");
     assert!(matches!(&file.tracks[at].entries[0].codec, redrob_film_isobmff::CodecConfig::Aac(_)));
-    if let (Some(ffprobe), Some(ffmpeg)) = (redrob_film_testkit::ffprobe_or_skip("nvenc hevc export"), redrob_film_testkit::ffmpeg_or_skip("nvenc hevc export")) {
+    if let (Some(ffprobe), Some(ffmpeg)) = (redrob_film_testkit::ffprobe_or_skip("nvenc hevc export"), redrob_film_testkit::ffmpeg_or_skip("nvenc hevc export"))
+    {
         let out = Command::new(&ffprobe)
             .args(["-v", "error", "-show_entries", "stream=codec_name,codec_type,codec_tag_string", "-of", "csv=p=0", &path])
             .output()
@@ -219,7 +220,8 @@ fn sizes_that_are_not_multiples_of_the_coding_block_are_cropped_back() {
         let pictures = decode(&path);
         assert_eq!(pictures.len(), 12);
         assert!(pictures.iter().all(|f| (f.width, f.height) == (w, h)), "{w}x{h}: decoded {}x{}", pictures[0].width, pictures[0].height);
-        if let (Some(ffprobe), Some(ffmpeg)) = (redrob_film_testkit::ffprobe_or_skip("nvenc hevc export"), redrob_film_testkit::ffmpeg_or_skip("nvenc hevc export"))
+        if let (Some(ffprobe), Some(ffmpeg)) =
+            (redrob_film_testkit::ffprobe_or_skip("nvenc hevc export"), redrob_film_testkit::ffmpeg_or_skip("nvenc hevc export"))
         {
             let v = probe(&ffprobe, &path);
             assert_eq!((v["width"].as_str(), v["height"].as_str()), (w.to_string().as_str(), h.to_string().as_str()), "{v:?}");

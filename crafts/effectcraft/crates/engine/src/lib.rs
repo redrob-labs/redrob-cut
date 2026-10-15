@@ -59,6 +59,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 pub use commands::{CommandSpec, command_specs, find as find_command};
+pub use history::{Branch, History, HistoryNode};
 pub use redrob_effects_color as color;
 pub use redrob_effects_effects as effects;
 pub use redrob_effects_geom as geom;
@@ -70,7 +71,6 @@ pub use redrob_effects_segment as segment;
 pub use redrob_effects_text as text;
 pub use redrob_effects_time as time;
 pub use redrob_effects_track as track;
-pub use history::{Branch, History, HistoryNode};
 pub use render_queue::{ExportJob, ExportResult, Exporter, JobState};
 
 #[derive(Debug, thiserror::Error)]

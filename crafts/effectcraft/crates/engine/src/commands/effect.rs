@@ -567,7 +567,9 @@ fn list(_: &mut Session, p: &Value) -> Result<Value> {
     let v: Vec<Value> = redrob_effects_effects::all()
         .into_iter()
         .filter(|e| {
-            filter.as_ref().is_none_or(|f| redrob_effects_effects::name_matches(e, f) || e.id.contains(f.as_str()) || e.category.to_ascii_lowercase().contains(f))
+            filter
+                .as_ref()
+                .is_none_or(|f| redrob_effects_effects::name_matches(e, f) || e.id.contains(f.as_str()) || e.category.to_ascii_lowercase().contains(f))
         })
         .map(|e| {
             json!({"id": e.id, "name": e.name, "category": e.category, "gpu": e.gpu, "float": e.float, "params": e.params.iter().map(|p| {

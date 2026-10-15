@@ -12,10 +12,10 @@
 //!
 //! [`EffectHost::self_at`]: crate::EffectHost::self_at
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use redrob_effects_raster::flow::Flow;
 

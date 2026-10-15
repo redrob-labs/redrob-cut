@@ -1,7 +1,7 @@
 //! Lights & Glows (and the glow-like Legacy Alpha Glow, the procedural Lens Flare).
 
-use redrob_film_project::EffectInstance;
 use rayon::prelude::*;
+use redrob_film_project::EffectInstance;
 
 use super::*;
 use crate::effects::gaussian;

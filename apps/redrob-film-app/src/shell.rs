@@ -368,7 +368,10 @@ impl ShellApp {
             rfd::FileDialog::new().add_filter("Effects Project", &["json", "rfx"]).set_file_name(name).save_file().map(|p| p.to_string_lossy().to_string())
         }));
         app.hooks.pick_open_project = Some(Box::new(|| {
-            rfd::FileDialog::new().add_filter("Effects Project", &["json", "rfx", "rfxx", "ecproj", "ecprojx"]).pick_file() // legacy: pre-rename effects projects still open.map(|p| p.to_string_lossy().to_string())
+            rfd::FileDialog::new()
+                .add_filter("Effects Project", &["json", "rfx", "rfxx", "ecproj", "ecprojx"]) // legacy: pre-rename effects projects still open
+                .pick_file()
+                .map(|p| p.to_string_lossy().to_string())
         }));
         app.hooks.pick_folder = Some(Box::new(|| rfd::FileDialog::new().pick_folder().map(|p| p.to_string_lossy().to_string())));
         app.hooks.pick_save_file = Some(Box::new(|name: &str, ext: &str| {

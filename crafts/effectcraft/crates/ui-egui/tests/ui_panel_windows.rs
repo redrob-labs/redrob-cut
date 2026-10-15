@@ -1,10 +1,10 @@
 //! Multiple monitors (#486): a panel moves out of the main window into a native window of its
 //! own (Move Panel to New Window), which can be placed on another screen, and back.
+use egui::vec2;
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::{PanelKind, PanelWindow};
-use egui::vec2;
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn invoke(app: &mut EffectcraftApp, ctx: &egui::Context, params: serde_json::Value) -> Result<serde_json::Value, String> {

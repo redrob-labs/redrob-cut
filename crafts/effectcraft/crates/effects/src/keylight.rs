@@ -21,11 +21,11 @@
 //! Views: Source, Source Alpha, Corrected Source, Colour Correction Edges, Screen Matte, Inside
 //! Mask, Outside Mask, Combined Matte, Status, Intermediate Result and Final Result.
 
+use rayon::prelude::*;
 use redrob_effects_color::luminance;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, gaussian_blur};
-use rayon::prelude::*;
 
 use crate::util::{Plane, gauss_plane, morph_frac, point_in_poly, premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

@@ -343,7 +343,8 @@ pub fn timeline_to_composition(shell: &mut ShellApp, params: &Value) -> Result<S
             None => {
                 // crafts/effectcraft/crates/engine/src/commands/file.rs L234 / L500: {"items": [ids], "errors": [..]}
                 let r = session.execute("file.import", json!({"paths": [clip.path.as_str()], "addToComp": false})).map_err(|e| e.to_string())?;
-                let Some(id) = r.get("items").and_then(Value::as_array).and_then(|a| a.first()).and_then(Value::as_u64).map(redrob_effects_project::ItemId) else {
+                let Some(id) = r.get("items").and_then(Value::as_array).and_then(|a| a.first()).and_then(Value::as_u64).map(redrob_effects_project::ItemId)
+                else {
                     let why = r.get("errors").and_then(Value::as_array).and_then(|a| a.first()).and_then(Value::as_str).unwrap_or("not importable");
                     problems.push(format!("{}: {why}", clip.name));
                     continue;

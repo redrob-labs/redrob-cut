@@ -3,11 +3,11 @@
 //!
 //! Every transition is the identity at 0 % completion. Angles are clockwise from "up".
 
+use rayon::prelude::*;
 use redrob_effects_color::luminance;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Px;
-use rayon::prelude::*;
 
 use crate::sim2::{Piece, PiecePlan, PieceTex, rot_axis, sort_far_first};
 use crate::util::{Plane, gauss_plane, hash1, layer_rect, remap, unpremul};

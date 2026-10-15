@@ -4,12 +4,12 @@
 //!
 //! Edits go through engine commands (`view.*`, `comp.*`); the viewer calls in from small hooks.
 
+use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use redrob_effects_engine::commands::viewer_cmds::FastPreviews;
 use redrob_effects_engine::project::{Comp, ItemId, LayerId};
 use redrob_effects_engine::render::EvalCtx;
 use redrob_effects_engine::time::Tick;
 use redrob_effects_engine::viewer::{self as vw, Channel, Snap, SnapKind, SnapSource};
-use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
 use super::viewer::ViewerMap;

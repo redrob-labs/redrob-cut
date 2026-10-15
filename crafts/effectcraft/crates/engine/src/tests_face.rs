@@ -88,7 +88,9 @@ fn face_tracking_keys_outline_points_and_measurements() {
     }
     // One undo step for the extraction.
     assert!(s.undo());
-    assert!(!s.active_comp().unwrap().layer(clip).unwrap().effects().unwrap().groups().any(|g| g.match_id == redrob_effects_effects::face_track::MEASUREMENTS_ID));
+    assert!(
+        !s.active_comp().unwrap().layer(clip).unwrap().effects().unwrap().groups().any(|g| g.match_id == redrob_effects_effects::face_track::MEASUREMENTS_ID)
+    );
     // Outline Only keys just the mask.
     let r = s.execute("mask.new", json!({"layer": clip.0, "vertices": ShapePath::rect(c, 120.0, 160.0).vertices, "closed": true})).unwrap();
     let m2 = r["mask"].as_u64().unwrap();

@@ -2,10 +2,10 @@
 //! from masks with colour-based edge estimation and decontamination), Unmult and CC Simple
 //! Wire Removal.
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::gaussian_blur;
-use rayon::prelude::*;
 
 use crate::util::{Plane, dist_to_poly, gauss_plane, layer_or_self, lerp4, morph_frac, point_in_poly, premul, smoothstep, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};

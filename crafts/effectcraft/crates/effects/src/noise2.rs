@@ -2,10 +2,10 @@
 //! and synthesised onto this one), Median (Legacy) and Curl Noise (divergence-free flow
 //! distortion from the curl of a fractal noise potential).
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Image;
-use rayon::prelude::*;
 
 use crate::noise::{GrainLook, draw_boxes, fbm, grain_params, median_image, preview_params, sampling_boxes, sampling_params};
 use crate::util::{Plane, gauss_plane, layer_or_self, premul, unpremul};

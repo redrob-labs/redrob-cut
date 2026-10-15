@@ -15,13 +15,13 @@
 
 use std::sync::Arc;
 
+use rayon::prelude::*;
 use redrob_effects_color::{BlendMode, blend_pixel};
 use redrob_effects_effects::Buf;
 use redrob_effects_geom::{Mat3, Mat4, Vec3, vec3};
 use redrob_effects_project::{Layer, LightKind, MatteKind};
 use redrob_effects_raster::{Image, Px, hash_noise};
 use redrob_effects_time::Tick;
-use rayon::prelude::*;
 
 use super::camera::{CameraState, NEAR, active_camera};
 use super::light::{LightState, Material, lights_at, shade};

@@ -252,7 +252,8 @@ mod tests {
     }
 
     fn app_with_store() -> EffectcraftApp {
-        let s = redrob_effects_engine::Session { config: Some(std::sync::Arc::new(redrob_effects_engine::config::MemoryConfig::default())), ..Default::default() };
+        let s =
+            redrob_effects_engine::Session { config: Some(std::sync::Arc::new(redrob_effects_engine::config::MemoryConfig::default())), ..Default::default() };
         EffectcraftApp::new(s)
     }
 

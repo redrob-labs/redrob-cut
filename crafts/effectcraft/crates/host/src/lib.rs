@@ -359,8 +359,14 @@ mod tests {
         let cid = s.active_comp_id().unwrap();
         let comp = s.project.comp(cid).unwrap();
         let layer = comp.layer(redrob_effects_engine::project::LayerId(l)).unwrap();
-        let ctx =
-            redrob_effects_engine::render::EvalCtx { project: &s.project, comp_id: cid, comp, time: Default::default(), expr: s.expr.as_deref(), footage: None };
+        let ctx = redrob_effects_engine::render::EvalCtx {
+            project: &s.project,
+            comp_id: cid,
+            comp,
+            time: Default::default(),
+            expr: s.expr.as_deref(),
+            footage: None,
+        };
         ctx.value(layer, layer.props.prop(path).unwrap())
     }
 

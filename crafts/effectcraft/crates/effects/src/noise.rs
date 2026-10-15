@@ -1,10 +1,10 @@
 //! Noise & Grain effects: film grain, median-family filters, denoising and procedural noise.
 
+use rayon::prelude::*;
 use redrob_effects_color::{hsl_to_rgb, luminance, rgb_to_hsl};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::generate::value_noise;
 use crate::util::{Plane, gauss_plane, guided_filter, hash1, join, lerp, premul, smoothstep, split, unpremul};

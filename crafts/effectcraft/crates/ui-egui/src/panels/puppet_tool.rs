@@ -5,12 +5,12 @@
 
 use std::sync::Arc;
 
+use egui::{Color32, Pos2, Stroke};
 use redrob_effects_engine::effects::puppet::{self, Mesh, Pin, PinKind};
 use redrob_effects_engine::geom::vec2 as gv2;
 use redrob_effects_engine::project::{ItemId, Layer, LayerId};
 use redrob_effects_engine::render::EvalCtx;
 use redrob_effects_engine::time::Tick;
-use egui::{Color32, Pos2, Stroke};
 
 use super::viewer::{ViewerMap, fx2c};
 use crate::EffectcraftApp;

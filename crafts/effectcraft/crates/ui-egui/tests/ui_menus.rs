@@ -1,11 +1,11 @@
 //! The menu bar from the keyboard, and the app's shortcuts waiting while a menu is open (#279)
 //! (egui_kittest, UI logic only).
 
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::EffectcraftApp;
 use egui::{Event, Key, Modifiers, Pos2, Rect, pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::EffectcraftApp;
 use serde_json::json;
 
 fn harness() -> Harness<'static, EffectcraftApp> {

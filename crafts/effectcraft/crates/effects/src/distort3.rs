@@ -7,11 +7,11 @@
 
 use std::f64::consts::{PI, TAU};
 
+use rayon::prelude::*;
 use redrob_effects_geom::{Mat3, vec2};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::util::{Plane, dist_to_poly, gauss_plane, layer_or_self, pick, point_in_poly, poly_length, poly_point_at, premul, remap, src_at, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

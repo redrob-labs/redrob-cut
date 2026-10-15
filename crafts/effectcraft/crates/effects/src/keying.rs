@@ -2,11 +2,11 @@
 //! matte clean-up. Written from public behaviour descriptions and the standard colour-difference /
 //! blue-screen matting literature (Vlahos; Smith & Blinn, "Blue Screen Matting").
 
+use rayon::prelude::*;
 use redrob_effects_color::{luminance, rgb_to_hsl, srgb_to_linear};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, gaussian_blur};
-use rayon::prelude::*;
 
 use crate::util::{Plane, gauss_plane, morph_frac, premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

@@ -2,6 +2,8 @@
 //! click (point prompt), a drag (box prompt) re-prompting the same effect, Shift adding another,
 //! one undo step each (egui_kittest, UI logic only).
 
+use egui::{Event, Modifiers, Pos2, Rect, pos2, vec2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::effects::flatten_params;
 use redrob_effects_engine::effects::object_matte as om;
@@ -10,8 +12,6 @@ use redrob_effects_engine::project::{GroupKind, LayerId, PropGroup};
 use redrob_effects_ui_egui::EffectcraftApp;
 use redrob_effects_ui_egui::dock::PanelKind;
 use redrob_effects_ui_egui::state::Tool;
-use egui::{Event, Modifiers, Pos2, Rect, pos2, vec2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn harness() -> Harness<'static, EffectcraftApp> {

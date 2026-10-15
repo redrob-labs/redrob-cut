@@ -8,10 +8,10 @@
 
 use std::f64::consts::PI;
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::generate3::{Seg, mask_px, poly_segs, raster_segs};
 use crate::util::{Plane, gauss_plane, hash1, poly_length, poly_point_at};

@@ -470,7 +470,14 @@ fn analyze(s: &mut Session, p: &V) -> Result<V> {
 
 /// Comp times to analyse from the CTI (`now`) in `dir`, bounded by `start` / `end` and the
 /// layer's In/Out points; the first is the start frame.
-pub(crate) fn analysis_times(comp: &redrob_effects_project::Comp, layer: &Layer, dir: Direction, now: Tick, start: Option<Tick>, end: Option<Tick>) -> Vec<Tick> {
+pub(crate) fn analysis_times(
+    comp: &redrob_effects_project::Comp,
+    layer: &Layer,
+    dir: Direction,
+    now: Tick,
+    start: Option<Tick>,
+    end: Option<Tick>,
+) -> Vec<Tick> {
     let fd = comp.frame_duration();
     let lo = layer.in_point.max(Tick::ZERO);
     let hi = layer.out_point.min(comp.duration) - fd;

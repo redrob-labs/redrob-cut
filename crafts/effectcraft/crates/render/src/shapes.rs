@@ -10,6 +10,7 @@
 //! - surface items (Front, Bevel, Side, Back) colour those surfaces of the Advanced 3D
 //!   extrusion of every paint in their group and its nested groups (the innermost wins).
 
+use rayon::prelude::*;
 use redrob_effects_color::{BlendMode, blend_pixel};
 use redrob_effects_effects::Buf;
 use redrob_effects_geom::{Mat3, vec2};
@@ -17,7 +18,6 @@ use redrob_effects_keyframe::{Gradient, Value};
 use redrob_effects_path::{BezPath, Cap, FillRule, Join, StrokeStyle, ops, varstroke};
 use redrob_effects_project::{Layer, Node, PropGroup};
 use redrob_effects_raster::{Image, Mask};
-use rayon::prelude::*;
 
 use crate::eval::EvalCtx;
 

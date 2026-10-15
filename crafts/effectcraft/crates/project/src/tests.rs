@@ -191,7 +191,8 @@ fn item_users_count_layers_in_every_comp() {
     let sid = p.find_by_name("Red Solid").unwrap().id;
     let comp = p.comp(main).unwrap().clone();
     let pre = p.add_item("A Precomp", redrob_effects_color::Label::Sandstone, None, ItemKind::Comp(comp.clone().into()));
-    let unused = p.add_item("Unused", redrob_effects_color::Label::Red, None, ItemKind::Solid(Solid { color: [0.0; 3], width: 8, height: 8, pixel_aspect: 1.0 }));
+    let unused =
+        p.add_item("Unused", redrob_effects_color::Label::Red, None, ItemKind::Solid(Solid { color: [0.0; 3], width: 8, height: 8, pixel_aspect: 1.0 }));
     // Two more layers of the solid in the precomp (it starts with one, cloned from Main), and the
     // precomp nested in Main.
     for _ in 0..2 {

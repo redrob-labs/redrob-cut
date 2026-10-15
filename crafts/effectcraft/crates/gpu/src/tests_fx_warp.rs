@@ -107,8 +107,8 @@ fn direct_with_masks(id: &str, vals: &[(&str, Value)]) {
                 env: redrob_effects_effects::EffectEnv { masks: &masks, ..Default::default() },
             };
             let cpu = (spec.render)(&ctx(), buf.clone());
-            let out =
-                redrob_effects_render::Accelerator::effects(g, &[redrob_effects_render::FxStep { spec, ctx: ctx() }], &buf, None).expect("the GPU runs the effect");
+            let out = redrob_effects_render::Accelerator::effects(g, &[redrob_effects_render::FxStep { spec, ctx: ctx() }], &buf, None)
+                .expect("the GPU runs the effect");
             assert_eq!((out.offset, out.scale), (cpu.offset, cpu.scale), "{id}: geometry");
             assert!(cpu.img.data != buf.img.data, "{id} {vals:?}: the case changes the picture");
             let d = diff(&cpu.img, &out.img, 1.0 / 255.0);

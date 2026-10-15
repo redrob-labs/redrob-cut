@@ -225,8 +225,12 @@ pub fn route(app: &mut FilmcraftApp, ctx: &egui::Context, id: &str, params: &Val
             return Some(app.session.execute(id, p).map_err(|e| e.to_string()));
         }
         "file.mediaPropertiesFile" if params.get("path").is_none() => {
-            let exts: Vec<&str> =
-                redrob_film_media::VIDEO_EXTENSIONS.iter().chain(redrob_film_media::AUDIO_EXTENSIONS).chain(redrob_film_media::STILL_EXTENSIONS).copied().collect();
+            let exts: Vec<&str> = redrob_film_media::VIDEO_EXTENSIONS
+                .iter()
+                .chain(redrob_film_media::AUDIO_EXTENSIONS)
+                .chain(redrob_film_media::STILL_EXTENSIONS)
+                .copied()
+                .collect();
             let Some(path) = app.hooks.pick_open_file.as_mut().and_then(|f| f(tl!("Media"), &exts)) else { return Some(Ok(Value::Null)) };
             let r = app.session.execute(id, json!({"path": path})).map_err(|e| e.to_string());
             if let Ok(v) = &r {
@@ -588,7 +592,10 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
                         ui.label(RichText::new(tl!("Video Rendering and Playback")).strong());
                         let rs = vec![
                             (redrob_film_engine::project_tools::RENDERER_GPU.to_string(), redrob_film_engine::project_tools::RENDERER_GPU.to_string()),
-                            (redrob_film_engine::project_tools::RENDERER_SOFTWARE.to_string(), redrob_film_engine::project_tools::RENDERER_SOFTWARE.to_string()),
+                            (
+                                redrob_film_engine::project_tools::RENDERER_SOFTWARE.to_string(),
+                                redrob_film_engine::project_tools::RENDERER_SOFTWARE.to_string(),
+                            ),
                         ];
                         combo(ui, &mut elems, "projectSettings.renderer", tl!("Renderer:"), &mut p["renderer"], &rs);
                         ui.label(RichText::new(tl!("Video")).strong());

@@ -1134,7 +1134,8 @@ fn add_item_keeps_footage_longer_than_the_comp_at_full_length() {
         duration: redrob_effects_time::Tick::from_seconds_f64(10.0),
         ..Default::default()
     };
-    let item = std::sync::Arc::make_mut(&mut s.project).add_item("long.mp4", redrob_effects_color::Label::None, None, redrob_effects_project::ItemKind::Footage(f));
+    let item =
+        std::sync::Arc::make_mut(&mut s.project).add_item("long.mp4", redrob_effects_color::Label::None, None, redrob_effects_project::ItemKind::Footage(f));
     let l = s.execute("layer.addItem", json!({"item": item.0})).unwrap()["layer"].as_u64().unwrap();
     let layer = s.active_comp().unwrap().layer(redrob_effects_project::LayerId(l)).unwrap();
     assert_eq!(layer.out_point.seconds(), 10.0);

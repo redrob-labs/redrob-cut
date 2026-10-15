@@ -1,9 +1,9 @@
 //! Effects & Presets: copy the configured folder path through the contents menu.
 
-use redrob_effects_engine::Session;
-use redrob_effects_ui_egui::{ControlRequest, EffectcraftApp, control, dock::PanelKind};
 use egui::{Event, Modifiers, OutputCommand, PointerButton, pos2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::{ControlRequest, EffectcraftApp, control, dock::PanelKind};
 use serde_json::json;
 
 fn expected_folder() -> String {

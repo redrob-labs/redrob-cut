@@ -1,8 +1,8 @@
 //! Real keyboard/pointer coverage for the font menus in both text panels.
-use redrob_effects_engine::{Session, commands::text_edit::layer_doc, project::LayerId};
-use redrob_effects_ui_egui::{EffectcraftApp, dock::PanelKind};
 use egui::{Event, Key, Modifiers, PointerButton};
 use egui_kittest::Harness;
+use redrob_effects_engine::{Session, commands::text_edit::layer_doc, project::LayerId};
+use redrob_effects_ui_egui::{EffectcraftApp, dock::PanelKind};
 use serde_json::json;
 
 fn click(h: &mut Harness<'_, EffectcraftApp>, id: &str) {

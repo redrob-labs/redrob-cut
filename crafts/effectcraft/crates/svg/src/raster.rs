@@ -1,10 +1,10 @@
 //! Rasterisation of a parsed SVG into a premultiplied `f32` image (anti-aliased coverage from
 //! `redrob-effects-path`; group opacity composites the group as a whole, as SVG specifies).
 
-use redrob_effects_geom::Mat3;
-use redrob_effects_raster::{Image, Mask};
 use kurbo::{Affine, Point, Shape as _};
 use rayon::prelude::*;
+use redrob_effects_geom::Mat3;
+use redrob_effects_raster::{Image, Mask};
 
 use crate::{BlendMode, Doc, FillRule, Gradient, GradientKind, Group, Node, Paint, Shape, Spread};
 

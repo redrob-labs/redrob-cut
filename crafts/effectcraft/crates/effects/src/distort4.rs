@@ -20,10 +20,10 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::Image;
-use rayon::prelude::*;
 
 use crate::util::{hash1, point_in_poly};
 use crate::{Buf, EffectCtx, EffectSpec, col, num, p, popup, slider};

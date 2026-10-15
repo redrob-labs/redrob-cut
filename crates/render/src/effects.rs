@@ -5,11 +5,11 @@
 //! (so ½/¼ playback resolution renders the same look). Colour-grading math runs on display-encoded
 //! straight colour where artists expect it (contrast, levels, posterize), linear light elsewhere.
 
+use rayon::prelude::*;
 use redrob_film_color::{GradeSpace, hsl_to_rgb, linear_to_srgb, luma709, rgb_to_hsl, srgb_to_linear};
 use redrob_film_geom::{Affine, Vec2};
 use redrob_film_project::{EffectInstance, ParamValue};
 use redrob_film_time::Tick;
-use rayon::prelude::*;
 
 use crate::image::Image;
 

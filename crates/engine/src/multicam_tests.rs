@@ -573,8 +573,9 @@ fn any_nest_can_be_multicam() {
         p.sequence_mut(nest).unwrap().video_tracks[k].items.push(v);
     }
     let edit = s.state.active_sequence.unwrap();
-    let mut v =
-        p.make_track_item(nest, redrob_film_project::TrackKind::Video, Tick::ZERO, redrob_film_time::TimeRange::new(Tick::ZERO, rate.tick_of(48)), rate).unwrap();
+    let mut v = p
+        .make_track_item(nest, redrob_film_project::TrackKind::Video, Tick::ZERO, redrob_film_time::TimeRange::new(Tick::ZERO, rate.tick_of(48)), rate)
+        .unwrap();
     assert!(v.multicam.is_none(), "plain nests start as plain nests");
     for e in &mut v.effects {
         redrob_film_project::resolve_auto_points(e, (W, H), (W, H));

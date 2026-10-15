@@ -2,10 +2,10 @@
 //! adapter); run with
 //! `RQ_SNAPSHOT=/abs/out.png cargo test -p redrob-effects-ui-egui --test render_queue_snapshot -- --ignored`.
 
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::render_queue::RenderStatus;
 use redrob_effects_ui_egui::EffectcraftApp;
-use egui_kittest::Harness;
 use serde_json::json;
 
 #[test]

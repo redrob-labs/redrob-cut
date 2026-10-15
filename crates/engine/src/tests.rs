@@ -388,8 +388,9 @@ fn set_param_takes_a_choice_by_name() {
     use redrob_film_project::ParamValue;
     let mut s = demo();
     let c = s.active_sequence().unwrap().video_tracks[0].items[0].id.0;
-    let blend =
-        |s: &Session| s.active_sequence().unwrap().find_item(redrob_film_project::ClipId(c)).unwrap().1.effect("opacity").unwrap().params["blend"].value.clone();
+    let blend = |s: &Session| {
+        s.active_sequence().unwrap().find_item(redrob_film_project::ClipId(c)).unwrap().1.effect("opacity").unwrap().params["blend"].value.clone()
+    };
     let set = |value: serde_json::Value| json!({"clip": c, "effect": "opacity", "param": "blend", "value": value});
     s.execute("effects.setParam", set(json!("Screen"))).unwrap();
     assert_eq!(blend(&s), ParamValue::Choice(8));
@@ -476,8 +477,10 @@ fn every_video_transition_applies_via_command() {
     let mut s = demo();
     let cut = s.active_sequence().unwrap().video_tracks[0].items[2].start;
     s.execute("playhead.set", json!({"time": cut.0})).unwrap();
-    let defs: Vec<_> =
-        redrob_film_project::effect_defs().iter().filter(|d| d.kind == redrob_film_project::EffectKind::VideoTransition && d.category[0] != "Obsolete").collect();
+    let defs: Vec<_> = redrob_film_project::effect_defs()
+        .iter()
+        .filter(|d| d.kind == redrob_film_project::EffectKind::VideoTransition && d.category[0] != "Obsolete")
+        .collect();
     assert_eq!(defs.len(), 84 + 21);
     for (i, d) in defs.iter().enumerate() {
         // alternate id and display-name lookups

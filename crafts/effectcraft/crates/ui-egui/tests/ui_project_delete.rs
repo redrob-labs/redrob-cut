@@ -1,12 +1,12 @@
 //! Project-panel deletion uses its selection, even when a Timeline layer is still selected.
 //! Shift+Delete deletes it without asking (Delete Project Items Without Confirmation).
 
+use egui::{Event, Key, Modifiers, pos2};
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::{Footage, FootageKind, ItemId, ItemKind, LayerId};
 use redrob_effects_ui_egui::dock::PanelKind;
 use redrob_effects_ui_egui::{Dialog, EffectcraftApp};
-use egui::{Event, Key, Modifiers, pos2};
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn harness() -> (Harness<'static, EffectcraftApp>, Vec<ItemId>, LayerId) {

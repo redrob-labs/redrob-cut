@@ -702,7 +702,12 @@ not a stroke",
         let data = redrob_effects_track::roto::RotoData {
             base: Some(0),
             span: [0, 10],
-            strokes: vec![redrob_effects_track::roto::Stroke { kind: redrob_effects_track::roto::StrokeKind::Fg, frame: 0, radius: 5.0, points: vec![[2.0, 2.0]] }],
+            strokes: vec![redrob_effects_track::roto::Stroke {
+                kind: redrob_effects_track::roto::StrokeKind::Fg,
+                frame: 0,
+                radius: 5.0,
+                points: vec![[2.0, 2.0]],
+            }],
         };
         roto.get_mut(crate::roto::STROKES).unwrap().value = Value::Str(data.to_json());
         to_effect_space(spec, &mut roto, SIZE, D, &own);

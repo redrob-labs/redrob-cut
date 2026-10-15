@@ -5,10 +5,10 @@
 //! Written from the public descriptions of the effects' behaviour. Pieces are textured convex
 //! polygons placed in 3D and drawn through a per-piece inverse homography, far to near.
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::card3d::{Lighting, Proj};
 use crate::generate::value_noise;

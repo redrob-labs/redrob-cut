@@ -36,11 +36,11 @@ pub use settings::*;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, OnceLock, RwLock};
 
+use rayon::prelude::*;
 use redrob_film_isobmff::SampleEntry;
 use redrob_film_project::{ItemId, Project};
 use redrob_film_render::SourceProvider;
 use redrob_film_time::{FrameRate, Tick, TimeRange};
-use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, thiserror::Error)]

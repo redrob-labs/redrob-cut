@@ -19,12 +19,12 @@
 //! handle registers an automation id.
 
 use crate::i18n::{tr, tr_args};
+use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use redrob_effects_engine::effects::{ColoramaPalette, OffsetCurve};
 use redrob_effects_engine::geom::Mat3;
 use redrob_effects_engine::keyframe::Value;
 use redrob_effects_engine::project::{GroupKind, Layer, PropGroup};
 use redrob_effects_engine::render::EvalCtx;
-use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
 use super::effect_controls::gesture_key;

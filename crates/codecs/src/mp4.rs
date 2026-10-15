@@ -280,7 +280,9 @@ impl Mp4Source {
             if matches!(entry.codec, CodecConfig::Dnx { .. }) {
                 // the sample entry doesn't say which VC-3 compression ID it is: read the first frame header
                 let s0 = &t.samples[0];
-                if let Some(h) = redrob_film_media::reader::read_range(&*bytes.0, s0.offset, s0.size as usize).ok().and_then(|d| redrob_film_dnx::probe(&d).ok()) {
+                if let Some(h) =
+                    redrob_film_media::reader::read_range(&*bytes.0, s0.offset, s0.size as usize).ok().and_then(|d| redrob_film_dnx::probe(&d).ok())
+                {
                     info.codec = redrob_film_dnx::cid_name(h.cid);
                     let sub = match h.chroma {
                         redrob_film_dnx::ChromaFormat::Yuv420 => "YUV 4:2:0",
@@ -294,7 +296,8 @@ impl Mp4Source {
             if matches!(entry.codec, CodecConfig::ProRes { .. }) {
                 // a 4444 fourcc doesn't mean the frames carry alpha (alpha_channel_type does): read the first frame header
                 let s0 = &t.samples[0];
-                if let Some(h) = redrob_film_media::reader::read_range(&*bytes.0, s0.offset, s0.size as usize).ok().and_then(|d| redrob_film_prores::probe(&d).ok())
+                if let Some(h) =
+                    redrob_film_media::reader::read_range(&*bytes.0, s0.offset, s0.size as usize).ok().and_then(|d| redrob_film_prores::probe(&d).ok())
                 {
                     info.has_alpha = h.alpha != redrob_film_prores::AlphaType::None;
                     let sub = match h.chroma {

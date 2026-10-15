@@ -296,7 +296,12 @@ fn cache_budgets_are_applied() {
     assert_eq!(s.layer_cache.budget(), 128 << 20);
     struct Src(std::sync::Mutex<usize>);
     impl redrob_effects_render::FootageSource for Src {
-        fn frame(&self, _: redrob_effects_project::ItemId, _: &redrob_effects_project::Footage, _: redrob_effects_time::Tick) -> Option<Arc<redrob_effects_raster::Image>> {
+        fn frame(
+            &self,
+            _: redrob_effects_project::ItemId,
+            _: &redrob_effects_project::Footage,
+            _: redrob_effects_time::Tick,
+        ) -> Option<Arc<redrob_effects_raster::Image>> {
             None
         }
         fn set_cache_budget(&self, b: usize) {
@@ -643,10 +648,7 @@ fn autosave_rotates_through_max_versions() {
         written.push(s.autosave_now().unwrap());
     }
     let names: Vec<String> = written.iter().map(|p| PathBuf::from(p).file_name().unwrap().to_string_lossy().to_string()).collect();
-    assert_eq!(
-        names,
-        ["Intro auto-save 1.rfx", "Intro auto-save 2.rfx", "Intro auto-save 3.rfx", "Intro auto-save 1.rfx", "Intro auto-save 2.rfx"]
-    );
+    assert_eq!(names, ["Intro auto-save 1.rfx", "Intro auto-save 2.rfx", "Intro auto-save 3.rfx", "Intro auto-save 1.rfx", "Intro auto-save 2.rfx"]);
     let have: Vec<u32> = autosave::existing(&folder, "Intro").iter().map(|e| e.0).collect();
     assert_eq!(have, [1, 2, 3]);
     let slot2 = std::fs::read_to_string(folder.join("Intro auto-save 2.rfx")).unwrap();

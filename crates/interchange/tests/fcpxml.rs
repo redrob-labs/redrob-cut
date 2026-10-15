@@ -3,10 +3,10 @@
 
 mod support;
 
+use proptest::prelude::*;
 use redrob_film_interchange::{ExportOptions, FcpxmlVersion, Format, detect, import};
 use redrob_film_project::{ItemKind, Keyframe, Label, Marker, MarkerId, MarkerKind, MediaRef, Param, ParamValue, Project, TrackKind, TransitionAlign};
 use redrob_film_time::FrameRate;
-use proptest::prelude::*;
 use support::*;
 
 /// Frame `n` at 23.976 as an FCPXML time, offset by `base` frames.

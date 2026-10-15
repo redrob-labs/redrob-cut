@@ -4,6 +4,7 @@
 //! 3D views (Active Camera / Front / … / Custom View 3), camera tools (orbit, pan, dolly) and
 //! camera/light wireframes.
 
+use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use redrob_effects_engine::commands::shape_tool::PaintKind;
 use redrob_effects_engine::effects::puppet::PinKind;
 use redrob_effects_engine::geom::{Mat3, vec2 as gv2};
@@ -11,7 +12,6 @@ use redrob_effects_engine::project::{Comp, Layer, LayerId, LayerSource};
 use redrob_effects_engine::render::EvalCtx;
 use redrob_effects_engine::render::three_d::{self, CameraState, View3D};
 use redrob_effects_engine::time::Tick;
-use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
 use crate::state::Tool;
@@ -324,7 +324,11 @@ fn project_clipped(m: &Mat3, poly: &[[f64; 2]]) -> Vec<[f64; 2]> {
 }
 
 /// The segment a → b (world space) through the projection `pc`, clipped at the near plane.
-fn project_segment(pc: &redrob_effects_engine::geom::Mat4, a: redrob_effects_engine::geom::Vec3, b: redrob_effects_engine::geom::Vec3) -> Option<[[f64; 2]; 2]> {
+fn project_segment(
+    pc: &redrob_effects_engine::geom::Mat4,
+    a: redrob_effects_engine::geom::Vec3,
+    b: redrob_effects_engine::geom::Vec3,
+) -> Option<[[f64; 2]; 2]> {
     let h = |p: redrob_effects_engine::geom::Vec3| {
         let r = |i: usize| pc.0.get(i).map_or(0.0, |row| row[0] * p.x + row[1] * p.y + row[2] * p.z + row[3]);
         [r(0), r(1), r(3)]
@@ -776,7 +780,8 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
         empty_state(app, ui, rect);
         return;
     };
-    let comp = app.session.project.comp_arc(cid).unwrap_or_else(|| redrob_effects_engine::project::Comp::new(1920, 1080, Default::default(), Tick::ZERO).into());
+    let comp =
+        app.session.project.comp_arc(cid).unwrap_or_else(|| redrob_effects_engine::project::Comp::new(1920, 1080, Default::default(), Tick::ZERO).into());
     let comp_name = app.session.project.item(cid).map(|i| i.name.clone()).unwrap_or_default();
     let p = ui.painter().clone();
     VIEW_CAM.with(|c| c.set(app.session.view_camera(cid)));

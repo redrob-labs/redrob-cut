@@ -2,11 +2,11 @@
 //! Illustrator and EPS footage → shape layer), Create Shapes from Text and Create Masks from
 //! Text (glyph outlines), and vector files imported as compositions (one layer per file layer).
 
+use kurbo::{BezPath, Point};
 use redrob_effects_keyframe::{Gradient, ShapePath, Value};
 use redrob_effects_project::build::{self, Ids};
 use redrob_effects_project::{Comp, ItemId, Layer, LayerSource, MaskMode, Project, PropGroup};
 use redrob_effects_svg::{Affine, Doc, Geom, GradientKind, Node, Paint};
-use kurbo::{BezPath, Point};
 
 fn shape_paths(ids: &mut Ids, path: &BezPath) -> Vec<PropGroup> {
     redrob_effects_path::from_kurbo(path)

@@ -161,7 +161,8 @@ fn new_keys_work_in_the_app() {
     // Project panel: Down moves the selection; Shift+\ toggles the view
     d.focus("Project");
     // the Icon view shows a bin's clips (sub-bins are folder cards): open the first bin in place
-    let bin = d.app().session.project.root.children.iter().find_map(|e| if let redrob_film_project::BinEntry::Bin(b) = e { Some(b.id.0) } else { None }).unwrap();
+    let bin =
+        d.app().session.project.root.children.iter().find_map(|e| if let redrob_film_project::BinEntry::Bin(b) = e { Some(b.id.0) } else { None }).unwrap();
     d.ok("ui.menu.invoke", json!({"id": "projectPanel.openBin", "params": {"bin": bin, "how": "inPlace"}}));
     d.exec("project.select", json!({"items": []}));
     d.key("Down");

@@ -1,10 +1,10 @@
 //! RAM preview frames are keyed by content: editing one comp keeps the cached frames of another,
 //! and undo finds the frames of the state it returns to.
 
+use egui_kittest::Harness;
 use redrob_effects_engine::Session;
 use redrob_effects_engine::project::ItemId;
 use redrob_effects_ui_egui::EffectcraftApp;
-use egui_kittest::Harness;
 use serde_json::json;
 
 fn settle(h: &mut Harness<'_, EffectcraftApp>) {

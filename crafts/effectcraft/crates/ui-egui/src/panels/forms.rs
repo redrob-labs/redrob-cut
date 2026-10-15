@@ -632,7 +632,9 @@ pub fn open_form(app: &mut EffectcraftApp, id: &str, p: &Value) -> bool {
                 .project
                 .items
                 .values()
-                .filter(|i| matches!(&i.kind, redrob_effects_engine::project::ItemKind::Footage(f) if f.kind == redrob_effects_engine::project::FootageKind::Data))
+                .filter(
+                    |i| matches!(&i.kind, redrob_effects_engine::project::ItemKind::Footage(f) if f.kind == redrob_effects_engine::project::FootageKind::Data),
+                )
                 .map(|i| (i.name.clone(), json!(i.id.0)))
                 .collect();
             if data.is_empty() {

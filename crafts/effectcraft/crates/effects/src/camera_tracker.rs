@@ -19,11 +19,11 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
+use rayon::prelude::*;
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
 use redrob_effects_track::camtrack::{CameraSolve, CameraTracks, ShotType, SolveMethod, SolveSettings, linalg, point_color};
-use rayon::prelude::*;
 
 use crate::warp_stab::param;
 use crate::{Buf, EffectCtx, EffectSpec, Params, num, p, popup, slider};

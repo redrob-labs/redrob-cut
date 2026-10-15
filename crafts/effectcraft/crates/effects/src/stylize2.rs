@@ -1,11 +1,11 @@
 //! Stylize effects (batch 2): cartoon, roughened edges, scatter, strobe, relief, painterly
 //! strokes, kaleidoscope, tiling, colour emboss, vignette and thresholds.
 
+use rayon::prelude::*;
 use redrob_effects_color::{luminance, rgb_to_hsl};
 use redrob_effects_keyframe::Value;
 use redrob_effects_project::ParamUi;
 use redrob_effects_raster::{Image, Px};
-use rayon::prelude::*;
 
 use crate::noise::fbm;
 use crate::util::{Plane, gauss_plane, guided_filter, hash1, join, layer_rect, lerp3, lerp4, morph_frac, premul, smoothstep, split, unpremul};
