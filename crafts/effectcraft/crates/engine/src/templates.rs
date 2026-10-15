@@ -6,7 +6,7 @@
 //!   renderer the first time they are asked for.
 //! - **User templates**: File ▸ Save as Template… writes the open project as an `.ectemplate`
 //!   (the open template container of `essential.exportTemplate`: a stored ZIP with
-//!   `manifest.json` (`kind: "project"`), `project.ecproj`, `poster.png` and `thumb.txt`) into
+//!   `manifest.json` (`kind: "project"`), `project.rfx`, `poster.png` and `thumb.txt`) into
 //!   the config store's `Templates` folder.
 //! - **Embedded footage**: saving embeds the footage files the project reads (default on,
 //!   `embedFootage`), as `media/<item>/<file>` entries like `essential.exportTemplate`, up to
@@ -867,7 +867,7 @@ fn save_as(s: &mut Session, p: &Value) -> Result<Value> {
     }
     let t = s.time_of(cid);
     let mut entries: Vec<(String, Vec<u8>)> =
-        vec![("manifest.json".into(), serde_json::to_vec_pretty(&manifest).unwrap_or_default()), ("project.ecproj".into(), proj.to_json().into_bytes())];
+        vec![("manifest.json".into(), serde_json::to_vec_pretty(&manifest).unwrap_or_default()), ("project.rfx".into(), proj.to_json().into_bytes())];
     entries.extend(media_entries);
     if let Ok((w, h, rgba)) = s.render_rgba8(cid, t, 320) {
         if let Ok(png) = crate::commands::comp_more::encode_png(&rgba, w, h) {
@@ -1110,7 +1110,7 @@ mod tests {
         for f in &seq {
             std::fs::remove_file(f).unwrap();
         }
-        let proj_path = root.join("work").join("Promo.ecproj");
+        let proj_path = root.join("work").join("Promo.rfx");
         std::fs::create_dir_all(proj_path.parent().unwrap()).unwrap();
         let r = s.execute("templates.create", json!({"id": "user/With Footage.ectemplate", "projectPath": proj_path.to_string_lossy()})).unwrap();
         assert_eq!(r["untitled"], false);

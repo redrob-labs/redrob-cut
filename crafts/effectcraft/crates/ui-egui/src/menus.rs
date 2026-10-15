@@ -1336,8 +1336,8 @@ fn file_dialog(app: &mut EffectcraftApp, id: &str, params: &Value) -> Option<Res
     let (key, ask) = match id {
         "file.import" | "file.importMultiple" => ("paths", Ask::Import),
         "file.open" => ("path", Ask::OpenProject),
-        "file.save" if app.session.path.is_none() => ("path", Ask::Save("Untitled Project.ecproj")),
-        "file.saveAs" | "file.saveCopy" => ("path", Ask::Save("Untitled Project.ecproj")),
+        "file.save" if app.session.path.is_none() => ("path", Ask::Save("Untitled Project.rfx")),
+        "file.saveAs" | "file.saveCopy" => ("path", Ask::Save("Untitled Project.rfx")),
         "comp.saveFrameAs" => ("path", Ask::Save("Frame.png")),
         "comp.saveFrameAsPsd" => ("path", Ask::Save("Frame.psd")),
         "comp.saveFrameAsExr" => ("path", Ask::Save("Frame.exr")),
@@ -1348,7 +1348,7 @@ fn file_dialog(app: &mut EffectcraftApp, id: &str, params: &Value) -> Option<Res
         "view.importGuides" => ("path", Ask::Open(&["json"])),
         "file.exportLottie" => ("path", Ask::Save("Animation.json")),
         "file.importLottie" => ("path", Ask::Open(&["json", "lottie"])),
-        "file.importProject" => ("path", Ask::Open(&["ecproj", "ecprojx"])),
+        "file.importProject" => ("path", Ask::Open(&["rfx", "rfxx"])),
         "file.importTimeline" => ("path", Ask::Open(&["xml", "fcpxml", "otio", "edl", "aaf", "omf"])),
         "render.saveCurrentPreview" => ("path", Ask::Save("Preview.mp4")),
         "file.runScript" if params.get("name").is_none() => ("path", Ask::Open(&["jsx", "js", "jsonl", "json", "txt"])),
@@ -1357,7 +1357,7 @@ fn file_dialog(app: &mut EffectcraftApp, id: &str, params: &Value) -> Option<Res
         "file.replaceFootage" => ("path", Ask::Import),
         "file.relinkFootage" => ("folder", Ask::Folder),
         "file.collectFiles" => ("folder", Ask::Save("Collected Files")),
-        "file.saveCopyAsXml" => ("path", Ask::Save("Untitled Project.ecprojx")),
+        "file.saveCopyAsXml" => ("path", Ask::Save("Untitled Project.rfxx")),
         "keys.rpfCameraImport" => ("path", Ask::Open(&["json", "csv", "txt"])),
         "essential.exportTemplate" => ("path", Ask::Save("Template.ectemplate")),
         "essential.importTemplate" => ("path", Ask::Open(&["ectemplate"])),
@@ -2419,7 +2419,7 @@ mod tests {
     }
 
     /// Saving anything but a project asks the save dialog for that file's extension (#293): the
-    /// project dialog, filtered to `.ecproj`, made macOS append `.ecproj` (`Frame.png.ecproj`).
+    /// project dialog, filtered to `.rfx`, made macOS append `.rfx` (`Frame.png.rfx`).
     /// Hosts with only the project dialog (the web) still get it, given the file name.
     #[test]
     fn save_dialogs_offer_the_file_extension() {
@@ -2447,9 +2447,9 @@ mod tests {
                 "file Frame.png [png]",
                 "file Preview.mp4 [mp4]",
                 "file Animation.json [json]",
-                "file Untitled Project.ecprojx [ecprojx]",
+                "file Untitled Project.rfxx [rfxx]",
                 "file Collected Files []",
-                "project Untitled Project.ecproj",
+                "project Untitled Project.rfx",
             ]
         );
         // Without the other dialog, the project one names any file.
@@ -2474,16 +2474,16 @@ mod tests {
         app.hooks.file_dialog_async = Some(Box::new(move |dialog, done| queue.lock().unwrap().push((dialog, done))));
         assert_eq!(invoke(&mut app, &ctx, "file.saveAs", json!({})).unwrap(), json!({"dialog": "file.saveAs"}));
         let (dialog, done) = pending.lock().unwrap().pop().expect("a dialog was shown");
-        assert_eq!(dialog, crate::FileDialog::Save { default: "Untitled Project.ecproj".into(), ext: "ecproj".into(), project: true });
+        assert_eq!(dialog, crate::FileDialog::Save { default: "Untitled Project.rfx".into(), ext: "rfx".into(), project: true });
         assert!(app.session.path.is_none(), "nothing saved until the dialog answers");
         let dir = std::env::temp_dir().join(format!("ec-dialog-answer-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        let path = dir.join("Answered.ecproj");
+        let path = dir.join("Answered.rfx");
         // Answered from another thread, as the host's dialog does.
         std::thread::spawn(move || done(vec![path.to_string_lossy().to_string()])).join().unwrap();
         app.run_dialog_answers();
-        assert_eq!(app.session.path.as_deref(), Some(dir.join("Answered.ecproj").to_string_lossy().as_ref()));
-        assert!(dir.join("Answered.ecproj").is_file());
+        assert_eq!(app.session.path.as_deref(), Some(dir.join("Answered.rfx").to_string_lossy().as_ref()));
+        assert!(dir.join("Answered.rfx").is_file());
         // Cancelled: nothing runs.
         invoke(&mut app, &ctx, "comp.saveFrameAs", json!({})).unwrap();
         let (dialog, done) = pending.lock().unwrap().pop().expect("a dialog was shown");

@@ -97,7 +97,7 @@ pub fn session() -> Session {
     }
 }
 
-/// The platform config directory for EffectCraft (`EFFECTCRAFT_CONFIG_DIR` overrides):
+/// The platform config directory for EffectCraft (`REDROB_EFFECTS_CONFIG_DIR` overrides):
 /// `~/Library/Application Support/EffectCraft` (macOS), `%APPDATA%\EffectCraft` (Windows),
 /// `$XDG_CONFIG_HOME/effectcraft` or `~/.config/effectcraft` (Linux and others). A `portable.txt`
 /// beside the executable puts it in `EffectCraftData` there instead ([`app_dirs`]).
@@ -575,12 +575,12 @@ mod tests {
             [still instanceof FootageItem, still.width, still.mainSource.isStill, l.source.name, app.project.file.name]
             "#,
             png = q("frame.png"),
-            proj = q("p.ecproj")
+            proj = q("p.rfx")
         );
         let r = s.execute("script.run", json!({"code": code})).unwrap();
         assert_eq!(r["ok"], json!(true), "{r}");
-        assert_eq!(r["result"], json!([true, 32, true, "frame.png", "p.ecproj"]), "{r}");
-        let r = s.execute("script.run", json!({"code": format!("app.open(new File({})); app.project.numItems", q("p.ecproj"))})).unwrap();
+        assert_eq!(r["result"], json!([true, 32, true, "frame.png", "p.rfx"]), "{r}");
+        let r = s.execute("script.run", json!({"code": format!("app.open(new File({})); app.project.numItems", q("p.rfx"))})).unwrap();
         assert_eq!(r["result"], json!(5), "{r}"); // Src, Solids, G, frame.png, Main
     }
 

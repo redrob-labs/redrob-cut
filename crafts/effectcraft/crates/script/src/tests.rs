@@ -381,7 +381,7 @@ fn security_gate_for_files() {
     std::fs::write(proj.join("data.txt"), "inside").unwrap();
     std::fs::write(dir.join("secret.txt"), "outside").unwrap();
     let mut s = session();
-    s.path = Some(proj.join("p.ecproj").to_string_lossy().to_string());
+    s.path = Some(proj.join("p.rfx").to_string_lossy().to_string());
     let q = |p: &std::path::Path| serde_json::to_string(&p.to_string_lossy()).unwrap();
     // Reading inside the project folder works.
     let o = ok(&mut s, &format!("var f = new File({}); f.open('r'); var t = f.read(); f.close(); t", q(&proj.join("data.txt"))));
@@ -912,7 +912,7 @@ fn binary_file_io_preserves_all_byte_values() {
     let original = [0x89u8, 0x50, 0x4e, 0x47, 0x00, 0x7f, 0x80, 0xff, 0x0a];
     std::fs::write(&src, original).unwrap();
     let mut s = session();
-    s.path = Some(dir.join("project.ecproj").to_string_lossy().to_string());
+    s.path = Some(dir.join("project.rfx").to_string_lossy().to_string());
     s.prefs.scripting.allow_scripts_write_files = true;
     let q = |p: &std::path::Path| serde_json::to_string(&p.to_string_lossy()).unwrap();
 

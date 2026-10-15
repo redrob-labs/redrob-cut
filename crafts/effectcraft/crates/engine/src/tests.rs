@@ -367,7 +367,7 @@ fn save_and_open_roundtrip() {
     let mut s = demo();
     let dir = std::env::temp_dir().join(format!("ec-test-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let path = dir.join("demo.ecproj").to_string_lossy().to_string();
+    let path = dir.join("demo.rfx").to_string_lossy().to_string();
     s.execute("file.saveAs", json!({"path": path})).unwrap();
     let before = s.project.clone();
     let mut s2 = Session::default();
@@ -635,7 +635,7 @@ fn reopening_a_project_restores_its_active_comp() {
     use redrob_effects_project::ItemId;
     let dir = std::env::temp_dir().join(format!("ec-test-748-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let path = dir.join("view.ecproj").to_string_lossy().to_string();
+    let path = dir.join("view.rfx").to_string_lossy().to_string();
     let mut s = Session::default();
     let a = s.execute("comp.new", json!({"name": "CompA"})).unwrap()["comp"].as_u64().unwrap();
     let b = s.execute("comp.new", json!({"name": "CompB"})).unwrap()["comp"].as_u64().unwrap();
@@ -673,7 +673,7 @@ fn reopening_a_project_restores_its_active_comp() {
     assert_eq!((s5.state.active_comp, s5.state.open_comps.clone()), (Some(ItemId(a)), vec![ItemId(a)]));
 
     // XML copies carry it too.
-    let xml = dir.join("view.ecprojx").to_string_lossy().to_string();
+    let xml = dir.join("view.rfxx").to_string_lossy().to_string();
     s.execute("file.saveAs", json!({"path": xml})).unwrap();
     let mut s6 = Session::default();
     s6.execute("file.open", json!({"path": xml})).unwrap();

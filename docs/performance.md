@@ -367,7 +367,7 @@ with `--hw off` / `--hw auto`, 2026-10-07: Intel Xeon E5-2680 v4 (14 cores / 28 
 NVIDIA GeForce RTX 5060 8 GB (driver 617.14), Windows 11 Pro 26200, idle machine. Two alternating
 rounds; the table gives the range of the two (decode: best of 3 within each). Reproduce with
 `cargo xtask bench --sections decode --only dec_h264 --repeat 3 --hw off|auto` (likewise `dec_hevc`)
-and `--sections playback --only "h264-2160 full" --hw off|auto`; set `FILMCRAFT_FFMPEG` if ffmpeg is not
+and `--sections playback --only "h264-2160 full" --hw off|auto`; set `REDROB_FILM_FFMPEG` if ffmpeg is not
 on `PATH` for the fixture generator. Pictures are identical either way (bit-exact parity tests,
 `crates/platform/tests/media_foundation.rs`). The decoder MFTs were Microsoft's H.264 decoder
 (`Microsoft H264 Video Decoder MFT`) and the `HEVCVideoExtension` decoder, both decoding with DXVA

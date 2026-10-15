@@ -5,4 +5,4 @@
 //! in `goldens/` using `redrob_film_testkit::golden`. The same scenes are composited on the GPU
 //! (`redrob-film-gpu`) when an adapter is available and compared with the CPU result.
 //!
-//! Regenerate references with `FILMCRAFT_BLESS=1 cargo test -p redrob-film-golden`.
+//! Regenerate references with `REDROB_FILM_BLESS=1 cargo test -p redrob-film-golden`.

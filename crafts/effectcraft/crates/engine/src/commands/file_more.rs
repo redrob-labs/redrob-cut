@@ -418,7 +418,7 @@ fn collect_files(s: &mut Session, p: &Value) -> Result<Value> {
         .and_then(|p| std::path::Path::new(p).file_stem())
         .map(|n| n.to_string_lossy().to_string())
         .unwrap_or_else(|| "Untitled Project".into());
-    let out = format!("{folder}/{stem}.ecproj");
+    let out = format!("{folder}/{stem}.rfx");
     s.services.write_file(&out, proj.to_json().as_bytes()).map_err(|e| EngineError::Other(format!("cannot write {out}: {e}")))?;
     s.toast(format!("Collected {copied} file(s) into {folder}"));
     Ok(json!({"project": out, "copied": copied, "errors": errors}))

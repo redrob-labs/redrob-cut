@@ -3,7 +3,7 @@
 //! dropdowns, numbers, label names), OK / Cancel / Escape / Reset… semantics, and settings that
 //! change the UI right away (theme, label names in the Edit ▸ Label menu, tooltips).
 //!
-//! With `FILMCRAFT_UI_SHOTS=<dir>` the test also renders the UI with wgpu and writes
+//! With `REDROB_FILM_UI_SHOTS=<dir>` the test also renders the UI with wgpu and writes
 //! `settings-*.png`.
 
 use std::sync::mpsc::{Sender, channel};
@@ -26,7 +26,7 @@ impl Driver {
         session.execute("file.openDemoProject", json!({})).expect("demo project");
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let shots = std::env::var_os("FILMCRAFT_UI_SHOTS").map(std::path::PathBuf::from);
+        let shots = std::env::var_os("REDROB_FILM_UI_SHOTS").map(std::path::PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if shots.is_some() {
             b = b.wgpu().with_pixels_per_point(1.0);

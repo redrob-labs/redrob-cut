@@ -2,7 +2,7 @@
 //! (search, favourites, save, apply), the export queue panel (send, reorder, cancel, start, retry),
 //! the Export button and the header's Quick Export popup.
 //!
-//! Set `FILMCRAFT_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write
+//! Set `REDROB_FILM_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write
 //! `export-*.png` there; without it no GPU is needed.
 
 use std::path::{Path, PathBuf};
@@ -31,7 +31,7 @@ impl Driver {
         s.export_presets.set_dir(&dir.join("data"));
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(s).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();

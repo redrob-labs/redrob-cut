@@ -260,8 +260,8 @@ mod tests {
             moved_candidates("/new/p", "/old/p/shots/a.mov"),
             ["/new/p/old/p/shots/a.mov", "/new/p/p/shots/a.mov", "/new/p/shots/a.mov", "/new/p/a.mov"]
         );
-        assert_eq!(project_dir("/x/y/p.ecproj").as_deref(), Some("/x/y"));
-        assert_eq!(project_dir("p.ecproj"), None);
+        assert_eq!(project_dir("/x/y/p.rfx").as_deref(), Some("/x/y"));
+        assert_eq!(project_dir("p.rfx"), None);
         // Hostile input doesn't panic.
         for (a, b) in [("", ""), ("/", "/"), ("x", ""), ("\\\\", "//"), ("/a", "/a/b/c")] {
             let _ = moved_root(a, b);

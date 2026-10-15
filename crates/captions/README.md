@@ -4,7 +4,7 @@ Caption files and caption burn-in for FilmCraft (layer L2: depends on `redrob-fi
 `redrob-film-color`, `redrob-film-project`, `redrob-film-text` and `roxmltree` for TTML).
 
 The caption *model* (caption tracks in a sequence, captions, track style) lives in
-`redrob-film-project` (`caption.rs`) because it is part of the `.fcproj` document. This crate reads
+`redrob-film-project` (`caption.rs`) because it is part of the `.rfilm` document. This crate reads
 and writes caption files, converts them to and from caption tracks, and draws captions.
 
 ## Formats

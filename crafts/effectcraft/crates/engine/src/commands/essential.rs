@@ -8,7 +8,7 @@
 //!   property edit of the master property); Push to Comp writes the override into the source
 //!   comp, Revert drops it.
 //! - **Templates**: `essential.exportTemplate` writes an open `.ectemplate` (a ZIP holding
-//!   `manifest.json` with the exposed controls, `project.ecproj` with the comp and everything it
+//!   `manifest.json` with the exposed controls, `project.rfx` with the comp and everything it
 //!   uses, the media files and a poster frame); `essential.importTemplate` merges one into the
 //!   project and adds an instance to the active comp.
 
@@ -865,7 +865,7 @@ fn export_template(s: &mut Session, p: &Value) -> Result<Value> {
     {
         entries.push(("poster.png".into(), png));
     }
-    entries.insert(0, ("project.ecproj".into(), sub.to_json().into_bytes()));
+    entries.insert(0, ("project.rfx".into(), sub.to_json().into_bytes()));
     entries.insert(0, ("manifest.json".into(), serde_json::to_vec_pretty(&manifest).unwrap_or_default()));
     let bytes = redrob_effects_lottie::zip::store(&entries);
     s.services.write_file(&path, &bytes).map_err(|e| EngineError::Other(format!("cannot write {path}: {e}")))?;
@@ -885,7 +885,8 @@ pub fn read_template(bytes: &[u8]) -> std::result::Result<(Value, Project, Vec<(
     if manifest.get("version").and_then(Value::as_u64).unwrap_or(0) > TEMPLATE_VERSION as u64 {
         return Err("the template was made by a newer Redrob Film".into());
     }
-    let text = String::from_utf8(get("project.ecproj").ok_or("template has no project.ecproj")?).map_err(|e| e.to_string())?;
+    let project = get("project.rfx").or_else(|| get("project.ecproj")); // legacy: templates packed before the rename
+    let text = String::from_utf8(project.ok_or("template has no project.rfx")?).map_err(|e| e.to_string())?;
     let mut project = Project::from_json(&text).map_err(|e| e.to_string())?;
     crate::upgrade_effects(&mut project);
     Ok((manifest, project, entries))

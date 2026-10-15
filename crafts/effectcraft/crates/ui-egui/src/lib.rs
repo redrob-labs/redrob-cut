@@ -123,7 +123,7 @@ impl FileDialog {
     /// The save dialog for `default`, as [`Hooks::save_dialog`] picks it.
     pub fn save(default: &str) -> Self {
         let ext = std::path::Path::new(default).extension().map(|e| e.to_string_lossy().to_string()).unwrap_or_default();
-        Self::Save { default: default.to_string(), project: ext.eq_ignore_ascii_case("ecproj"), ext }
+        Self::Save { default: default.to_string(), project: ext.eq_ignore_ascii_case("rfx"), ext }
     }
 }
 
@@ -175,13 +175,13 @@ impl Hooks {
     /// The host's save dialog for `default` (a file name or path), offering its extension: the
     /// project dialog for project files, else [`Hooks::pick_save_file`]. The project dialog is
     /// the fallback for hosts without that (the web, whose dialog only names the file): on macOS
-    /// a dialog filtered to projects appends `.ecproj` to any other name (#293). `None` when the
+    /// a dialog filtered to projects appends `.rfx` to any other name (#293). `None` when the
     /// host has no save dialog; `Some(None)` when it was cancelled.
     pub fn save_dialog(&self, default: &str) -> Option<Option<String>> {
         let path = std::path::Path::new(default);
         let ext = path.extension().map(|e| e.to_string_lossy().to_string()).unwrap_or_default();
         match (&self.pick_save_file, &self.pick_save) {
-            (Some(pick), _) if !ext.eq_ignore_ascii_case("ecproj") => Some(pick(default, &ext)),
+            (Some(pick), _) if !ext.eq_ignore_ascii_case("rfx") => Some(pick(default, &ext)),
             (_, Some(pick)) => Some(pick(&path.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default())),
             (Some(pick), None) => Some(pick(default, &ext)),
             (None, None) => None,

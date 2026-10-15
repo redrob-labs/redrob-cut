@@ -10,4 +10,5 @@ Terminal=false
 StartupNotify=true
 StartupWMClass=ai.redrob.film
 Categories=AudioVideo;Video;AudioVideoEditing;
+MimeType=application/x-redrob-film;application/x-redrob-effects;
 Keywords=video;editor;film;timeline;color;grading;nle;

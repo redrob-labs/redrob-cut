@@ -1,4 +1,4 @@
-//! `.fcproj` save/open through the command interface: schema envelope, legacy upgrade, Save a Copy,
+//! `.rfilm` save/open through the command interface: schema envelope, legacy upgrade, Save a Copy,
 //! Revert.
 
 use super::*;
@@ -20,7 +20,7 @@ fn temp_dir(tag: &str) -> std::path::PathBuf {
 #[test]
 fn saved_file_is_versioned_and_save_copy_keeps_state() {
     let d = temp_dir("schema");
-    let path = d.join("p.fcproj").to_string_lossy().to_string();
+    let path = d.join("p.rfilm").to_string_lossy().to_string();
     let mut s = demo();
     s.execute("file.saveAs", json!({"path": path})).unwrap();
     let v: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
@@ -28,7 +28,7 @@ fn saved_file_is_versioned_and_save_copy_keeps_state() {
     assert_eq!(v["format"], "filmcraft.project");
     s.execute("sequence.addEdit", json!({"seconds": 1.0})).unwrap();
     assert!(s.is_dirty());
-    let copy = d.join("copy.fcproj").to_string_lossy().to_string();
+    let copy = d.join("copy.rfilm").to_string_lossy().to_string();
     s.execute("file.saveCopy", json!({"path": copy})).unwrap();
     assert!(s.is_dirty(), "Save a Copy leaves the project unsaved");
     assert_eq!(s.path.as_deref(), Some(path.as_str()));
@@ -49,8 +49,8 @@ fn saved_file_is_versioned_and_save_copy_keeps_state() {
 #[test]
 fn legacy_project_opens_and_first_save_keeps_a_backup() {
     let d = temp_dir("legacy");
-    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../format/tests/fixtures/v1-edit.fcproj");
-    let path = d.join("old.fcproj");
+    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../format/tests/fixtures/v1-edit.rfilm");
+    let path = d.join("old.rfilm");
     std::fs::copy(&fixture, &path).unwrap();
     let p = path.to_string_lossy().to_string();
     let mut s = Session::default();
@@ -61,7 +61,7 @@ fn legacy_project_opens_and_first_save_keeps_a_backup() {
     assert!(s.drain_events().iter().any(|e| matches!(e, Event::Toast { message, .. } if message.contains("Upgraded"))));
     let r = s.execute("file.save", json!({})).unwrap();
     let backup = r["backup"].as_str().unwrap().to_string();
-    assert!(backup.ends_with("old (schema v1 backup).fcproj"), "{backup}");
+    assert!(backup.ends_with("old (schema v1 backup).rfilm"), "{backup}");
     assert_eq!(std::fs::read(&backup).unwrap(), std::fs::read(&fixture).unwrap());
     let v: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
     assert_eq!(v["schema_version"], redrob_film_format::SCHEMA_VERSION);
@@ -80,13 +80,13 @@ fn legacy_project_opens_and_first_save_keeps_a_backup() {
 fn project_is_named_after_its_file() {
     let d = temp_dir("name");
     let mut s = demo();
-    let a = d.join("Apollo 11 - Tranquility.fcproj").to_string_lossy().to_string();
+    let a = d.join("Apollo 11 - Tranquility.rfilm").to_string_lossy().to_string();
     s.execute("file.saveAs", json!({"path": a})).unwrap();
     assert_eq!(s.project.name, "Apollo 11 - Tranquility");
     assert_eq!(s.project.root.name, "Apollo 11 - Tranquility");
     assert!(!s.is_dirty(), "renaming on Save As is not an edit");
     // Save a Copy keeps the current name.
-    let c = d.join("Backup copy.fcproj").to_string_lossy().to_string();
+    let c = d.join("Backup copy.rfilm").to_string_lossy().to_string();
     s.execute("file.saveCopy", json!({"path": c})).unwrap();
     assert_eq!(s.project.name, "Apollo 11 - Tranquility");
     s.execute("file.open", json!({"path": c})).unwrap();

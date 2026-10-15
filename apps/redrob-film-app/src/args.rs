@@ -2,17 +2,17 @@
 
 /// `redrob-film --help`.
 pub const USAGE: &str = "\
-Usage: redrob-film [options] [project.fcproj | media files...]
+Usage: redrob-film [options] [project.rfilm | media files...]
 
 Options:
   --control <port>   start the localhost JSON-lines control server
-                     (also: FILMCRAFT_CONTROL_PORT)
+                     (also: REDROB_FILM_CONTROL_PORT)
   --demo             open the demo project
   --empty            start with an empty project
   --recover          recover the newest unsaved changes without asking
   --no-recover       start without asking about unsaved changes
   --data-dir <dir>   folder for auto-save, crash recovery and logs
-                     (also: FILMCRAFT_DATA_DIR)
+                     (also: REDROB_FILM_DATA_DIR)
   --version          print the version and exit
   -h, --help         print this help and exit
 ";
@@ -39,7 +39,7 @@ pub struct Launch {
 }
 
 /// Parse the arguments after the program name. `env_control_port` is the value of
-/// `FILMCRAFT_CONTROL_PORT`, used when `--control` is not given (an empty value counts as unset).
+/// `REDROB_FILM_CONTROL_PORT`, used when `--control` is not given (an empty value counts as unset).
 ///
 /// An option we don't know, or one without a usable value, is an error: opening a window for a
 /// mistyped flag helps nobody, and starting without the control server that was asked for leaves
@@ -79,7 +79,7 @@ pub fn parse(env_control_port: Option<String>, args: impl IntoIterator<Item = St
     if l.control_port.is_none()
         && let Some(port) = env_control_port.as_deref().map(str::trim).filter(|p| !p.is_empty())
     {
-        l.control_port = Some(port.parse().map_err(|_| format!("FILMCRAFT_CONTROL_PORT needs a port number, got `{port}`"))?);
+        l.control_port = Some(port.parse().map_err(|_| format!("REDROB_FILM_CONTROL_PORT needs a port number, got `{port}`"))?);
     }
     Ok(Cli::Run(l))
 }
@@ -133,12 +133,12 @@ mod tests {
         assert!(parse_args(&["--help", "--control"]).is_err());
     }
 
-    /// A bad `FILMCRAFT_CONTROL_PORT` used to start the app without the control server, silently.
+    /// A bad `REDROB_FILM_CONTROL_PORT` used to start the app without the control server, silently.
     #[test]
     fn a_bad_port_in_the_environment_is_an_error_like_a_bad_control_flag() {
         for bad in ["abc", "70000", "-1", "98 76", "9876x", "\u{fffd}"] {
             let e = parse_env(Some(bad), &[]).unwrap_err();
-            assert!(e.contains("FILMCRAFT_CONTROL_PORT") && e.contains(bad), "{bad}: {e}");
+            assert!(e.contains("REDROB_FILM_CONTROL_PORT") && e.contains(bad), "{bad}: {e}");
             assert!(parse_env(Some(bad), &["--empty", "a.mp4"]).is_err(), "{bad}");
             // the flag wins, so the environment's value is not looked at; nor for --help / --version
             assert_eq!(parse_env(Some(bad), &["--control", "9"]).map(|c| matches!(c, Cli::Run(l) if l.control_port == Some(9))), Ok(true), "{bad}");
@@ -158,11 +158,11 @@ mod tests {
     fn known_options_and_files_parse_as_before() {
         let none = launch(&[]);
         assert_eq!(none, Launch { control_port: None, files: vec![], demo: true, startup_flag: false, recover: None, data_dir: None });
-        let l = launch(&["--control", "9876", "--empty", "--no-recover", "--data-dir", "/tmp/fc", "cut.fcproj", "a.mp4"]);
+        let l = launch(&["--control", "9876", "--empty", "--no-recover", "--data-dir", "/tmp/fc", "cut.rfilm", "a.mp4"]);
         assert_eq!(l.control_port, Some(9876));
         assert_eq!((l.demo, l.startup_flag, l.recover), (false, true, Some(false)));
         assert_eq!(l.data_dir, Some(std::path::PathBuf::from("/tmp/fc")));
-        assert_eq!(l.files, ["cut.fcproj", "a.mp4"]);
+        assert_eq!(l.files, ["cut.rfilm", "a.mp4"]);
         assert_eq!((launch(&["--demo"]).demo, launch(&["--demo"]).startup_flag, launch(&["--recover"]).recover), (true, true, Some(true)));
         // `--` ends the options; a lone `-` and macOS' process serial number are not options
         assert_eq!(launch(&["--", "--odd name.mov", "-h"]).files, ["--odd name.mov", "-h"]);

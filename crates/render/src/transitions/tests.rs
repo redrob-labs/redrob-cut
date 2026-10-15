@@ -2,7 +2,7 @@
 //!
 //! Golden fingerprints (`goldens.txt`): a 4×4 grid of mean 8-bit RGB values at p = 0.25 / 0.5 /
 //! 0.75 on two procedural test frames. Re-bless after an intended change with
-//! `FILMCRAFT_BLESS=1 cargo test -p redrob-film-render transitions::tests::golden_fingerprints`
+//! `REDROB_FILM_BLESS=1 cargo test -p redrob-film-render transitions::tests::golden_fingerprints`
 //! and review the diff.
 
 use redrob_film_geom::Vec2;
@@ -347,11 +347,11 @@ fn golden_fingerprints() {
         }
     }
     let path = golden_path();
-    if std::env::var_os("FILMCRAFT_BLESS").is_some() {
+    if std::env::var_os("REDROB_FILM_BLESS").is_some() {
         std::fs::write(&path, lines.join("\n") + "\n").unwrap();
         return;
     }
-    let want = std::fs::read_to_string(&path).expect("goldens.txt (bless with FILMCRAFT_BLESS=1)");
+    let want = std::fs::read_to_string(&path).expect("goldens.txt (bless with REDROB_FILM_BLESS=1)");
     let want: std::collections::HashMap<(String, String), String> = want
         .lines()
         .filter_map(|l| {
@@ -377,12 +377,12 @@ fn golden_fingerprints() {
     assert!(bad.is_empty(), "transition goldens differ: {bad:?}");
 }
 
-/// Contact sheets for eyeballing: `FILMCRAFT_TRANSITION_SHEETS=<dir> cargo test -p redrob-film-render
+/// Contact sheets for eyeballing: `REDROB_FILM_TRANSITION_SHEETS=<dir> cargo test -p redrob-film-render
 /// contact_sheets -- --ignored` writes one PNG per folder (rows = transitions, columns = p).
 #[test]
 #[ignore]
 fn contact_sheets() {
-    let Some(dir) = std::env::var_os("FILMCRAFT_TRANSITION_SHEETS") else { return };
+    let Some(dir) = std::env::var_os("REDROB_FILM_TRANSITION_SHEETS") else { return };
     let (cw, chh) = (192usize, 108usize);
     let a = paint(cw, chh, |x, y| {
         let u = x / cw as f32;

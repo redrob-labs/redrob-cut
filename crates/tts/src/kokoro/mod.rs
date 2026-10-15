@@ -72,14 +72,14 @@ impl Kokoro {
     }
 }
 
-/// Tests with the real model run when `FILMCRAFT_KOKORO_DIR` names a directory holding
+/// Tests with the real model run when `REDROB_FILM_KOKORO_DIR` names a directory holding
 /// `config.json`, `kokoro-v1_0.pth` and `af_heart.pt` (the downloaded package); they skip otherwise.
 #[cfg(test)]
 mod tests {
     use super::*;
 
     fn model() -> Option<(Kokoro, VoicePack)> {
-        let dir = std::path::PathBuf::from(std::env::var_os("FILMCRAFT_KOKORO_DIR")?);
+        let dir = std::path::PathBuf::from(std::env::var_os("REDROB_FILM_KOKORO_DIR")?);
         let voice = [dir.join("af_heart.pt"), dir.join("voices/af_heart.pt")].into_iter().find(|p| p.exists())?;
         Some((Kokoro::load(&dir).unwrap(), VoicePack::load(&voice).unwrap()))
     }

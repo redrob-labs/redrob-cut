@@ -157,7 +157,7 @@ EffectInstance
 - **Effect definitions are data.** `project::effect::effect_defs()` lists every video effect,
   audio effect and transition with its parameter schema. The Effects panel tree, the Effect
   Controls rows and the parameter docs agents see are all generated from it.
-- **Project files** (`.fcproj`) are the project serialised as JSON. Saves are atomic: write a
+- **Project files** (`.rfilm`) are the project serialised as JSON. Saves are atomic: write a
   temporary sibling file, then rename it over the target.
 
 ## 4. Command system (`redrob-film-engine`)
@@ -316,7 +316,7 @@ file ──► codecs (MP4/MOV, MKV, audio)        demux + decode, GOP-aware see
   colour settings as its parent, nothing on the clip that changes the picture, every layer inside
   blended normally) and non-dissolve transitions are rendered on the CPU for that layer or frame
   and handed to the GPU as an image (a layer image keeps its clip's blend mode), so both paths
-  give the same picture. Setting `FILMCRAFT_CPU_COMPOSITE=1`
+  give the same picture. Setting `REDROB_FILM_CPU_COMPOSITE=1`
   forces the CPU path in the desktop app.
 - **CPU compositor shortcuts.** The CPU compositor, which is what export runs, works on
   premultiplied linear `f32` images, 33 MB at 1080p, so what it does not allocate, convert or mix

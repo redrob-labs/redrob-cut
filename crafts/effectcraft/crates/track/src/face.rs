@@ -1356,14 +1356,14 @@ mod tests {
         assert!((f.landmarks[EYE[0][4]][0] - (truth[EYE[0][4]][0] - 10.0)).abs() < 1e-3);
     }
 
-    /// With the official MediaPipe Face Landmarker (`EFFECTCRAFT_FACE_LANDMARKER` = path to
+    /// With the official MediaPipe Face Landmarker (`REDROB_EFFECTS_FACE_LANDMARKER` = path to
     /// `face_landmarker.task`, else skipped): it recognises the synthetic face and follows it
     /// through the moving, rolling clip. Brows and lips are drawn differently from where a real
     /// face's mesh points sit, so only the points both agree on are held to ground truth: eyes and
     /// chin tightly, the mouth corners (the cartoon mouth's ends, as it turns) more loosely.
     #[test]
     fn mediapipe_follows_the_synthetic_face() {
-        let Ok(path) = std::env::var("EFFECTCRAFT_FACE_LANDMARKER") else { return };
+        let Ok(path) = std::env::var("REDROB_EFFECTS_FACE_LANDMARKER") else { return };
         let Ok(redrob_effects_segment::Loaded::Face(model)) = redrob_effects_segment::load("mediapipe-face", &std::fs::read(path).unwrap()) else {
             panic!("not a face model")
         };

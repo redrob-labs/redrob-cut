@@ -213,7 +213,7 @@ fn previews_survive_save_and_open() {
     job_ok(&s, &v);
     let folder = tmp("save-project");
     std::fs::create_dir_all(&folder).unwrap();
-    let path = folder.join("Film.fcproj").to_string_lossy().to_string();
+    let path = folder.join("Film.rfilm").to_string_lossy().to_string();
     s.execute("file.save", json!({"path": path})).unwrap();
     // the unsaved project's previews moved next to the project
     assert_eq!(s.previews.dir().unwrap(), folder.join("Redrob Film Previews").join("Film"));

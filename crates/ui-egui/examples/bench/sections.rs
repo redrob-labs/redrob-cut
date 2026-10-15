@@ -569,7 +569,7 @@ pub fn project(o: &Opts) -> Vec<Value> {
     }
     let dir = std::env::temp_dir().join(format!("filmcraft-bench-project-{}", std::process::id()));
     std::fs::create_dir_all(&dir).expect("tmp dir");
-    let file = dir.join("big.fcproj");
+    let file = dir.join("big.rfilm");
     let n = o.repeat.max(3);
     let (mut save, mut open) = (Vec::new(), Vec::new());
     for _ in 0..n {

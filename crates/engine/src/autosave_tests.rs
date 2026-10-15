@@ -62,7 +62,7 @@ fn preferences_get_set_and_persist() {
 #[test]
 fn crash_recovery_end_to_end() {
     let d = temp_dir("recover");
-    let proj = d.join("film.fcproj").to_string_lossy().to_string();
+    let proj = d.join("film.rfilm").to_string_lossy().to_string();
     // Session A: saved project, then unsaved edits, then a crash.
     let mut a = demo();
     start(&mut a, &d);
@@ -101,7 +101,7 @@ fn crash_recovery_end_to_end() {
     c.execute("file.save", json!({})).unwrap();
     wait_for("journal cleared", || {
         c.poll_persistence();
-        !c.persistence.as_ref().unwrap().session_dir.join("snapshot.fcproj").exists()
+        !c.persistence.as_ref().unwrap().session_dir.join("snapshot.rfilm").exists()
     });
     let session_dir = c.persistence.as_ref().unwrap().session_dir.clone();
     c.shutdown();
@@ -138,7 +138,7 @@ fn quitting_with_unsaved_changes_keeps_them_for_next_launch() {
 #[test]
 fn auto_save_ring_rotates_and_can_save_the_project() {
     let d = temp_dir("ring");
-    let proj = d.join("ring.fcproj").to_string_lossy().to_string();
+    let proj = d.join("ring.rfilm").to_string_lossy().to_string();
     let mut s = demo();
     start(&mut s, &d);
     s.execute("prefs.set", json!({"values": {"autoSave.maxVersions": 2}})).unwrap();

@@ -1,5 +1,5 @@
 //! File ▸ Watch Folder…: render farm without a farm. EffectCraft watches a folder for project
-//! files (`.ecproj`, at the top level or one folder down, e.g. the folders File ▸ Dependencies ▸
+//! files (`.rfx`, at the top level or one folder down, e.g. the folders File ▸ Dependencies ▸
 //! Collect Files writes) whose Render Queue has queued items, renders them, and writes a status
 //! file next to each project (`<project>.status.json`: `rendering`, then `done` or `failed`, with
 //! every item's status and output path). A project with a status file is not picked up again;
@@ -32,7 +32,7 @@ pub fn pending(folder: &Path) -> std::io::Result<Vec<PathBuf>> {
             let p = e?.path();
             if p.is_dir() {
                 subdirs.push(p);
-            } else if p.extension().is_some_and(|x| x.eq_ignore_ascii_case("ecproj")) && !status_path(&p).exists() {
+            } else if p.extension().is_some_and(|x| x.eq_ignore_ascii_case("rfx") || x.eq_ignore_ascii_case("ecproj")) && !status_path(&p).exists() { // legacy: .ecproj
                 out.push(p);
             }
         }
@@ -137,7 +137,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Watch Folder...",
             ["File"],
             None,
-            "{folder, stop?: bool} → watches the folder for .ecproj files with queued renders, renders them and writes `<project>.status.json`",
+            "{folder, stop?: bool} → watches the folder for .rfx files with queued renders, renders them and writes `<project>.status.json`",
             always,
             watch
         ),

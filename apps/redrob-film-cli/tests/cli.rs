@@ -98,7 +98,7 @@ fn exec_inspect_and_describe() {
 fn exec_save_as_then_reopen() {
     let dir = std::env::temp_dir().join(format!("fc-cli-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let proj = dir.join("p.fcproj");
+    let proj = dir.join("p.rfilm");
     let p = proj.to_str().unwrap();
     json_out(&cli(&["--demo", "exec", "file.newBin", "name=CLI Selects", "--save-as", p]));
     let tree = json_out(&cli(&["--project", p, "inspect", "project"]));
@@ -273,7 +273,7 @@ fn run_with_closed_stdout(args: &[&str], script: &[u8]) -> Output {
 fn closed_stdout_still_runs_the_script_and_saves() {
     let dir = std::env::temp_dir().join(format!("fc-cli-pipe-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let proj = dir.join("p.fcproj");
+    let proj = dir.join("p.rfilm");
     let p = proj.to_str().unwrap();
     let script = b"{\"id\":\"file.newBin\",\"params\":{\"name\":\"Piped One\"}}\n{\"id\":\"file.newBin\",\"params\":{\"name\":\"Piped Two\"}}\n";
     let out = run_with_closed_stdout(&["--demo", "--save-as", p, "run", "-"], script);

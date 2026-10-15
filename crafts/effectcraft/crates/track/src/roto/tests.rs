@@ -397,12 +397,12 @@ fn a_model_prior_shapes_the_cut_and_bad_models_are_ignored() {
     assert!(iou(&kept.matte, &gt) > 0.95, "{}", iou(&kept.matte, &gt));
 }
 
-/// With the real MobileSAM weights (`EFFECTCRAFT_MOBILESAM=path/to/mobile_sam.pt`, else
+/// With the real MobileSAM weights (`REDROB_EFFECTS_MOBILESAM=path/to/mobile_sam.pt`, else
 /// skipped): the base frame and 20 propagated frames of the moving textured disk stay at least
 /// as accurate as the classic engine.
 #[test]
 fn mobilesam_segments_and_propagates_the_disk() {
-    let Ok(path) = std::env::var("EFFECTCRAFT_MOBILESAM") else { return };
+    let Ok(path) = std::env::var("REDROB_EFFECTS_MOBILESAM") else { return };
     let redrob_effects_segment::Loaded::Mask(model) = redrob_effects_segment::load("mobilesam", &std::fs::read(path).unwrap()).unwrap() else {
         panic!("not a mask model")
     };

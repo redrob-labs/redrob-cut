@@ -13,7 +13,7 @@ incompatible clip types show no valid transition preview. Ordinary effects retai
 outline. `timeline.transitionDropPreview` exposes the span and edge to automation.
 
 `transition_drop_ui` covers both edges of short video/audio clips, hover without project edits,
-the committed span and undo. Set `FILMCRAFT_UI_SNAPSHOT_DIR` to render screenshots with wgpu.
+the committed span and undo. Set `REDROB_FILM_UI_SNAPSHOT_DIR` to render screenshots with wgpu.
 
 ## Localisation
 

@@ -84,7 +84,7 @@ fn premiere_table_has_no_dangling_ids_or_new_conflicts() {
     for (id, keys, panel) in presets::premiere() {
         assert!(redrob_film_engine::find_command(id).is_some() || ui.iter().any(|u| u == id), "Premiere table: `{id}` ({keys} {panel}) is not a command");
     }
-    for (id, _, _) in presets::FILMCRAFT_PANEL.iter().chain(presets::PREMIERE_PANEL) {
+    for (id, _, _) in presets::REDROB_FILM_PANEL.iter().chain(presets::PREMIERE_PANEL) {
         assert!(redrob_film_engine::find_command(id).is_some() || ui.iter().any(|u| u == id), "panel table: `{id}` is not a command");
     }
     let mut s = Session::default();

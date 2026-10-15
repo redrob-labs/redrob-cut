@@ -129,7 +129,7 @@ fn clear_recent_presets(s: &mut Session, _: &Value) -> Result<Value> {
 // ---------------------------------------------------------------- File menu
 
 fn save_copy_xml(s: &mut Session, p: &Value) -> Result<Value> {
-    let path = str_p(p, "path").ok_or_else(|| bad("file.saveCopyAsXml", "missing `path` (.ecprojx)"))?;
+    let path = str_p(p, "path").ok_or_else(|| bad("file.saveCopyAsXml", "missing `path` (.rfxx)"))?;
     let xml = crate::xml_project::to_xml(&s.project.to_file_json_with_view(&s.saved_view())?).map_err(EngineError::Other)?;
     s.services.write_file(path, xml.as_bytes()).map_err(|e| EngineError::Other(format!("cannot write {path}: {e}")))?;
     s.toast(format!("Saved an XML copy to {path}"));
@@ -667,7 +667,7 @@ pub fn specs() -> Vec<CommandSpec> {
             |s| if s.prefs.recent_presets.is_empty() { Err("no recent animation presets".into()) } else { Ok(()) },
             clear_recent_presets
         ),
-        cmd!("file.saveCopyAsXml", "Save a Copy As XML...", ["File", "Save As"], None, "{path: .ecprojx}", always, save_copy_xml),
+        cmd!("file.saveCopyAsXml", "Save a Copy As XML...", ["File", "Save As"], None, "{path: .rfxx}", always, save_copy_xml),
         cmd!("file.replaceWithLayeredComp", "With Layered Comp", ["File", "Replace Footage"], None, "{item?}", has_footage, replace_with_layered_comp),
         cmd!("file.replaceWithPrecomp", "Replace with Precomposition", [], None, "{item?}", has_footage_or_solid, replace_with_precomp),
         cmd!("file.executeFile", "Execute File", [], None, "{path, confirmed?}", always, execute_file),

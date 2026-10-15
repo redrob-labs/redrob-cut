@@ -2,7 +2,7 @@
 //! moved (search a folder, link, the others follow), Project panel offline / proxy badges, the
 //! monitors' Toggle Proxies button, Create Proxies and Project Manager dialogs.
 //!
-//! Set `FILMCRAFT_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write PNGs
+//! Set `REDROB_FILM_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write PNGs
 //! there (`media-*.png`).
 
 use std::path::{Path, PathBuf};
@@ -61,7 +61,7 @@ fn make_movie(path: &Path, scene: DemoScene, w: u32, h: u32, frames: i64) {
     redrob_film_engine::export::export(&Arc::new(p), seq, &settings, &provider, &Default::default()).unwrap();
 }
 
-/// `<root>/p.fcproj` with a sequence of `<root>/Media/{Harbour,Night}.mov`; the media folder is
+/// `<root>/p.rfilm` with a sequence of `<root>/Media/{Harbour,Night}.mov`; the media folder is
 /// then moved to `<root>/Moved/Media`.
 fn moved_project(root: &Path) -> String {
     let media = root.join("Media");
@@ -87,7 +87,7 @@ fn moved_project(root: &Path) -> String {
         at += d;
     }
     s.project = Arc::new(p);
-    let path = root.join("p.fcproj").to_string_lossy().into_owned();
+    let path = root.join("p.rfilm").to_string_lossy().into_owned();
     s.execute("file.save", json!({"path": path})).unwrap();
     drop(s); // Close decoder files before moving their directory on Windows.
     std::fs::create_dir_all(root.join("Moved")).unwrap();
@@ -105,7 +105,7 @@ impl Driver {
     fn new(session: Session) -> Self {
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();
@@ -369,7 +369,7 @@ fn link_media_large_lists_and_long_paths_keep_actions_on_screen() {
         let mut app = FilmcraftApp::new(s);
         app.ui.link_media = Some(Default::default());
         let mut builder = Harness::builder().with_size(egui::vec2(width, height)).with_max_steps(10_000);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(PathBuf::from);
         if snapshots.is_some() {
             builder = builder.wgpu();
         }

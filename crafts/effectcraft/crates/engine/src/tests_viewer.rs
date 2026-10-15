@@ -583,7 +583,7 @@ fn each_comp_keeps_its_resolution_outside_the_undo_history_and_in_the_file() {
     let mut s = comp();
     let a = s.active_comp_id().unwrap();
     s.execute("layer.newSolid", json!({"name": "S", "color": "#ff0000", "width": 10, "height": 10})).unwrap();
-    let path = std::env::temp_dir().join(format!("ec-resolution-{}.ecproj", std::process::id()));
+    let path = std::env::temp_dir().join(format!("ec-resolution-{}.rfx", std::process::id()));
     s.execute("file.saveAs", json!({"path": path.to_string_lossy()})).unwrap();
     assert_eq!(s.active_comp().unwrap().resolution, Resolution::Auto);
     let (steps, pixels) = (s.history.undo.len(), s.active_comp_arc().unwrap());

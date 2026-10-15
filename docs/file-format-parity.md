@@ -14,7 +14,7 @@ only). "Tested" names the evidence.
 | Format | Premiere | Read | Write | Tested | % |
 |---|---|---|---|---|---|
 | **Premiere project `.prproj`** | native | **no** | **no** | — | **0%** ([G2](gaps.md#g2-premieres-prproj-cannot-be-opened)) |
-| Our project `.fcproj` | — | yes, schema migrations | yes, atomic, auto-save, recovery journal | migration tests | — |
+| Our project `.rfilm` | — | yes, schema migrations | yes, atomic, auto-save, recovery journal | migration tests | — |
 | FCP7 XML (`xmeml`) | read + write | yes | yes | round-trip tests; Premiere-exported XML slow (#461) | 75% |
 | FCPXML | read (via XtoCC) | yes | yes | round-trip tests | 80% |
 | AAF (Edit Protocol) | read + write | yes | yes (embedded / linked / consolidated) | own CFB; **never opened in Media Composer / Pro Tools** | 55% |
@@ -23,7 +23,7 @@ only). "Tested" names the evidence.
 | OpenTimelineIO | read + write (26.0) | yes | yes | tests | 80% |
 | Avid Log Exchange (ALE) | write | no | yes | — | 70% |
 | Marker CSV / text | write | — | yes (#454) | — | 80% |
-| Selection as project | Premiere project | — | `.fcproj` only | — | 50% |
+| Selection as project | Premiere project | — | `.rfilm` only | — | 50% |
 | Templates (`.prproj` templates) | yes | — | our templates | — | 70% |
 | Motion Graphics templates `.mogrt` | read + write | **refused by design** (clean-room, AGENTS.md §1); our `.fcgt` instead | `.fcgt` | — | n/a |
 | Effect presets `.prfpset` | read + write | no | our JSON presets | — | 40% |

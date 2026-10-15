@@ -105,12 +105,12 @@ fn face_tracking_keys_outline_points_and_measurements() {
     assert!(layer.props.find_group(m3).unwrap().get("path").unwrap().keys.is_empty());
 }
 
-/// With MediaPipe Face Landmarker installed (`EFFECTCRAFT_FACE_LANDMARKER` = path to
+/// With MediaPipe Face Landmarker installed (`REDROB_EFFECTS_FACE_LANDMARKER` = path to
 /// `face_landmarker.task`, else skipped): Track Mask ▸ Face Tracking uses it, and the pupils and
 /// eye corners it keys sit on the synthetic face's.
 #[test]
 fn face_tracking_uses_the_chosen_model() {
-    let Ok(model) = std::env::var("EFFECTCRAFT_FACE_LANDMARKER") else { return };
+    let Ok(model) = std::env::var("REDROB_EFFECTS_FACE_LANDMARKER") else { return };
     let (mut s, clip, _) = setup(|f| render_synthetic(W, H, &face(f), 5));
     let dir = std::env::temp_dir().join(format!("ec-face-model-{}", std::process::id()));
     s.models_dir = Some(dir.clone());

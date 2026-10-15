@@ -165,7 +165,7 @@ fn relink_is_reachable_through_the_dependencies_menu() {
     h.input_mut().events.push(Event::PointerMoved(dependencies.center()));
     h.run_steps(8);
     let relink = h.query_by_label_contains("Relink Missing Footage").unwrap().rect();
-    if let Some(path) = std::env::var_os("EFFECTCRAFT_RELINK_MENU_SNAPSHOT") {
+    if let Some(path) = std::env::var_os("REDROB_EFFECTS_RELINK_MENU_SNAPSHOT") {
         h.render().unwrap().save(path).unwrap();
     }
     click_at(&mut h, relink.center());

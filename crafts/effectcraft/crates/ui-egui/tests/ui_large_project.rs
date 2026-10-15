@@ -95,7 +95,7 @@ fn timeline_reaches_the_last_of_many_layers() {
 
 #[test]
 fn lazy_open_lists_the_footage_check_in_the_progress_panel() {
-    let path = std::env::temp_dir().join(format!("ec-ui-lazy-open-{}.ecproj", std::process::id()));
+    let path = std::env::temp_dir().join(format!("ec-ui-lazy-open-{}.rfx", std::process::id()));
     let mut s = large();
     s.execute("file.saveAs", json!({"path": path.to_string_lossy()})).unwrap();
     let mut o = Session { check_footage_on_open: true, ..Default::default() };

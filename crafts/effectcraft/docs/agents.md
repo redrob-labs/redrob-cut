@@ -90,7 +90,7 @@ Each server has its own folder under `<config directory>/EffectCraft Auto-Save/M
 `<custom Auto-Save folder>/MCP/`). The maximum-version setting applies within that folder.
 `--autosave` enables these checkpoints regardless of the desktop's Auto-Save toggle and interval;
 it reads settings without writing desktop preferences, shortcuts or crash-recovery state.
-`EFFECTCRAFT_CONFIG_DIR` overrides the platform config directory. Session folders are retained
+`REDROB_EFFECTS_CONFIG_DIR` overrides the platform config directory. Session folders are retained
 for recovery; remove old folders once their work is saved elsewhere.
 
 `initialize` instructions and `_meta.effectcraftAutoSave` list the current folder and up to five
@@ -552,13 +552,13 @@ menu's Variable Fonts filter; `{"rescan":true}` first picks up fonts installed s
 one of its `styles` to `layer.setText {"font", "style"}`; `text.fontFeatures` says which OpenType
 options a font draws with its own glyphs.
 A tool with its own font library can hand it over without installing it: folders listed in
-`EFFECTCRAFT_FONT_DIRS` (a path list, `:`-separated, `;` on Windows) are scanned like the system font folders.
+`REDROB_EFFECTS_FONT_DIRS` (a path list, `:`-separated, `;` on Windows) are scanned like the system font folders.
 On Linux and the BSDs the system font folders are `/usr/share/fonts`, `/usr/local/share/fonts`,
 `~/.local/share/fonts`, `~/.fonts`, `$XDG_DATA_HOME/fonts`, `fonts` in each `$XDG_DATA_DIRS` folder,
 every `<dir>` the fontconfig configuration names (`/etc/fonts/fonts.conf` with its includes,
 `~/.config/fontconfig/fonts.conf`) and, in the Flatpak, the host's fonts under `/run/host`. The
 Flatpak can't see other folders; grant one with
-`flatpak override --user --filesystem=<dir>:ro --env=EFFECTCRAFT_FONT_DIRS=<dir> ai.storyteller.effectcraft`.
+`flatpak override --user --filesystem=<dir>:ro --env=REDROB_EFFECTS_FONT_DIRS=<dir> ai.storyteller.effectcraft`.
 
 In expressions, `text.sourceText.style` / `getStyleAt(i, t)` read styles and the setters
 (`setFontSize(v, start?, count?)`, `setFillColor`, `setText`, `setJustification`…) return a

@@ -8,8 +8,8 @@ The first Redrob Film release (the release workflow checks that this section exi
 
 - **Renamed to Redrob Film** (from Redrob Cut): executables `redrob-film` / `redrob-film-cli`, app id
   `ai.redrob.film`, console product `film` ([docs/console-product-id.md](docs/console-product-id.md)),
-  installers and release assets `redrob-film-<version>-…`. Upstream crate names, `FILMCRAFT_*`
-  environment variables, `.fcproj` and the MIME type are unchanged.
+  installers and release assets `redrob-film-<version>-…`. Upstream crate names, `REDROB_FILM_*`
+  environment variables, `.rfilm` and the MIME type are unchanged.
 - **Effects mode.** storytold/effectcraft is a git subtree under `crafts/effectcraft/` (pinned in
   `upstream-base.json`), hosted as the second editor of the one window: Edit / Effects buttons in the
   top bar, the Mode menu, one project bundle.

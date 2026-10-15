@@ -55,7 +55,7 @@ macro_rules! uic {
 }
 
 /// Frontend commands added for keyboard parity. Panel-scoped keys are in the shortcut tables
-/// (`FILMCRAFT_PANEL`), so they have no application-wide default here.
+/// (`REDROB_FILM_PANEL`), so they have no application-wide default here.
 pub const COMMANDS: &[UiCommand] = &[
     uic!("window.maximizeFrame", "Maximize or Restore Active Frame", [], Some("Shift+`")),
     uic!("window.maximizeFrameUnderCursor", "Maximize or Restore Frame Under Cursor", [], Some("`")),

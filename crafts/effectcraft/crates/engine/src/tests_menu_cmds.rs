@@ -563,7 +563,7 @@ fn work_area_stays_ordered_when_the_start_passes_the_end() {
     s.execute("time.set", json!({"time": 8.0})).unwrap();
     s.execute("comp.workArea", json!({"set": "begin"})).unwrap();
     assert_eq!(ordered(&s).1, one_frame_at_two(&s));
-    let path = tmp("WorkArea.ecproj");
+    let path = tmp("WorkArea.rfx");
     s.execute("file.saveAs", json!({"path": path})).unwrap();
     s.execute("file.open", json!({"path": path})).unwrap();
     assert_eq!(ordered(&s).1, one_frame_at_two(&s));
@@ -747,7 +747,7 @@ fn file_menu_project_ops() {
     s.execute("file.reduceProject", json!({})).unwrap();
     assert!(s.project.items.len() <= 2, "{:?}", s.project.items.values().map(|i| &i.name).collect::<Vec<_>>());
     // Save a copy leaves the session path alone.
-    let path = tmp("copy.ecproj");
+    let path = tmp("copy.rfx");
     s.execute("file.saveCopy", json!({"path": path})).unwrap();
     assert!(s.path.is_none() && std::fs::metadata(&path).is_ok());
     s.execute("file.closeProject", json!({})).unwrap();
@@ -1148,23 +1148,23 @@ fn comps_made_from_the_same_footage_get_numbered_names_as_duplicate_does() {
 fn project_files_keep_their_format_warn_about_newer_versions_and_never_save_unreadable() {
     let mut s = comp();
     let a = solid(&mut s, "#ff0000");
-    let path = tmp("Safe.ecproj");
+    let path = tmp("Safe.rfx");
     s.execute("file.saveAs", json!({"path": path})).unwrap();
     let saved = std::fs::read_to_string(&path).unwrap();
     assert_eq!(redrob_effects_project::saved_by(&saved).as_deref(), Some(redrob_effects_project::APP_VERSION));
     // Save a Copy and Increment and Save keep an XML project XML.
-    let copy = tmp("Copy.ecprojx");
+    let copy = tmp("Copy.rfxx");
     s.execute("file.saveCopy", json!({"path": copy})).unwrap();
     assert!(std::fs::read_to_string(&copy).unwrap().starts_with("<?xml"));
-    s.execute("file.saveAs", json!({"path": tmp("Xml.ecprojx")})).unwrap();
+    s.execute("file.saveAs", json!({"path": tmp("Xml.rfxx")})).unwrap();
     let r = s.execute("file.incrementAndSave", json!({})).unwrap();
     let inc = r["path"].as_str().unwrap().to_string();
-    assert!(inc.ends_with("Xml 2.ecprojx"), "{inc}");
+    assert!(inc.ends_with("Xml 2.rfxx"), "{inc}");
     assert!(std::fs::read_to_string(&inc).unwrap().starts_with("<?xml"));
     let r = s.execute("file.open", json!({"path": inc})).unwrap();
     assert_eq!(r["savedBy"], json!(redrob_effects_project::APP_VERSION));
     // A project from a newer version opens with a warning.
-    let newer = tmp("Newer.ecproj");
+    let newer = tmp("Newer.rfx");
     std::fs::write(&newer, saved.replacen(redrob_effects_project::APP_VERSION, "999.0.0", 1)).unwrap();
     s.drain_events();
     let r = s.execute("file.open", json!({"path": newer})).unwrap();
@@ -1187,7 +1187,7 @@ fn project_files_keep_their_format_warn_about_newer_versions_and_never_save_unre
     assert!(e.contains("can't be saved"), "{e}");
     assert_eq!(std::fs::read_to_string(&path).unwrap(), saved);
     // Not a project: a clear message.
-    let junk = tmp("Junk.ecproj");
+    let junk = tmp("Junk.rfx");
     std::fs::write(&junk, "{ not json").unwrap();
     let e = s.execute("file.open", json!({"path": junk})).unwrap_err().to_string();
     assert!(e.contains("is not a project Redrob Film can open"), "{e}");

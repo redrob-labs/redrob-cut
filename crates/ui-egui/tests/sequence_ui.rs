@@ -2,7 +2,7 @@
 //! through-edit marks on the timeline, the Markers panel colour filter and the Shift+; gap key.
 //! The real `FilmcraftApp` under `egui_kittest`, driven over the control channel by automation id.
 //!
-//! Set `FILMCRAFT_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write
+//! Set `REDROB_FILM_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write
 //! `sequence-settings-*.png` there; without it no GPU is needed.
 
 use std::sync::mpsc::{Sender, channel};
@@ -25,7 +25,7 @@ impl Driver {
         session.execute("file.openDemoProject", json!({})).expect("demo project");
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(std::path::PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(std::path::PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();
@@ -89,7 +89,7 @@ impl Driver {
         e["label"].as_str().unwrap_or_default().to_string()
     }
 
-    /// With `FILMCRAFT_UI_SNAPSHOT_DIR` set, render the window offscreen and write `<name>.png`,
+    /// With `REDROB_FILM_UI_SNAPSHOT_DIR` set, render the window offscreen and write `<name>.png`,
     /// cropped to the elements whose ids start with `prefix`.
     fn snapshot(&mut self, name: &str, prefix: &str) {
         let Some(dir) = self.snapshots.clone() else { return };

@@ -171,7 +171,7 @@ fn close_commands_and_templates() {
     assert!(s.execute("file.closeAllOtherProjects", json!({})).is_err());
     // template round trip
     let dir = tmp_dir("templates");
-    let path = dir.join("Doc Template.fcproj").to_string_lossy().to_string();
+    let path = dir.join("Doc Template.rfilm").to_string_lossy().to_string();
     let r = s.execute("file.saveAsTemplate", json!({"path": path, "name": "Doc Template"})).unwrap();
     assert_eq!(r["path"], path);
     let n = s.project.items.len();
@@ -192,7 +192,7 @@ fn export_selection_project_and_ale() {
     let main = s.state.active_sequence.unwrap();
     s.execute("project.select", json!({"items": [main.0]})).unwrap();
     let dir = tmp_dir("export-sel");
-    let path = dir.join("Main Only.fcproj").to_string_lossy().to_string();
+    let path = dir.join("Main Only.rfilm").to_string_lossy().to_string();
     let r = s.execute("file.exportSelectionProject", json!({"path": path})).unwrap();
     let p = redrob_film_format::decode(&std::fs::read(&path).unwrap()).unwrap().project;
     assert_eq!(p.name, "Main Only");
@@ -242,7 +242,7 @@ fn export_selection_project_of_a_bin_exports_its_contents() {
     // Selecting the bin (its id, not its items) must export the bin's contents, not an empty project.
     s.execute("project.select", json!({"items": [footage_bin]})).unwrap();
     let dir = tmp_dir("export-bin");
-    let path = dir.join("Footage.fcproj").to_string_lossy().to_string();
+    let path = dir.join("Footage.rfilm").to_string_lossy().to_string();
     let r = s.execute("file.exportSelectionProject", json!({"path": path})).unwrap();
     let p = redrob_film_format::decode(&std::fs::read(&path).unwrap()).unwrap().project;
     assert_eq!(r["items"].as_array().unwrap().len(), p.items.len(), "reported items match the saved project");
@@ -257,7 +257,7 @@ fn export_selection_project_of_a_bin_exports_its_contents() {
     assert!(p.items.keys().all(|k| listed.contains(k) || matches!(p.item(*k).unwrap().kind, ItemKind::Graphic { .. })));
 
     // A mixed bin + item request must not report the bin id, which names no item in the output.
-    let explicit = dir.join("Mixed.fcproj").to_string_lossy().to_string();
+    let explicit = dir.join("Mixed.rfilm").to_string_lossy().to_string();
     let r = s.execute("file.exportSelectionProject", json!({"items": [footage_bin, bin_items[0].0], "path": explicit})).unwrap();
     let p = redrob_film_format::decode(&std::fs::read(&explicit).unwrap()).unwrap().project;
     for v in r["items"].as_array().unwrap() {
@@ -268,7 +268,7 @@ fn export_selection_project_of_a_bin_exports_its_contents() {
     // An empty bin has nothing to export: an actionable error, no misleading empty file.
     let empty_bin = s.execute("file.newBin", json!({"name": "Empty"})).unwrap()["bin"].as_u64().unwrap();
     s.execute("project.select", json!({"items": [empty_bin]})).unwrap();
-    let empty_path = dir.join("Empty.fcproj").to_string_lossy().to_string();
+    let empty_path = dir.join("Empty.rfilm").to_string_lossy().to_string();
     assert!(s.execute("file.exportSelectionProject", json!({"path": empty_path})).is_err());
     assert!(!std::path::Path::new(&empty_path).exists(), "no empty project written");
 }
@@ -308,7 +308,7 @@ fn media_properties_settings_and_scratch_disks() {
     s.execute("edit.undo", json!({})).unwrap();
     assert_eq!(s.project.settings.renderer, crate::project_tools::RENDERER_GPU);
     // Scratch Disks: previews follow the Video Previews folder once the project is saved
-    let proj = dir.join("Show.fcproj").to_string_lossy().to_string();
+    let proj = dir.join("Show.rfilm").to_string_lossy().to_string();
     s.execute("file.saveAs", json!({"path": proj})).unwrap();
     assert_eq!(crate::project_tools::previews_dir(&s).unwrap(), dir.join("Redrob Film Previews").join("Show"));
     let scratch = dir.join("scratch").to_string_lossy().to_string();

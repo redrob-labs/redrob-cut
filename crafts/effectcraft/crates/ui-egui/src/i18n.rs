@@ -6621,7 +6621,7 @@ mod tests {
     fn czech_translates_menus_without_changing_bindings_or_user_names() {
         let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key": "general.language", "value": "en"})).unwrap();
-        app.session.prefs.push_recent("File.ecproj");
+        app.session.prefs.push_recent("File.rfx");
         let en = crate::native_menu::build(&app);
         let state = crate::native_menu::state_key(&app);
         app.session.execute("prefs.set", json!({"key": "general.language", "value": "cs"})).unwrap();
@@ -6637,7 +6637,7 @@ mod tests {
         assert!(cs.items().iter().any(|i| i.command == "comp.new" && i.label == "Nová kompozice..."));
         assert!(cs.items().iter().any(|i| i.command == "layer.newText" && i.label == "Text"));
         assert!(cs.items().iter().any(|i| i.command == "keys.easyEase" && i.label == "Snadné zpomalení"));
-        assert!(cs.items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.ecproj"));
+        assert!(cs.items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.rfx"));
         for (source, translated) in [
             ("File", "Soubor"),
             ("Edit", "Úpravy"),
@@ -6822,8 +6822,8 @@ mod tests {
         assert!(ja.items().iter().any(|i| i.command == "comp.new" && i.label == "新規コンポジション..."));
         assert!(ja.items().iter().any(|i| i.command == "layer.newText" && i.label == "テキスト"));
         assert!(ja.items().iter().any(|i| i.command == "keys.easyEase" && i.label == "イージーイーズ"));
-        app.session.prefs.push_recent("/tmp/File.ecproj");
-        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.ecproj"));
+        app.session.prefs.push_recent("/tmp/File.rfx");
+        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.rfx"));
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"en"})).unwrap();
         assert_eq!(label(&app, "", "Composition"), "Composition");
     }
@@ -6941,8 +6941,8 @@ mod tests {
         assert!(zh.items().iter().any(|i| i.command == "layer.newText" && i.label == "文本"));
         assert!(zh.items().iter().any(|i| i.command == "keys.easyEase" && i.label == "缓动"));
         // A dynamic filename is never translated.
-        app.session.prefs.push_recent("/tmp/File.ecproj");
-        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.ecproj"));
+        app.session.prefs.push_recent("/tmp/File.rfx");
+        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.rfx"));
     }
 
     #[test]
@@ -6985,15 +6985,15 @@ mod tests {
         assert!(zh.items().iter().any(|i| i.command == "layer.newText" && i.label == "文字"));
         assert!(zh.items().iter().any(|i| i.command == "keys.easyEase" && i.label == "緩動"));
         // A dynamic filename is never translated.
-        app.session.prefs.push_recent("/tmp/File.ecproj");
-        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.ecproj"));
+        app.session.prefs.push_recent("/tmp/File.rfx");
+        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.rfx"));
     }
 
     #[test]
     fn ukrainian_translates_menus_without_changing_bindings_or_user_names() {
         let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"en"})).unwrap();
-        app.session.prefs.push_recent("/tmp/File.ecproj");
+        app.session.prefs.push_recent("/tmp/File.rfx");
         let en = crate::native_menu::build(&app);
         let state = crate::native_menu::state_key(&app);
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"uk"})).unwrap();
@@ -7007,7 +7007,7 @@ mod tests {
         assert_eq!(bindings(&en), bindings(&uk));
         assert!(uk.items().iter().any(|i| i.command == "comp.new" && i.label == "Нова композиція..."));
         assert!(uk.items().iter().any(|i| i.command == "layer.newText" && i.label == "Текст"));
-        assert!(uk.items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.ecproj"));
+        assert!(uk.items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.rfx"));
         assert_eq!(label(&app, "", "File"), "Файл");
         assert_eq!(label(&app, "", "Light"), "Світло");
         assert_eq!(label(&app, "view.panelBackground", "Black"), "Чорний");
@@ -7094,8 +7094,8 @@ mod tests {
         assert!(es.items().iter().any(|i| i.command == "layer.newText" && i.label == "Texto"));
         assert!(es.items().iter().any(|i| i.command == "keys.easyEase" && i.label == "Suavizado"));
         // A dynamic filename is never translated.
-        app.session.prefs.push_recent("/tmp/File.ecproj");
-        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.ecproj"));
+        app.session.prefs.push_recent("/tmp/File.rfx");
+        assert!(crate::native_menu::build(&app).items().iter().any(|i| i.command == "file.openRecent" && i.label == "File.rfx"));
     }
 
     #[test]

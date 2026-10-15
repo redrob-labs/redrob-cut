@@ -572,7 +572,7 @@ impl Shortcuts {
                 out.push(Binding::new(&c.id, k, p.as_deref()));
             }
         }
-        for (c, k, p) in presets::FILMCRAFT_PANEL.iter().chain(presets::PREMIERE_PANEL) {
+        for (c, k, p) in presets::REDROB_FILM_PANEL.iter().chain(presets::PREMIERE_PANEL) {
             if self.known(c) {
                 out.push(Binding::new(c, k, panel_opt(p)));
             }

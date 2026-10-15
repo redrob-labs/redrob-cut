@@ -2,11 +2,11 @@
 //!
 //! **Auto Save** (Premiere behaviour, Preferences ▸ Auto Save): every *interval* minutes, if the
 //! project changed since the last auto-save, a copy is written to the `Auto-Save` folder next to the
-//! project as `<name>-YYYY-MM-DD_HH-MM-SS.fcproj`, keeping at most *Maximum Project Versions* files.
+//! project as `<name>-YYYY-MM-DD_HH-MM-SS.rfilm`, keeping at most *Maximum Project Versions* files.
 //! Optionally the project file itself is saved too.
 //!
 //! **Recovery journal** (Redrob Film addition): while the project has unsaved changes, a snapshot is
-//! written to `<data dir>/Recovery/<session>/snapshot.fcproj` shortly after each change (debounced,
+//! written to `<data dir>/Recovery/<session>/snapshot.rfilm` shortly after each change (debounced,
 //! and at least every *N* seconds while edits keep coming). Each running app holds an OS lock on
 //! `<session>/lock`; when the process dies (crash, `kill -9`, power cut) the lock is released, so on
 //! the next launch any session directory whose lock can be taken and that holds a snapshot is a
@@ -487,14 +487,14 @@ pub fn portable_data_dir(exe_dir: &Path) -> Option<PathBuf> {
     exe_dir.join(PORTABLE_MARKER).is_file().then(|| exe_dir.join("data"))
 }
 
-/// The data directory. `FILMCRAFT_DATA_DIR` overrides; a portable install ([`PORTABLE_MARKER`] next
+/// The data directory. `REDROB_FILM_DATA_DIR` overrides; a portable install ([`PORTABLE_MARKER`] next
 /// to the executable) uses `<exe dir>/data`; otherwise the per-user directory:
 /// macOS `~/Library/Application Support/Redrob Film`, Windows `%APPDATA%\Redrob Film`,
 /// elsewhere `$XDG_DATA_HOME/redrob-film` or `~/.local/share/redrob-film`. Not upstream's folders, so
 /// an upstream install and this one never share auto-saves, presets or logs.
 pub fn default_data_dir() -> Option<PathBuf> {
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
-    if let Some(d) = env("FILMCRAFT_DATA_DIR") {
+    if let Some(d) = env("REDROB_FILM_DATA_DIR").or_else(|| env("FILMCRAFT_DATA_DIR")) { // legacy: the pre-rename variable still works
         return Some(d);
     }
     if let Some(d) = std::env::current_exe().ok().and_then(|exe| exe.parent().and_then(portable_data_dir)) {
@@ -515,7 +515,7 @@ pub fn unix_now() -> i64 {
 
 // ------------------------------------------------------------------ recovery candidates
 
-/// Snapshot meta written next to `snapshot.fcproj`.
+/// Snapshot meta written next to `snapshot.rfilm`.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct JournalMeta {
@@ -543,7 +543,8 @@ pub struct RecoveryCandidate {
     pub meta: JournalMeta,
 }
 
-const SNAPSHOT: &str = "snapshot.fcproj";
+const SNAPSHOT: &str = "snapshot.rfilm";
+const LEGACY_SNAPSHOT: &str = "snapshot.fcproj"; // legacy: recovery sessions written before the rename
 const META: &str = "session.json";
 const LOCK: &str = "lock";
 
@@ -575,7 +576,7 @@ pub fn scan_candidates(data_dir: &Path, skip: Option<&Path>) -> Vec<RecoveryCand
         }
         let meta = fs::read(dir.join(META)).ok().and_then(|b| serde_json::from_slice::<JournalMeta>(&b).ok());
         match meta {
-            Some(meta) if dir.join(SNAPSHOT).is_file() => {
+            Some(meta) if snapshot_file(&dir).is_some() => {
                 out.push(RecoveryCandidate { id: e.file_name().to_string_lossy().into_owned(), dir, meta });
             }
             _ => {
@@ -587,9 +588,15 @@ pub fn scan_candidates(data_dir: &Path, skip: Option<&Path>) -> Vec<RecoveryCand
     out
 }
 
+/// The snapshot file of a recovery session: `snapshot.rfilm`, or a pre-rename `snapshot.fcproj`.
+fn snapshot_file(dir: &Path) -> Option<PathBuf> {
+    [SNAPSHOT, LEGACY_SNAPSHOT].iter().map(|n| dir.join(n)).find(|p| p.is_file()) // legacy: .fcproj snapshot
+}
+
 /// Load a candidate's snapshot.
 pub fn load_candidate(c: &RecoveryCandidate) -> Result<redrob_film_format::Loaded, String> {
-    let b = fs::read(c.dir.join(SNAPSHOT)).map_err(|e| format!("{}: {e}", c.dir.display()))?;
+    let snap = snapshot_file(&c.dir).unwrap_or_else(|| c.dir.join(SNAPSHOT));
+    let b = fs::read(snap).map_err(|e| format!("{}: {e}", c.dir.display()))?;
     redrob_film_format::decode(&b).map_err(|e| e.to_string())
 }
 

@@ -142,7 +142,7 @@ entry held out, lexicon rebuilt without them, letter-to-sound output compared
 with the dictionary pronunciation. On 2026-10-08, machine: mjcamacho's Linux
 workstation (rustc 1.99.0, release build): **229 held-out words, 9.1 % exact
 word accuracy, 37.9 % phoneme error rate** (Levenshtein over phoneme symbols).
-The test runs whenever `FILMCRAFT_CMUDICT` points at a CMUdict file and prints
+The test runs whenever `REDROB_FILM_CMUDICT` points at a CMUdict file and prints
 the numbers; it asserts only that it runs. CMUdict is downloaded with the voices
 at run time, never committed (BSD-style licence, attributed in the download
 dialog).

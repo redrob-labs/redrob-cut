@@ -94,7 +94,7 @@ fn resolve_relative_footage(p: &mut Project, project_path: &str, services: &dyn 
     }
 }
 
-/// The project file's text for `path`: `.ecproj` JSON, or XML for `.ecprojx` / `.xml` (a
+/// The project file's text for `path`: `.rfx` JSON, or XML for `.rfxx` / `.xml` (a
 /// project opened from an XML copy saves as XML again). Fails, writing nothing, when the project
 /// wouldn't read back.
 pub(crate) fn file_text(s: &Session, path: &str) -> Result<String> {

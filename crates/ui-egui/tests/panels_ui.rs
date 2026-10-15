@@ -2,7 +2,7 @@
 //! footer), Metadata (edit a field by typing, undo), Timecode, Events, Progress and the Reference
 //! Monitor, each opened from Window ▸ and driven by automation id through the control channel.
 //!
-//! Set `FILMCRAFT_UI_SNAPSHOT_DIR=<dir>` to also render offscreen with wgpu and write `panels-*.png`.
+//! Set `REDROB_FILM_UI_SNAPSHOT_DIR=<dir>` to also render offscreen with wgpu and write `panels-*.png`.
 
 #![allow(dead_code)]
 
@@ -25,7 +25,7 @@ impl Driver {
     fn with(session: Session) -> Self {
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(std::path::PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(std::path::PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();

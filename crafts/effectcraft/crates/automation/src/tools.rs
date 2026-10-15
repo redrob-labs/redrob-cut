@@ -416,7 +416,7 @@ fn open_project(b: &mut Backend, a: &Value) -> Result<Reply> {
     } else if get(a, "new").and_then(Value::as_bool) == Some(true) {
         b.exec("file.newProject", json!({}))?;
     } else {
-        return Err(Error::BadArgs("give `path` (.ecproj), `demo: true` or `new: true`".into()));
+        return Err(Error::BadArgs("give `path` (.rfx), `demo: true` or `new: true`".into()));
     }
     get_project(b, &json!({}))
 }
@@ -745,18 +745,18 @@ static TOOLS: &[ToolDef] = &[
     },
     ToolDef {
         name: "open_project",
-        description: "Open a project: `path` to an .ecproj file, `demo: true` for the built-in demo project, or `new: true` for an empty project. Returns the project overview.",
+        description: "Open a project: `path` to an .rfx file, `demo: true` for the built-in demo project, or `new: true` for an empty project. Returns the project overview.",
         bridge_only: false,
         schema: || {
-            schema(json!({"path": {"type": "string", "description": "Path of an .ecproj file."}, "demo": {"type": "boolean"}, "new": {"type": "boolean"}}), &[])
+            schema(json!({"path": {"type": "string", "description": "Path of an .rfx file."}, "demo": {"type": "boolean"}, "new": {"type": "boolean"}}), &[])
         },
         run: open_project,
     },
     ToolDef {
         name: "save_project",
-        description: "Save the project to its current file, or to `path` (Save As, .ecproj).",
+        description: "Save the project to its current file, or to `path` (Save As, .rfx).",
         bridge_only: false,
-        schema: || schema(json!({"path": {"type": "string", "description": "Destination .ecproj path (Save As)."}}), &[]),
+        schema: || schema(json!({"path": {"type": "string", "description": "Destination .rfx path (Save As)."}}), &[]),
         run: save_project,
     },
     ToolDef {

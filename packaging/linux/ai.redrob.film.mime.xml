@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-redrob-film">
+    <comment>Redrob Film project</comment>
+    <sub-class-of type="application/json"/>
+    <glob pattern="*.rfilm"/>
+    <glob pattern="*.fcproj"/>
+  </mime-type>
+  <mime-type type="application/x-redrob-effects">
+    <comment>Redrob Film effects project</comment>
+    <sub-class-of type="application/json"/>
+    <glob pattern="*.rfx"/>
+    <glob pattern="*.ecproj"/>
+  </mime-type>
 </mime-info>

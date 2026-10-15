@@ -4316,8 +4316,8 @@ mod tests {
         assert_eq!(tr_args("Template: {}\n{}", &[&"Title", &"My description"]), "Šablona: Title\nMy description");
         assert_eq!(tr_args("Leave all attributes in \"{}\"", &[&"File Čeština"]), "Ponechat všechny atributy v „File Čeština“");
         assert_eq!(
-            tr_args("{} — double-click to open, {}-click to reveal", &[&"File.ecproj", &"Alt"]),
-            "File.ecproj — dvojklikem otevřete, kliknutím s Alt zobrazíte umístění"
+            tr_args("{} — double-click to open, {}-click to reveal", &[&"File.rfx", &"Alt"]),
+            "File.rfx — dvojklikem otevřete, kliknutím s Alt zobrazíte umístění"
         );
         assert_eq!(tr_args("Proxy Use: {}", &[]), "Použití zástupných souborů: ");
         set_current("en");

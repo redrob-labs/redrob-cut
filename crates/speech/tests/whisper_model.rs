@@ -1,8 +1,8 @@
 //! Whisper end-to-end on real speech, when the weights are on this machine.
 //!
-//! Never downloads. Looks for the model in `$FILMCRAFT_MODELS_DIR/<id>/`, then
+//! Never downloads. Looks for the model in `$REDROB_FILM_MODELS_DIR/<id>/`, then
 //! `<repo>/target/models/<id>/` (put a model there by hand, or let the app download it into the
-//! data directory and point `FILMCRAFT_MODELS_DIR` at `<data dir>/models`). Speech samples are
+//! data directory and point `REDROB_FILM_MODELS_DIR` at `<data dir>/models`). Speech samples are
 //! `<repo>/target/fixtures/speech/**/<name>.f32` (mono 16 kHz little-endian f32) with the
 //! reference text in `<name>.txt`; without either the test prints SKIPPED.
 #![cfg(feature = "whisper")]
@@ -17,7 +17,7 @@ fn repo() -> PathBuf {
 
 fn model_dir(id: &str) -> Option<PathBuf> {
     let m = models::find(id)?;
-    let mut roots: Vec<PathBuf> = std::env::var_os("FILMCRAFT_MODELS_DIR").map(PathBuf::from).into_iter().collect();
+    let mut roots: Vec<PathBuf> = std::env::var_os("REDROB_FILM_MODELS_DIR").map(PathBuf::from).into_iter().collect();
     roots.push(repo().join("target/models"));
     // worktrees: the main checkout's target
     if let Ok(main) = std::fs::canonicalize(repo())

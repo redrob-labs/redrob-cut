@@ -251,7 +251,7 @@ pub(crate) const EXPORT_SAVE_DIALOGS: [(&str, &str, &str); 7] = [
     ("file.exportFcpxml", "FCPXML", "fcpxml"),
     ("file.exportOtio", "OpenTimelineIO", "otio"),
     ("file.exportAle", "Avid Log Exchange", "ale"),
-    ("file.exportSelectionProject", "Redrob Film Project", "fcproj"),
+    ("file.exportSelectionProject", "Redrob Film Project", "rfilm"),
 ];
 
 pub struct FilmcraftApp {
@@ -1235,7 +1235,7 @@ impl FilmcraftApp {
             }
             "file.saveAs" | "file.save" | "file.saveCopy" => {
                 let suggested =
-                    if id == "file.saveCopy" { format!("{} copy.fcproj", self.session.project.name) } else { format!("{}.fcproj", self.session.project.name) };
+                    if id == "file.saveCopy" { format!("{} copy.rfilm", self.session.project.name) } else { format!("{}.rfilm", self.session.project.name) };
                 let Some(path) = self.hooks.pick_save.as_mut().and_then(|f| f(&suggested)) else { return Ok(Value::Null) };
                 let cmd = if id == "file.saveCopy" { "file.saveCopy" } else { "file.saveAs" };
                 self.session.execute(cmd, json!({"path": path})).map_err(|e| e.to_string())

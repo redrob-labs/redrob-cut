@@ -202,7 +202,7 @@ fn headless_workflow() {
     // Save + reopen.
     let dir = std::env::temp_dir().join(format!("ec-mcp-test-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let path = dir.join("t.ecproj").to_string_lossy().into_owned();
+    let path = dir.join("t.rfx").to_string_lossy().into_owned();
     let saved = call_json(&mut s, "save_project", json!({"path": path}));
     assert_eq!(saved["dirty"], false);
     call_json(&mut s, "open_project", json!({"new": true}));
@@ -342,7 +342,7 @@ fn autosave_errors_preserve_tool_success_retry_and_fail_shutdown() {
 #[test]
 fn autosave_keeps_sessions_and_desktop_recovery_separate() {
     let dir = autosave_test_dir("isolated");
-    let desktop_save = dir.join(redrob_effects_engine::autosave::AUTOSAVE_FOLDER).join("Untitled Project auto-save 1.ecproj");
+    let desktop_save = dir.join(redrob_effects_engine::autosave::AUTOSAVE_FOLDER).join("Untitled Project auto-save 1.rfx");
     std::fs::create_dir_all(desktop_save.parent().unwrap()).unwrap();
     std::fs::write(&desktop_save, "desktop backup").unwrap();
     std::fs::write(dir.join("session.lock"), "desktop sentinel").unwrap();
@@ -381,7 +381,7 @@ fn autosave_marks_saved_or_undone_work_clean_without_losing_its_path() {
     assert_eq!(manifest["dirty"], false);
     call_json(&mut s, "redo", json!({}));
     let path = autosave_status(&mut s)["latestPath"].clone();
-    call_json(&mut s, "save_project", json!({"path": dir.join("Saved.ecproj")}));
+    call_json(&mut s, "save_project", json!({"path": dir.join("Saved.rfx")}));
     assert_eq!(autosave_status(&mut s)["latestPath"], path, "save resets the engine bookkeeping but the server remembers the recovery file");
     let manifest: Value = serde_json::from_str(&std::fs::read_to_string(folder.join("session.json")).unwrap()).unwrap();
     assert_eq!(manifest["dirty"], false);
@@ -886,7 +886,7 @@ fn autosave_isolation_also_applies_to_engine_autosaves_and_preference_changes() 
     let dir = autosave_test_dir("engine-save");
     let desktop = dir.join("DesktopCustom");
     std::fs::create_dir_all(&desktop).unwrap();
-    std::fs::write(desktop.join("Untitled Project auto-save 1.ecproj"), "desktop backup").unwrap();
+    std::fs::write(desktop.join("Untitled Project auto-save 1.rfx"), "desktop backup").unwrap();
     let mut session = Session::default();
     session.prefs.auto_save.location = "custom".into();
     session.prefs.auto_save.folder = desktop.to_string_lossy().into_owned();
@@ -905,14 +905,14 @@ fn autosave_isolation_also_applies_to_engine_autosaves_and_preference_changes() 
             {"command":"file.autoSave","params":{}}
         ]}),
     );
-    call_json(&mut s, "save_project", json!({"path":dir.join("Named.ecproj")}));
+    call_json(&mut s, "save_project", json!({"path":dir.join("Named.rfx")}));
     call_json(&mut s, "execute_command", json!({"command":"layer.newText","params":{"text":"Latest isolated edit"}}));
     let current = autosave_status(&mut s);
     assert!(std::path::Path::new(current["latestPath"].as_str().unwrap()).starts_with(status["folder"].as_str().unwrap()));
     assert!(std::fs::read_to_string(current["latestPath"].as_str().unwrap()).unwrap().contains("Latest isolated edit"));
     let recovery = call_json(&mut s, "execute_command", json!({"command":"file.recoveryInfo"}));
     assert_eq!(recovery["folder"], status["folder"]);
-    assert_eq!(std::fs::read_to_string(desktop.join("Untitled Project auto-save 1.ecproj")).unwrap(), "desktop backup");
+    assert_eq!(std::fs::read_to_string(desktop.join("Untitled Project auto-save 1.rfx")).unwrap(), "desktop backup");
     assert_eq!(std::fs::read_dir(&desktop).unwrap().count(), 2, "only the original desktop file and the MCP subfolder");
     std::fs::remove_dir_all(dir).unwrap();
 }
@@ -969,7 +969,7 @@ fn resources_match_tools_and_recover_after_parse_error() {
     assert!(bad["id"].is_null());
     assert_eq!(rpc(&mut s, 1, "ping", json!({})), json!({}));
     let list = rpc(&mut s, 2, "resources/list", json!({}));
-    for (uri, tool) in [("effectcraft://document", "doc_inspect"), ("effectcraft://commands", "command_list")] {
+    for (uri, tool) in [("redrob-effects://document", "doc_inspect"), ("redrob-effects://commands", "command_list")] {
         assert!(list["resources"].as_array().unwrap().iter().any(|r| r["uri"] == uri));
         let r = rpc(&mut s, 3, "resources/read", json!({"uri":uri}));
         assert_eq!(r["contents"][0]["mimeType"], "application/json");
@@ -1032,7 +1032,7 @@ fn modern_clients_get_result_type() {
         (1, "tools/list", json!({"_meta": meta})),
         (2, "resources/list", json!({"_meta": meta})),
         (3, "resources/templates/list", json!({"_meta": meta})),
-        (4, "resources/read", json!({"_meta": meta, "uri": "effectcraft://document"})),
+        (4, "resources/read", json!({"_meta": meta, "uri": "redrob-effects://document"})),
         (5, "tools/call", json!({"_meta": meta, "name": "command_list", "arguments": {}})),
     ] {
         let r = rpc(&mut s, id, method, params);
@@ -1045,7 +1045,7 @@ fn modern_clients_get_result_type() {
     let mut s = server();
     rpc(&mut s, 1, "initialize", json!({"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "t", "version": "1"}}));
     for (id, method, params) in
-        [(2, "tools/list", json!({})), (3, "resources/list", json!({})), (4, "resources/read", json!({"uri": "effectcraft://document"}))]
+        [(2, "tools/list", json!({})), (3, "resources/list", json!({})), (4, "resources/read", json!({"uri": "redrob-effects://document"}))]
     {
         let r = rpc(&mut s, id, method, params);
         let res = r.as_object().unwrap();
@@ -1326,8 +1326,8 @@ fn automation_roots_confine_file_access() {
     // Unconfined (the default): anywhere.
     let mut s = server();
     call_json(&mut s, "execute_command", json!({"command": "comp.new", "params": {"name": "A", "width": 64, "height": 64}}));
-    call_json(&mut s, "save_project", json!({"path": p(&outside, "free.ecproj")}));
-    call_json(&mut s, "save_project", json!({"path": p(&read, "source.ecproj")}));
+    call_json(&mut s, "save_project", json!({"path": p(&outside, "free.rfx")}));
+    call_json(&mut s, "save_project", json!({"path": p(&read, "source.rfx")}));
 
     let mut s = server();
     s.backend().confine(Confinement::new(std::slice::from_ref(&read), std::slice::from_ref(&write)).unwrap());
@@ -1337,25 +1337,25 @@ fn automation_roots_confine_file_access() {
         c[0]["text"].as_str().unwrap_or_default().to_string()
     };
     // Reading: inside a read root, not outside.
-    call_json(&mut s, "open_project", json!({"path": p(&read, "source.ecproj")}));
-    let msg = denied(&mut s, "open_project", json!({"path": p(&outside, "free.ecproj")}));
+    call_json(&mut s, "open_project", json!({"path": p(&read, "source.rfx")}));
+    let msg = denied(&mut s, "open_project", json!({"path": p(&outside, "free.rfx")}));
     assert!(msg.contains("outside the automation roots"), "{msg}");
     // Writing: inside a write root only; not into a read root, not relative, not with `..`.
-    call_json(&mut s, "save_project", json!({"path": p(&write, "saved.ecproj")}));
-    assert!(write.join("saved.ecproj").is_file());
-    denied(&mut s, "save_project", json!({"path": p(&read, "copy.ecproj")}));
-    denied(&mut s, "save_project", json!({"path": "relative.ecproj"}));
-    denied(&mut s, "save_project", json!({"path": p(&write, "../elsewhere/up.ecproj")}));
+    call_json(&mut s, "save_project", json!({"path": p(&write, "saved.rfx")}));
+    assert!(write.join("saved.rfx").is_file());
+    denied(&mut s, "save_project", json!({"path": p(&read, "copy.rfx")}));
+    denied(&mut s, "save_project", json!({"path": "relative.rfx"}));
+    denied(&mut s, "save_project", json!({"path": p(&write, "../elsewhere/up.rfx")}));
     denied(&mut s, "execute_command", json!({"command": "comp.saveFrameAs", "params": {"path": p(&outside, "f.png")}}));
     // Any other absolute path a command is given.
     denied(&mut s, "execute_command", json!({"command": "renderQueue.add", "params": {"output": p(&outside, "movie.mp4")}}));
     // A batch step.
-    let steps = json!([{"command": "comp.new", "params": {"name": "B"}}, {"command": "file.saveAs", "params": {"path": p(&outside, "b.ecproj")}}]);
+    let steps = json!([{"command": "comp.new", "params": {"name": "B"}}, {"command": "file.saveAs", "params": {"path": p(&outside, "b.rfx")}}]);
     denied(&mut s, "batch", json!({"steps": steps}));
     let steps = json!([{"command": "file.saveAs", "params": {"path": "$1.path"}}]);
     denied(&mut s, "batch", json!({"steps": steps}));
     // Save (and Increment and Save) write the open project's own file: it must be writable.
-    call_json(&mut s, "open_project", json!({"path": p(&read, "source.ecproj")}));
+    call_json(&mut s, "open_project", json!({"path": p(&read, "source.rfx")}));
     denied(&mut s, "save_project", json!({}));
     denied(&mut s, "execute_command", json!({"command": "file.incrementAndSave"}));
     // Rendering the queue writes its items' outputs (by default beside the project).
@@ -1364,14 +1364,14 @@ fn automation_roots_confine_file_access() {
     assert!(queue["items"][0]["outputPath"].as_str().is_some_and(|o| o.starts_with(&*read.to_string_lossy())), "{queue}");
     let msg = denied(&mut s, "execute_command", json!({"command": "renderQueue.render"}));
     assert!(msg.contains("cannot write"), "{msg}");
-    call_json(&mut s, "open_project", json!({"path": p(&write, "saved.ecproj")}));
+    call_json(&mut s, "open_project", json!({"path": p(&write, "saved.rfx")}));
     call_json(&mut s, "save_project", json!({}));
     // Through a symbolic link out of a root.
     #[cfg(unix)]
     {
         std::os::unix::fs::symlink(&outside, write.join("link")).unwrap();
-        denied(&mut s, "save_project", json!({"path": p(&write.join("link"), "escaped.ecproj")}));
-        assert!(!outside.join("escaped.ecproj").exists());
+        denied(&mut s, "save_project", json!({"path": p(&write.join("link"), "escaped.rfx")}));
+        assert!(!outside.join("escaped.rfx").exists());
     }
     // Scripts can read and write anything: refused.
     denied(&mut s, "run_script", json!({"code": "1 + 1"}));

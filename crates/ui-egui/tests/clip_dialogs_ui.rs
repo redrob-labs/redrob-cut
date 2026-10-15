@@ -315,7 +315,7 @@ fn quitting_with_unsaved_changes_asks_to_save() {
 
 #[test]
 fn quit_save_on_a_new_project_uses_the_save_dialog_and_scripted_quit_does_not_ask() {
-    let path = std::env::temp_dir().join(format!("fc-quit-save-{}.fcproj", std::process::id()));
+    let path = std::env::temp_dir().join(format!("fc-quit-save-{}.rfilm", std::process::id()));
     let _ = std::fs::remove_file(&path);
     let mut d = Driver::new();
     d.app().session.path = None;

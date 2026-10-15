@@ -23,9 +23,9 @@ use crate::{Job, RenderQuality, out};
 /// platform, so a portable estimate is not available here.
 pub(crate) const GPU_INFLIGHT_DEFAULT: usize = 1;
 /// Overrides [`GPU_INFLIGHT_DEFAULT`]: a whole number of frames, at least 1.
-pub(crate) const GPU_INFLIGHT_ENV: &str = "EFFECTCRAFT_GPU_INFLIGHT";
+pub(crate) const GPU_INFLIGHT_ENV: &str = "REDROB_EFFECTS_GPU_INFLIGHT";
 
-/// GPU frames in flight from the `EFFECTCRAFT_GPU_INFLIGHT` value: a positive whole number, or
+/// GPU frames in flight from the `REDROB_EFFECTS_GPU_INFLIGHT` value: a positive whole number, or
 /// the default (with a warning when a value was given) when it is 0, negative, not a number or
 /// too large.
 pub(crate) fn gpu_inflight(var: Option<&str>) -> usize {

@@ -1,6 +1,6 @@
 # Project files
 
-FilmCraft projects are `.fcproj` files: UTF-8 JSON with an explicit schema version. Reading and
+FilmCraft projects are `.rfilm` files: UTF-8 JSON with an explicit schema version. Reading and
 writing them is `crates/format` (`redrob-film-format`); the engine's `file.*` commands use it.
 
 ## Format
@@ -74,7 +74,7 @@ build would load the file but silently drop new fields on its next save.
 
 When you open an older file FilmCraft says so ("Upgraded project from schema v1 to v2"). The file
 on disk is unchanged until you save. The **first save over it** keeps the original next to it as
-`<name> (schema v1 backup).fcproj`, so an older FilmCraft can still open your work.
+`<name> (schema v1 backup).rfilm`, so an older FilmCraft can still open your work.
 
 ### Newer files
 
@@ -125,9 +125,9 @@ like Premiere's:
 | Update it at least every N second(s) | `autoSave.recoveryIntervalSeconds` | 5 (1–600) |
 
 At each interval, if the project changed since the last auto-save, a copy is written to the
-`Auto-Save` folder next to the project as `<name>-YYYY-MM-DD_HH-MM-SS.fcproj` (local time). An
+`Auto-Save` folder next to the project as `<name>-YYYY-MM-DD_HH-MM-SS.rfilm` (local time). An
 unsaved project uses `<data dir>/Auto-Save/`. After each write the oldest copies beyond the limit are
-deleted. Only files named exactly `<name>-<timestamp>.fcproj` are ever deleted. An auto-save is an
+deleted. Only files named exactly `<name>-<timestamp>.rfilm` are ever deleted. An auto-save is an
 ordinary project file: open it with File ▸ Open Project. `file.listAutoSaves` lists them, newest
 first.
 
@@ -138,7 +138,7 @@ Preferences are stored in `<data dir>/preferences.json`. The `prefs.*` commands 
 Premiere's auto-save can lose up to one interval of work. FilmCraft also keeps a **recovery journal**:
 
 - Whenever the project has unsaved changes, a snapshot is written to
-  `<data dir>/Recovery/<started>-<pid>[-<n>]/snapshot.fcproj`, plus `session.json` (time, revision, project
+  `<data dir>/Recovery/<started>-<pid>[-<n>]/snapshot.rfilm`, plus `session.json` (time, revision, project
   name and path). It is written about 1 s after the last edit, or after at most
   `recoveryIntervalSeconds` while edits keep coming. Saving the project deletes the snapshot.
 - Each running FilmCraft holds an OS file lock on `<session>/lock`. When the process dies (crash,
@@ -160,7 +160,7 @@ Premiere's auto-save can lose up to one interval of work. FilmCraft also keeps a
 
 Desktop flags: `--recover` recovers the newest candidate without asking. `--no-recover` starts
 without asking; the changes stay available through File ▸ Recover Unsaved Changes…. `--data-dir
-<dir>` (or `FILMCRAFT_DATA_DIR`) moves the data directory. The default is `~/Library/Application
+<dir>` (or `REDROB_FILM_DATA_DIR`) moves the data directory. The default is `~/Library/Application
 Support/FilmCraft` on macOS, `%APPDATA%\FilmCraft` on Windows, and `$XDG_DATA_HOME/filmcraft` or
 `~/.local/share/filmcraft` elsewhere. A `portable.txt` file next to the executable (the Windows
 portable zip ships one) makes it `data` next to the executable instead.
@@ -202,7 +202,7 @@ UI automation ids: `recovery.recover`, `recovery.later`, `recovery.discard`, `re
 Premiere's Settings dialog (app menu ▸ Settings ▸ <category> on macOS, Edit ▸ Preferences
 elsewhere; General is Cmd+,; the window is titled "Preferences"). The values are user preferences,
 not project data: they live in `preferences.json` in the per-user data directory (written
-atomically on every change) and never touch the `.fcproj` schema. The file carries a `version`
+atomically on every change) and never touch the `.rfilm` schema. The file carries a `version`
 (currently 2); older files are migrated on load, unknown dropdown values, bad colours and
 out-of-range numbers are repaired to defaults/limits, and an unreadable file falls back to the
 defaults.
@@ -383,7 +383,7 @@ destination?, preset?}` (Project Settings ▸ Ingest) acts on every `file.import
 - **dryRun** returns the plan and the disk-space estimate (`originalBytes`, `resultBytes`, `files`)
   without writing anything.
 
-The copy runs as a job. The project file (`<destination>/<name>.fcproj`) is written last, with the
+The copy runs as a job. The project file (`<destination>/<name>.rfilm`) is written last, with the
 new paths and fingerprints, so it opens with no missing media.
 
 Dialog ids: `pm.seq.<id>`, `pm.mode.<collect|consolidate>`, `pm.preset.<id>`, `pm.excludeUnused`,
@@ -401,7 +401,7 @@ write the same JSON format:
 {"format": "filmcraft.effect-presets", "version": 1, "presets": [
   {"name": "My Vignette", "description": "", "keyframes": "AnchorToIn",
    "source_duration": 2540160000000, "source_size": [1920, 1080],
-   "effects": [ /* EffectInstance, exactly as in .fcproj: effect, enabled, params, masks */ ]}
+   "effects": [ /* EffectInstance, exactly as in .rfilm: effect, enabled, params, masks */ ]}
 ]}
 ```
 

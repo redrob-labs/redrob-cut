@@ -201,7 +201,7 @@ fn each_comp_keeps_its_viewer_resolution() {
     assert_eq!(h.state().viewer_res(), Resolution::Half);
     assert!(h.state().viewer_scale(1.0, 1.0) == 0.5);
     // Saved and opened again.
-    let path = std::env::temp_dir().join(format!("ec-viewer-res-{}.ecproj", std::process::id()));
+    let path = std::env::temp_dir().join(format!("ec-viewer-res-{}.rfx", std::process::id()));
     h.state_mut().session.execute("file.saveAs", json!({"path": path.to_string_lossy()})).unwrap();
     let mut s = Session::default();
     s.execute("file.open", json!({"path": path.to_string_lossy()})).unwrap();

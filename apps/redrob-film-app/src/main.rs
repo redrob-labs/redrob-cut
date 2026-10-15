@@ -5,13 +5,13 @@
 //! ([`ai`]), hand-offs between them ([`handoff`]) and one project bundle ([`bundle`]).
 //!
 //! Usage: `filmcraft [--control <port>] [--demo|--empty] [--recover|--no-recover] [--data-dir <dir>]
-//! [project.fcproj | media files…]`; `--help` prints the options, `--version` the version. An
+//! [project.rfilm | media files…]`; `--help` prints the options, `--version` the version. An
 //! unknown option is an error (exit code 2), not a file to open.
 //!
 //! Without a project, `--demo` or `--empty`, Settings ▸ General ▸ At Startup decides: Show Home
 //! (the demo project), Open Most Recent, or an empty project.
 //!
-//! `--control <port>` (or `FILMCRAFT_CONTROL_PORT`) starts a localhost JSON-lines control server;
+//! `--control <port>` (or `REDROB_FILM_CONTROL_PORT`) starts a localhost JSON-lines control server;
 //! see `redrob_film_ui_egui::control` for the methods. A port that is not a number is an error from
 //! either source. Without it the app still opens one, on a free port and gated by a per-launch
 //! token, for the built-in agent (Redrob Code) alone; see [`agent_setup`].
@@ -21,7 +21,7 @@
 //! project).
 //!
 //! Auto-save and the crash-recovery journal run in every session (data in `--data-dir`, else
-//! `FILMCRAFT_DATA_DIR`, else the per-user application data folder). If a previous session died
+//! `REDROB_FILM_DATA_DIR`, else the per-user application data folder). If a previous session died
 //! with unsaved changes the app asks to recover them; `--recover` recovers the newest without
 //! asking, `--no-recover` starts without asking (the changes stay available via File ▸ Recover
 //! Unsaved Changes…).
@@ -101,7 +101,9 @@ fn main() -> eframe::Result {
     // First, so the panic hook and every start-up record are logged (`logging`).
     let logger = logging::install();
     // lossy, so a value that is not Unicode is reported like any other bad port instead of ignored
-    let env_port = std::env::var_os("FILMCRAFT_CONTROL_PORT").map(|p| p.to_string_lossy().into_owned());
+    let env_port = std::env::var_os("REDROB_FILM_CONTROL_PORT")
+        .or_else(|| std::env::var_os("FILMCRAFT_CONTROL_PORT")) // legacy: the pre-rename variable still works
+        .map(|p| p.to_string_lossy().into_owned());
     let Launch { control_port, files, demo, startup_flag, recover, data_dir } = match args::parse(env_port, std::env::args().skip(1)) {
         Ok(Cli::Run(l)) => l,
         Ok(Cli::Help) => {
@@ -127,7 +129,7 @@ fn main() -> eframe::Result {
             Some(Err(e)) => log::warn!("no log file: {e}"),
             None => {
                 logger.stderr_only();
-                log::warn!("no log file: no data directory (set FILMCRAFT_DATA_DIR or --data-dir)");
+                log::warn!("no log file: no data directory (set REDROB_FILM_DATA_DIR or --data-dir)");
             }
         }
     }
@@ -179,7 +181,7 @@ fn main() -> eframe::Result {
             }
             // voice-over recording reads the microphone through cpal
             session.voiceover.input = Some(Box::new(audio_in::CpalIn::new(&session.prefs.audio_hardware.device_class)));
-            let project = files.iter().find(|f| f.ends_with(".fcproj")).cloned();
+            let project = files.iter().find(|f| f.ends_with(".rfilm") || f.ends_with(".fcproj")).cloned(); // legacy: .fcproj still opens
             if let Some(p) = project {
                 if let Err(e) = session.execute("file.open", json!({"path": p})) {
                     log::error!("{e}");
@@ -201,7 +203,7 @@ fn main() -> eframe::Result {
             } else if demo {
                 let _ = session.execute("file.openDemoProject", json!({}));
             }
-            let media: Vec<String> = files.iter().filter(|f| !f.ends_with(".fcproj")).cloned().collect();
+            let media: Vec<String> = files.iter().filter(|f| !(f.ends_with(".rfilm") || f.ends_with(".fcproj"))).cloned().collect(); // legacy: .fcproj
             if !media.is_empty() {
                 let _ = session.execute("file.import", json!({"paths": media}));
             }
@@ -218,7 +220,8 @@ fn main() -> eframe::Result {
             }
             app.integrated_titlebar = cfg!(target_os = "macos");
             if let Some(rs) = cc.wgpu_render_state.clone()
-                && std::env::var_os("FILMCRAFT_CPU_COMPOSITE").is_none()
+                && std::env::var_os("REDROB_FILM_CPU_COMPOSITE").is_none()
+                && std::env::var_os("FILMCRAFT_CPU_COMPOSITE").is_none() // legacy: the pre-rename variable still works
             {
                 app.set_wgpu(rs);
             }
@@ -243,7 +246,7 @@ fn main() -> eframe::Result {
             }));
             app.hooks.pick_save = Some(Box::new(|name: &str| {
                 rfd::FileDialog::new()
-                    .add_filter(redrob_film_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
+                    .add_filter(redrob_film_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["rfilm"]))
                     .set_file_name(name)
                     .save_file()
                     .map(|p| p.to_string_lossy().to_string())
@@ -299,7 +302,7 @@ fn main() -> eframe::Result {
             }));
             app.hooks.pick_open_project = Some(Box::new(|| {
                 rfd::FileDialog::new()
-                    .add_filter(redrob_film_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
+                    .add_filter(redrob_film_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["rfilm", "fcproj"])) // legacy: .fcproj still opens
                     .pick_file()
                     .map(|p| p.to_string_lossy().to_string())
             }));

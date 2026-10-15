@@ -1,6 +1,6 @@
 [package]
 name = "redrob-film-format"
-description = "Redrob Film .fcproj files: schema versions + migrations, atomic saves, auto-save naming and rotation"
+description = "Redrob Film .rfilm files: schema versions + migrations, atomic saves, auto-save naming and rotation"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

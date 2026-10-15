@@ -273,7 +273,7 @@ pub fn ops_bench(spec: &LargeSpec, dir: &std::path::Path, fresh: &dyn Fn() -> Se
     let layers: usize = project.comps().map(|(_, c)| c.layers.len()).sum();
     out.push(Measure { name: "generate", ms, note: format!("{comps} comps, {layers} layers, {} items", project.items.len()) });
 
-    let path = dir.join("bench-large.ecproj");
+    let path = dir.join("bench-large.rfx");
     let path_s = path.to_string_lossy().to_string();
     let mut s = fresh();
     s.replace_project(project, None);

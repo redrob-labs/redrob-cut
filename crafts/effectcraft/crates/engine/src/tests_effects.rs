@@ -583,7 +583,7 @@ fn opening_an_old_project_upgrades_effect_instances() {
     }
     let dir = std::env::temp_dir().join(format!("ec-upgrade-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let path = dir.join("old.ecproj").to_string_lossy().to_string();
+    let path = dir.join("old.rfx").to_string_lossy().to_string();
     std::fs::write(&path, old.to_json()).unwrap();
     let mut s2 = Session::default();
     s2.execute("file.open", json!({"path": path})).unwrap();
@@ -660,7 +660,7 @@ fn opening_a_schema_1_project_moves_shape_layer_effect_points_into_effect_space(
     assert!(old.contains("\"schema\": 1"));
     let dir = std::env::temp_dir().join(format!("ec-effect-space-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let path = dir.join("old.ecproj").to_string_lossy().to_string();
+    let path = dir.join("old.rfx").to_string_lossy().to_string();
     std::fs::write(&path, old).unwrap();
     let mut s2 = Session::default();
     s2.execute("file.open", json!({"path": path})).unwrap();

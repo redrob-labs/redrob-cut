@@ -50,7 +50,7 @@ How they were checked:
   on average (2.2 px at worst). Finding a face takes about 45 ms; following it, about 20 ms a
   frame (32-thread CPU).
 
-Tests that need the weights run when `EFFECTCRAFT_MOBILESAM` / `EFFECTCRAFT_FACE_LANDMARKER`
+Tests that need the weights run when `REDROB_EFFECTS_MOBILESAM` / `REDROB_EFFECTS_FACE_LANDMARKER`
 point at the files, and are skipped otherwise.
 
 ## Adding a model

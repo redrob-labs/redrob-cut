@@ -1,11 +1,11 @@
 //! Test-only helpers shared by every FilmCraft crate (used as a dev-dependency only).
 //!
 //! - [`oracle`]: find `ffmpeg` / `ffprobe` (env vars, `PATH`, well-known dirs) and skip — or, with
-//!   `FILMCRAFT_REQUIRE_ORACLES=1`, fail — when they are missing ([`require_ffmpeg!`] & co.).
+//!   `REDROB_FILM_REQUIRE_ORACLES=1`, fail — when they are missing ([`require_ffmpeg!`] & co.).
 //! - [`fixtures`]: the shared fixture directory (`<workspace>/target/fixtures/<crate>`) and
 //!   collision-free temporary names for concurrent generators.
 //! - [`golden`]: RGBA8 images, PNG I/O, image-difference metrics and golden-file checks
-//!   (`FILMCRAFT_BLESS=1` regenerates references).
+//!   (`REDROB_FILM_BLESS=1` regenerates references).
 //!
 //! ffmpeg/ffprobe are external test oracles and fixture generators only; they are never linked
 //! or shipped (AGENTS.md §2).
@@ -19,7 +19,7 @@ pub use fixtures::{fixtures_dir, temp_path, workspace_root};
 pub use oracle::{ffmpeg, ffmpeg_or_skip, ffprobe, ffprobe_or_skip, oracles_required, skip};
 
 /// `let ff = require_ffmpeg!();` — the ffmpeg path, or return from the test after printing
-/// `SKIPPED: … ffmpeg not found` (a hard failure with `FILMCRAFT_REQUIRE_ORACLES=1`).
+/// `SKIPPED: … ffmpeg not found` (a hard failure with `REDROB_FILM_REQUIRE_ORACLES=1`).
 /// `require_ffmpeg!(value)` returns `value` instead of `()`.
 #[macro_export]
 macro_rules! require_ffmpeg {

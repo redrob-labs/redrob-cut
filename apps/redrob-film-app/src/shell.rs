@@ -365,10 +365,10 @@ impl ShellApp {
             rfd::FileDialog::new().add_filter("Media", exts).pick_files().unwrap_or_default().into_iter().map(|p| p.to_string_lossy().to_string()).collect()
         }));
         app.hooks.pick_save = Some(Box::new(|name: &str| {
-            rfd::FileDialog::new().add_filter("Effects Project", &["json", "ecproj"]).set_file_name(name).save_file().map(|p| p.to_string_lossy().to_string())
+            rfd::FileDialog::new().add_filter("Effects Project", &["json", "rfx"]).set_file_name(name).save_file().map(|p| p.to_string_lossy().to_string())
         }));
         app.hooks.pick_open_project = Some(Box::new(|| {
-            rfd::FileDialog::new().add_filter("Effects Project", &["json", "ecproj", "ecprojx"]).pick_file().map(|p| p.to_string_lossy().to_string())
+            rfd::FileDialog::new().add_filter("Effects Project", &["json", "rfx", "rfxx", "ecproj", "ecprojx"]).pick_file() // legacy: pre-rename effects projects still open.map(|p| p.to_string_lossy().to_string())
         }));
         app.hooks.pick_folder = Some(Box::new(|| rfd::FileDialog::new().pick_folder().map(|p| p.to_string_lossy().to_string())));
         app.hooks.pick_save_file = Some(Box::new(|name: &str, ext: &str| {
@@ -904,9 +904,9 @@ mod tests {
     #[test]
     fn the_window_title_names_the_bundle_and_marks_unsaved_changes() {
         assert_eq!(window_title(None), "Redrob Film");
-        assert_eq!(window_title(Some(("cut.fcproj", false))), "cut.fcproj - Redrob Film");
+        assert_eq!(window_title(Some(("cut.rfilm", false))), "cut.rfilm - Redrob Film");
         assert_eq!(window_title(Some(("Untitled", true))), "Untitled* - Redrob Film");
-        assert_eq!(file_name("/work/cut.fcproj"), "cut.fcproj");
+        assert_eq!(file_name("/work/cut.rfilm"), "cut.rfilm");
         assert_eq!(file_name(""), "");
     }
 

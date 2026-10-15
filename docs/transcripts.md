@@ -7,7 +7,7 @@ the control channel and MCP agents can do the same.
 
 ## Model
 
-- A **transcript** belongs to a media item (`Project::transcripts`, saved in the `.fcproj` since
+- A **transcript** belongs to a media item (`Project::transcripts`, saved in the `.rfilm` since
   schema v9). It lists **words** with media-time bounds (`Tick`s), an optional speaker index and a
   confidence, plus the speaker names and the language. Because the times are media time, the
   transcript stays valid however the clip is trimmed, moved, sped up or reused.
@@ -74,7 +74,7 @@ revision of OpenAI's Hugging Face repositories and checked against its SHA-256:
 
 Unit and engine tests use a fake `Transcriber` (`FixedTranscriber`), so CI needs no model. The
 end-to-end test `crates/speech/tests/whisper_model.rs` (feature `whisper`) runs only when weights are
-in `target/models/<id>/` (or `$FILMCRAFT_MODELS_DIR`) and speech samples (mono 16 kHz f32 with a
+in `target/models/<id>/` (or `$REDROB_FILM_MODELS_DIR`) and speech samples (mono 16 kHz f32 with a
 reference `.txt`) are in `target/fixtures/speech/`; it reports the word error rate and otherwise
 prints SKIPPED. Measured on 2026-10-01: `whisper-tiny`, English, 12.2 % WER over 797 words of
 the local speech samples (LibriSpeech read speech and dialogue clips) (about 9.5 minutes for the run in a release build on an

@@ -233,7 +233,7 @@ fn template_export_import_round_trip_with_overrides() {
     assert_eq!(info["controls"][3]["group"], ids["group"]);
     let entries = redrob_effects_lottie::zip::read_stored(&std::fs::read(&path).unwrap());
     let names: Vec<&str> = entries.iter().map(|(n, _)| n.as_str()).collect();
-    assert!(names.contains(&"manifest.json") && names.contains(&"project.ecproj") && names.contains(&"poster.png"), "{names:?}");
+    assert!(names.contains(&"manifest.json") && names.contains(&"project.rfx") && names.contains(&"poster.png"), "{names:?}");
 
     // A fresh project imports it and gets an instance in its active comp.
     let mut t = Session::default();

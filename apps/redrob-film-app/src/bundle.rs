@@ -1,5 +1,5 @@
-//! One project bundle for both editors: the `.fcproj` stays the Edit project, and the effects
-//! project is stored beside it as `<name>.fcproj.effects.json` (the effects project's own JSON,
+//! One project bundle for both editors: the `.rfilm` stays the Edit project, and the effects
+//! project is stored beside it as `<name>.rfilm.effects.json` (the effects project's own JSON,
 //! `Project::to_json` / `from_json`, crafts/effectcraft/crates/project/src/lib.rs L1532 / L1539).
 //!
 //! The Edit engine's open and save paths are not patched; the shell watches their effects on the
@@ -20,9 +20,9 @@
 
 use std::path::Path;
 
-/// The effects file of the Edit project at `fcproj`.
-pub fn effects_path(fcproj: &str) -> String {
-    format!("{fcproj}.effects.json")
+/// The effects file of the Edit project at `rfilm`.
+pub fn effects_path(rfilm: &str) -> String {
+    format!("{rfilm}.effects.json")
 }
 
 /// What the Edit session did since the last frame, as far as the bundle is concerned.
@@ -64,11 +64,11 @@ impl BundleTracker {
     }
 }
 
-/// Load the effects project stored beside `fcproj` into `effects`, if there is one. `Ok(true)`
+/// Load the effects project stored beside `rfilm` into `effects`, if there is one. `Ok(true)`
 /// when a file was loaded, `Ok(false)` when there is none (the effects project is reset to an
 /// empty one, unless it has unsaved changes, which are kept so a stray Open loses nothing).
-pub fn load_effects(fcproj: &str, effects: &mut redrob_effects_engine::Session) -> Result<bool, String> {
-    let path = effects_path(fcproj);
+pub fn load_effects(rfilm: &str, effects: &mut redrob_effects_engine::Session) -> Result<bool, String> {
+    let path = effects_path(rfilm);
     if !Path::new(&path).is_file() {
         if !effects.is_dirty() {
             effects.replace_project(redrob_effects_project::Project::default(), None);
@@ -82,10 +82,10 @@ pub fn load_effects(fcproj: &str, effects: &mut redrob_effects_engine::Session) 
     Ok(true)
 }
 
-/// Write the effects project beside `fcproj`. Nothing is written for an effects project with no
+/// Write the effects project beside `rfilm`. Nothing is written for an effects project with no
 /// items when no effects file exists yet (an Edit-only project stays a single file).
-pub fn save_effects(fcproj: &str, effects: &mut redrob_effects_engine::Session) -> Result<Option<String>, String> {
-    let path = effects_path(fcproj);
+pub fn save_effects(rfilm: &str, effects: &mut redrob_effects_engine::Session) -> Result<Option<String>, String> {
+    let path = effects_path(rfilm);
     if effects.project.items.is_empty() && !Path::new(&path).is_file() {
         return Ok(None);
     }
@@ -103,7 +103,7 @@ mod tests {
 
     #[test]
     fn the_effects_file_sits_beside_the_project() {
-        assert_eq!(effects_path("/work/cut.fcproj"), "/work/cut.fcproj.effects.json");
+        assert_eq!(effects_path("/work/cut.rfilm"), "/work/cut.rfilm.effects.json");
     }
 
     #[test]
@@ -114,12 +114,12 @@ mod tests {
         // an edit changes nothing the bundle cares about
         assert_eq!(t.observe(1, None, 1), None);
         // Save As: same pool, new path, saved revision moves
-        assert_eq!(t.observe(1, Some("/a.fcproj"), 5), Some(BundleEvent::Saved { path: "/a.fcproj".into() }));
+        assert_eq!(t.observe(1, Some("/a.rfilm"), 5), Some(BundleEvent::Saved { path: "/a.rfilm".into() }));
         // Save again later
-        assert_eq!(t.observe(1, Some("/a.fcproj"), 5), None);
-        assert_eq!(t.observe(1, Some("/a.fcproj"), 9), Some(BundleEvent::Saved { path: "/a.fcproj".into() }));
+        assert_eq!(t.observe(1, Some("/a.rfilm"), 5), None);
+        assert_eq!(t.observe(1, Some("/a.rfilm"), 9), Some(BundleEvent::Saved { path: "/a.rfilm".into() }));
         // Open: a new pool, whatever the revision did
-        assert_eq!(t.observe(2, Some("/b.fcproj"), 1), Some(BundleEvent::Installed { path: Some("/b.fcproj".into()) }));
+        assert_eq!(t.observe(2, Some("/b.rfilm"), 1), Some(BundleEvent::Installed { path: Some("/b.rfilm".into()) }));
         // New project: new pool, no path
         assert_eq!(t.observe(3, None, 1), Some(BundleEvent::Installed { path: None }));
         // a saved revision change without a path (recovery marks) is not a save
@@ -130,18 +130,18 @@ mod tests {
     fn an_empty_effects_project_writes_no_file_and_a_missing_file_loads_as_empty() {
         let dir = std::env::temp_dir().join(format!("redrob-film-bundle-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        let fcproj = dir.join("cut.fcproj").to_string_lossy().to_string();
+        let rfilm = dir.join("cut.rfilm").to_string_lossy().to_string();
         let mut effects = redrob_effects_engine::Session::new();
-        assert_eq!(save_effects(&fcproj, &mut effects).unwrap(), None);
-        assert!(!Path::new(&effects_path(&fcproj)).exists());
-        assert!(!load_effects(&fcproj, &mut effects).unwrap());
+        assert_eq!(save_effects(&rfilm, &mut effects).unwrap(), None);
+        assert!(!Path::new(&effects_path(&rfilm)).exists());
+        assert!(!load_effects(&rfilm, &mut effects).unwrap());
         // with a composition the file is written and read back
         effects.execute("comp.new", serde_json::json!({"name": "Title", "open": false})).unwrap();
-        let written = save_effects(&fcproj, &mut effects).unwrap();
-        assert_eq!(written.as_deref(), Some(effects_path(&fcproj).as_str()));
+        let written = save_effects(&rfilm, &mut effects).unwrap();
+        assert_eq!(written.as_deref(), Some(effects_path(&rfilm).as_str()));
         assert!(!effects.is_dirty());
         let mut other = redrob_effects_engine::Session::new();
-        assert!(load_effects(&fcproj, &mut other).unwrap());
+        assert!(load_effects(&rfilm, &mut other).unwrap());
         assert_eq!(other.project.items.len(), effects.project.items.len());
         assert!(other.project.items.values().any(|i| i.name == "Title"));
         let _ = std::fs::remove_dir_all(&dir);

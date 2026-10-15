@@ -1,4 +1,4 @@
-//! File ▸ Import ▸ EffectCraft Project: merge another `.ecproj` (or its XML copy) into the
+//! File ▸ Import ▸ EffectCraft Project: merge another `.rfx` (or its XML copy) into the
 //! current project, as After Effects imports an `.aep` into the open project. The imported
 //! items land in a folder named after the file; every id is shifted past the current project's
 //! so nothing collides, and the whole import is one undo step.
@@ -15,7 +15,7 @@ const C: &str = "file.importProject";
 /// Whether `path` names a project EffectCraft imports as a project (not as footage).
 pub(crate) fn is_project_path(path: &str) -> bool {
     let lower = path.to_ascii_lowercase();
-    lower.ends_with(".ecproj") || lower.ends_with(".ecprojx")
+    lower.ends_with(".rfx") || lower.ends_with(".rfxx") || lower.ends_with(".ecproj") || lower.ends_with(".ecprojx") // legacy: pre-rename projects import too
 }
 
 /// Read a project file (JSON or its XML copy), as File ▸ Open does.
@@ -75,7 +75,7 @@ fn root_comps(project: &Project) -> Vec<ItemId> {
 }
 
 fn import_project(s: &mut Session, p: &Value) -> Result<Value> {
-    let path = str_p(p, "path").ok_or_else(|| bad(C, "missing `path` (.ecproj)"))?.to_string();
+    let path = str_p(p, "path").ok_or_else(|| bad(C, "missing `path` (.rfx)"))?.to_string();
     let (mut sub, saved_by) = read_project(s, &path)?;
     crate::upgrade_effects(&mut sub);
     let file = std::path::Path::new(&path);
@@ -136,7 +136,7 @@ pub fn specs() -> Vec<CommandSpec> {
         "Redrob Film Project...",
         ["File", "Import"],
         None,
-        "{path (.ecproj or .ecprojx)} — merges the project into a folder named after the file; returns {folder, items, comps, rootComps, primaryComp (the only root comp, else null), missingMedia, warnings}",
+        "{path (.rfx or .rfxx)} — merges the project into a folder named after the file; returns {folder, items, comps, rootComps, primaryComp (the only root comp, else null), missingMedia, warnings}",
         always,
         import_project
     )]

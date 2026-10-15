@@ -606,10 +606,10 @@ mod tests {
         assert_eq!(lock, Some(true));
         assert_ne!(undo(&spec0), undo(&spec1));
         // A recent project changes the structure (Open Recent grows).
-        app.session.prefs.push_recent("/tmp/Recent Test.ecproj");
+        app.session.prefs.push_recent("/tmp/Recent Test.rfx");
         let spec2 = build(&app);
         assert_ne!(spec1.structure(), spec2.structure());
-        assert!(spec2.items().iter().any(|i| i.command == "file.openRecent" && i.label == "Recent Test.ecproj"));
+        assert!(spec2.items().iter().any(|i| i.command == "file.openRecent" && i.label == "Recent Test.rfx"));
     }
 
     #[test]

@@ -2,7 +2,7 @@
 //! error, never a panic, an abort or a hang (AGENTS.md "Never crash").
 //!
 //! Dependency-free, deterministic and seeded: seed projects (empty, and the demo cut down to one
-//! layer at a time, each as `.ecproj` JSON and as `.ecprojx` XML) are mutated byte-wise (flips,
+//! layer at a time, each as `.rfx` JSON and as `.rfxx` XML) are mutated byte-wise (flips,
 //! deletions, splices, truncation, interesting tokens, deep nesting) and structurally (a JSON
 //! node replaced by an extreme number, another type or another subtree; members dropped,
 //! elements duplicated), then opened through the real `file.open` path, followed by the queries
@@ -12,8 +12,8 @@
 //! overflow can't be caught and aborts the run, which fails it all the same.
 //!
 //! The default run is bounded (iterations and seconds) to stay fast in `cargo test`; a longer run:
-//! `EFFECTCRAFT_FUZZ_ITERS=200000 EFFECTCRAFT_FUZZ_SECS=600 cargo test -p redrob-effects-engine fuzz_`
-//! (`EFFECTCRAFT_FUZZ_SEED` picks another sequence, `EFFECTCRAFT_FUZZ_START` the first iteration).
+//! `REDROB_EFFECTS_FUZZ_ITERS=200000 REDROB_EFFECTS_FUZZ_SECS=600 cargo test -p redrob-effects-engine fuzz_`
+//! (`REDROB_EFFECTS_FUZZ_SEED` picks another sequence, `REDROB_EFFECTS_FUZZ_START` the first iteration).
 //! The `mutate` + `open_input` pair is what a cargo-fuzz target would call.
 
 use std::sync::Arc;
@@ -23,7 +23,7 @@ use serde_json::{Value, json};
 
 use crate::{Services, Session};
 
-const PATH: &str = "/fuzz/input.ecproj";
+const PATH: &str = "/fuzz/input.rfx";
 
 /// splitmix64: tiny, good enough for picking mutations.
 struct Rng(u64);
@@ -307,10 +307,10 @@ fn env_u64(name: &str, default: u64) -> u64 {
 
 #[test]
 fn fuzz_file_open_never_crashes() {
-    let seed = env_u64("EFFECTCRAFT_FUZZ_SEED", 0x00EC_F022);
-    let start = env_u64("EFFECTCRAFT_FUZZ_START", 0);
-    let iters = env_u64("EFFECTCRAFT_FUZZ_ITERS", 3_000);
-    let budget = Duration::from_secs(env_u64("EFFECTCRAFT_FUZZ_SECS", 6));
+    let seed = env_u64("REDROB_EFFECTS_FUZZ_SEED", 0x00EC_F022);
+    let start = env_u64("REDROB_EFFECTS_FUZZ_START", 0);
+    let iters = env_u64("REDROB_EFFECTS_FUZZ_ITERS", 3_000);
+    let budget = Duration::from_secs(env_u64("REDROB_EFFECTS_FUZZ_SECS", 6));
     let seeds = seeds();
     // The unmutated seeds open.
     for s in &seeds {

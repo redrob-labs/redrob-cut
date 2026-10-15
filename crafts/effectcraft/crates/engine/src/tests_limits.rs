@@ -43,10 +43,10 @@ fn hostile_project() -> String {
 
 #[test]
 fn a_hostile_project_opens_within_the_limits_and_says_what_changed() {
-    let json_path = tmp("Hostile.ecproj");
+    let json_path = tmp("Hostile.rfx");
     let text = hostile_project();
     std::fs::write(&json_path, &text).unwrap();
-    let xml_path = tmp("Hostile.ecprojx");
+    let xml_path = tmp("Hostile.rfxx");
     std::fs::write(&xml_path, crate::xml_project::to_xml(&text).unwrap()).unwrap();
     for path in [json_path, xml_path] {
         let mut s = Session::default();

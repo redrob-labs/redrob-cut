@@ -25,6 +25,7 @@ pub const CONSOLE_API: &str = "https://console.redrob.ai/api/backend/v1";
 pub const CONSOLE_API_ENV: &str = "REDROB_CONSOLE_API";
 /// Overrides where `account.json` lives.
 pub const CONFIG_DIR_ENV: &str = "REDROB_FILM_CONFIG_DIR";
+const LEGACY_CONFIG_DIR_ENV: &str = "FILMCRAFT_CONFIG_DIR"; // legacy: the pre-rename variable still works
 pub const PRODUCT: &str = "film";
 
 const FALLBACK_EXPIRES: Duration = Duration::from_secs(600);
@@ -118,7 +119,7 @@ impl KeySource {
 
 /// `account.json`'s directory for this platform.
 pub fn config_dir() -> Option<PathBuf> {
-    if let Some(d) = std::env::var_os(CONFIG_DIR_ENV).filter(|d| !d.is_empty()) {
+    if let Some(d) = [CONFIG_DIR_ENV, LEGACY_CONFIG_DIR_ENV].iter().find_map(|k| std::env::var_os(k).filter(|d| !d.is_empty())) { // legacy:
         return Some(PathBuf::from(d));
     }
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);

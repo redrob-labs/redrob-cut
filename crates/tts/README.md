@@ -65,7 +65,7 @@ length (±5 % / ±10 %), measured pitch (autocorrelation) of the female voice is
 +6 semitones raises it by √2 (±0.12); empty, emoji-only, non-Latin, pause-only and over-long scripts
 are refused before rendering; hostile scripts never panic.
 
-Model-dependent tests run when `FILMCRAFT_KOKORO_DIR` names a downloaded package directory
+Model-dependent tests run when `REDROB_FILM_KOKORO_DIR` names a downloaded package directory
 (determinism, whole frames, pace changes length, refusals); the loaders have hostile-input tests
 (truncated or oversized voice data, wrong byte order, NaN, non-zip files, mismatched config).
 

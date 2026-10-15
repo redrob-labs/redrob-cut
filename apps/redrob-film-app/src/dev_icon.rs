@@ -12,7 +12,7 @@
 //! another binary (a dev build moves between checkouts). The shell picks the icon up at the *next* app start;
 //! `update-desktop-database`/`kbuildsycoca` is not needed for icon lookup.
 //!
-//! Opt-in only: nothing is written unless `FILMCRAFT_DEV_DESKTOP_ENTRY=1` is set, so ordinary
+//! Opt-in only: nothing is written unless `REDROB_FILM_DEV_DESKTOP_ENTRY=1` is set, so ordinary
 //! `cargo run`s (agents, worktrees, CI) never touch the user's profile. Packaged runs are
 //! excluded even then — AppImage (`APPIMAGE`) mounts at a fresh `/tmp/.mount_*` each launch,
 //! so its `Exec` path changes every time and it ships its own entry, and a Flatpak
@@ -33,7 +33,7 @@ pub fn ensure_dev_desktop_entry() {
     // Opt-in only: a plain `cargo run` (agents, worktrees, other checkouts) must not write into
     // the user's profile, and a packaged release never does (packages and install.sh install
     // the real entry).
-    if std::env::var_os("FILMCRAFT_DEV_DESKTOP_ENTRY").is_none_or(|v| v != "1") {
+    if std::env::var_os("REDROB_FILM_DEV_DESKTOP_ENTRY").is_none_or(|v| v != "1") {
         return;
     }
     if let Err(e) = ensure() {

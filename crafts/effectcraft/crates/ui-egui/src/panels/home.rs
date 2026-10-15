@@ -116,7 +116,7 @@ pub fn format_size(bytes: u64) -> String {
 /// The Kind column: what a recent file is, by its extension, in the interface language.
 fn kind_of(path: &str) -> &'static str {
     tr(match std::path::Path::new(path).extension().and_then(|e| e.to_str()).map(str::to_ascii_lowercase).as_deref() {
-        Some("ecproj") => "Redrob Film project",
+        Some("rfx") | Some("ecproj") => "Redrob Film project", // legacy: .ecproj
         Some("aep" | "aepx") => "After Effects project",
         Some("json" | "lottie") => "Lottie animation",
         _ => "Project",
@@ -484,8 +484,8 @@ mod tests {
     #[test]
     fn recent_list_comes_from_settings() {
         let mut prefs = redrob_effects_engine::prefs::Prefs::default();
-        prefs.push_recent("/projects/a/Alpha.ecproj");
-        prefs.push_recent("/projects/b/Beta.ecproj");
+        prefs.push_recent("/projects/a/Alpha.rfx");
+        prefs.push_recent("/projects/b/Beta.rfx");
         let e = recent_entries(&prefs);
         assert_eq!(e.len(), 2);
         assert_eq!((e[0].name.as_str(), e[0].folder.as_str(), e[0].index), ("Beta", "/projects/b", 0));
@@ -494,7 +494,7 @@ mod tests {
         // A real file has a date.
         let dir = std::env::temp_dir().join(format!("ec-home-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        let f = dir.join("Real.ecproj");
+        let f = dir.join("Real.rfx");
         std::fs::write(&f, "{}").unwrap();
         prefs.push_recent(&f.to_string_lossy());
         let e = recent_entries(&prefs);
@@ -515,7 +515,7 @@ mod tests {
         assert_eq!(back.pixels[THUMB_H / 2 * THUMB_W + THUMB_W / 2], Color32::from_rgb(10, 200, 30));
         assert_ne!(back.pixels[THUMB_W / 2], Color32::from_rgb(10, 200, 30));
         assert!(decode_thumb("abc").is_none());
-        assert_ne!(thumb_name("/a.ecproj"), thumb_name("/b.ecproj"));
+        assert_ne!(thumb_name("/a.rfx"), thumb_name("/b.rfx"));
     }
 
     #[test]
@@ -529,7 +529,7 @@ mod tests {
         assert_eq!(format_ago(now, now - 30 * 86_400), "2026-08-22");
         assert_eq!(format_ago(now, now + 100), "Just now");
         assert_eq!((format_size(900), format_size(13_000), format_size(3_500_000)), ("900 B".into(), "13 KB".into(), "3.3 MB".into()));
-        assert_eq!((kind_of("/a/B.ecproj"), kind_of("c.AEP"), kind_of("x")), ("Redrob Film project", "After Effects project", "Project"));
+        assert_eq!((kind_of("/a/B.rfx"), kind_of("c.AEP"), kind_of("x")), ("Redrob Film project", "After Effects project", "Project"));
     }
 
     /// The Home screen's own text goes through the interface catalog (#574): the Opened and Kind
@@ -538,7 +538,7 @@ mod tests {
     fn home_text_follows_the_interface_language() {
         let now = 1_790_000_000;
         crate::i18n::set_current("zh-hans");
-        let zh = (format_ago(now, now - 5), format_ago(now, now - 3 * 3_600), format_ago(now, now - 90_000), kind_of("/a/B.ecproj"));
+        let zh = (format_ago(now, now - 5), format_ago(now, now - 3 * 3_600), format_ago(now, now - 90_000), kind_of("/a/B.rfx"));
         crate::i18n::set_current("zh-hant");
         let tw = (format_ago(now, now - 60), kind_of("x"));
         crate::i18n::set_current("en");
@@ -550,7 +550,7 @@ mod tests {
     #[test]
     fn home_screen_registers_its_controls() {
         let mut s = redrob_effects_engine::Session::default();
-        s.prefs.push_recent("/projects/Alpha.ecproj");
+        s.prefs.push_recent("/projects/Alpha.rfx");
         let mut app = EffectcraftApp::new(s);
         let ctx = egui::Context::default();
         crate::theme::install(&ctx, &app.tokens, crate::i18n::language(&app));

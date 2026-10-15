@@ -23,12 +23,12 @@ fn watch_folder_renders_queued_projects_and_writes_status() {
     let mut a = Session { exporter: Some(ex.clone()), ..Default::default() };
     a.execute("comp.new", json!({"name": "Shot", "width": 32, "height": 32, "frameRate": 10, "duration": 0.5})).unwrap();
     a.execute("renderQueue.add", json!({})).unwrap();
-    let pa = dir.join("a.ecproj");
+    let pa = dir.join("a.rfx");
     a.execute("file.saveAs", json!({"path": pa.to_string_lossy()})).unwrap();
     std::fs::create_dir_all(dir.join("collected")).unwrap();
     let mut b = Session::default();
     b.execute("comp.new", json!({"name": "Idle", "width": 32, "height": 32, "duration": 1})).unwrap();
-    let pb = dir.join("collected/b.ecproj");
+    let pb = dir.join("collected/b.rfx");
     b.execute("file.saveAs", json!({"path": pb.to_string_lossy()})).unwrap();
 
     let mut host = Session { exporter: Some(ex.clone()), ..Default::default() };
@@ -37,20 +37,20 @@ fn watch_folder_renders_queued_projects_and_writes_status() {
     let done = r["rendered"].as_array().unwrap();
     assert_eq!(done.len(), 2, "{r}");
     assert_eq!(host.state.watch_folder.as_deref(), Some(dir.to_string_lossy().as_ref()));
-    let st: serde_json::Value = serde_json::from_slice(&std::fs::read(dir.join("a.ecproj.status.json")).unwrap()).unwrap();
+    let st: serde_json::Value = serde_json::from_slice(&std::fs::read(dir.join("a.rfx.status.json")).unwrap()).unwrap();
     assert_eq!(st["state"], "done", "{st}");
     assert_eq!(st["items"][0]["comp"], "Shot");
     assert_eq!(st["items"][0]["status"], "Done");
     assert_eq!(ex.log.lock().unwrap().len(), 1);
-    let st: serde_json::Value = serde_json::from_slice(&std::fs::read(dir.join("collected/b.ecproj.status.json")).unwrap()).unwrap();
+    let st: serde_json::Value = serde_json::from_slice(&std::fs::read(dir.join("collected/b.rfx.status.json")).unwrap()).unwrap();
     assert_eq!(st["note"], "nothing queued");
     // Rendered projects are not picked up again; deleting the status file re-renders.
     assert!(host.execute("file.watchFolder.poll", json!({})).unwrap()["rendered"].as_array().unwrap().is_empty());
-    std::fs::remove_file(dir.join("a.ecproj.status.json")).unwrap();
+    std::fs::remove_file(dir.join("a.rfx.status.json")).unwrap();
     assert_eq!(host.execute("file.watchFolder.poll", json!({})).unwrap()["rendered"].as_array().unwrap().len(), 1);
     assert_eq!(ex.log.lock().unwrap().len(), 2);
     // A broken project fails with a status, not an error.
-    std::fs::write(dir.join("broken.ecproj"), b"not a project").unwrap();
+    std::fs::write(dir.join("broken.rfx"), b"not a project").unwrap();
     let r = host.execute("file.watchFolder.poll", json!({})).unwrap();
     assert_eq!(r["rendered"][0]["state"], "failed");
     host.execute("file.watchFolder", json!({"stop": true})).unwrap();

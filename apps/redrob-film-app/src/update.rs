@@ -256,7 +256,7 @@ pub fn opted_out_with(env: impl Fn(&str) -> Option<OsString>) -> bool {
 // Preferences
 // ---------------------------------------------------------------------------------------------
 
-/// `update.json` next to `account.json` (`device::config_dir`, `FILMCRAFT_CONFIG_DIR` override).
+/// `update.json` next to `account.json` (`device::config_dir`, `REDROB_FILM_CONFIG_DIR` override).
 fn prefs_path() -> Option<PathBuf> {
     crate::device::config_dir().map(|d| d.join(PREFS_FILE))
 }

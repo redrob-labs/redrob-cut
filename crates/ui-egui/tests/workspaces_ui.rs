@@ -3,7 +3,7 @@
 //! it, rename and delete in the Edit Workspaces dialog, and the saved workspaces (and the one in use)
 //! surviving a restart through `workspaces.json` in the data directory.
 //!
-//! Set `FILMCRAFT_UI_SNAPSHOT_DIR=<dir>` to also render offscreen with wgpu and write
+//! Set `REDROB_FILM_UI_SNAPSHOT_DIR=<dir>` to also render offscreen with wgpu and write
 //! `workspaces-*.png`.
 
 use std::path::{Path, PathBuf};
@@ -30,7 +30,7 @@ impl Driver {
         session.prefs_path = Some(data.join("preferences.json"));
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();

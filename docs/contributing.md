@@ -29,7 +29,7 @@ macOS.
 cargo run --release -p redrob-film-app                      # desktop app with the demo project
 cargo run --release -p redrob-film-app -- --empty           # start without the demo project
 cargo run --release -p redrob-film-app -- --control 9876    # plus the JSON-lines control server
-cargo run --release -p redrob-film-app -- a.mp4 b.wav       # import media (or open a .fcproj)
+cargo run --release -p redrob-film-app -- a.mp4 b.wav       # import media (or open a .rfilm)
 cargo run --release -p redrob-film-cli -- commands      # list engine commands
 cargo run --release -p redrob-film-cli -- render --demo --seconds 3 --out frame.png
 cargo run --release -p redrob-film-cli -- mcp --demo    # headless MCP server on stdio
@@ -37,14 +37,14 @@ cargo run --release -p redrob-film-cli -- mcp --demo    # headless MCP server on
 
 | Variable | Effect |
 |---|---|
-| `FILMCRAFT_CONTROL_PORT` | Same as `--control <port>` |
-| `FILMCRAFT_CPU_COMPOSITE=1` | Disables the GPU compositor |
-| `FILMCRAFT_DEV_DESKTOP_ENTRY=1` | Linux, opt-in: a run from a source tree installs a user-level desktop entry (and the icons from `assets/app-icon`) so the taskbar shows the FilmCraft icon. Nothing is written without it; packaged runs never write one |
-| `FILMCRAFT_DATA_DIR` | Same as `--data-dir <dir>`: auto-save, crash recovery, settings and logs |
+| `REDROB_FILM_CONTROL_PORT` | Same as `--control <port>` |
+| `REDROB_FILM_CPU_COMPOSITE=1` | Disables the GPU compositor |
+| `REDROB_FILM_DEV_DESKTOP_ENTRY=1` | Linux, opt-in: a run from a source tree installs a user-level desktop entry (and the icons from `assets/app-icon`) so the taskbar shows the FilmCraft icon. Nothing is written without it; packaged runs never write one |
+| `REDROB_FILM_DATA_DIR` | Same as `--data-dir <dir>`: auto-save, crash recovery, settings and logs |
 | `RUST_LOG` | Log levels for standard error and the log file (see [Logs](#logs)) |
 
 `filmcraft --help` lists the app's options. An option it does not know, or a control port that is
-not a number (from `--control` or from `FILMCRAFT_CONTROL_PORT`), is an error on stderr with exit
+not a number (from `--control` or from `REDROB_FILM_CONTROL_PORT`), is an error on stderr with exit
 code 2 instead of a window.
 
 Dev builds compile dependencies at `opt-level = 2` and workspace crates at `opt-level = 1`. For
@@ -55,7 +55,7 @@ playback and codec speed, use `--release`.
 The desktop app writes its `log` records to standard error and to `Logs/filmcraft.log` in the data
 directory (`~/.local/share/filmcraft/Logs/` or `$XDG_DATA_HOME/filmcraft/Logs/` on Linux,
 `~/Library/Application Support/FilmCraft/Logs/` on macOS, `%APPDATA%\FilmCraft\Logs\` on Windows,
-or under `--data-dir` / `FILMCRAFT_DATA_DIR`), next to the crash logs; Help ▸ Reveal Log Files opens
+or under `--data-dir` / `REDROB_FILM_DATA_DIR`), next to the crash logs; Help ▸ Reveal Log Files opens
 the folder. A start from a desktop menu or the Dock has no terminal, so this file is what to attach
 to a bug report: GPU compositor fallbacks, audio output problems, panicked frame jobs and container
 warnings all land there. Each launch moves the previous log to `filmcraft.1.log` (and that one to

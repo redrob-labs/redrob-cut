@@ -229,8 +229,8 @@ impl McpServer {
             "resources/read" => {
                 let uri = params.get("uri").and_then(Value::as_str).ok_or((INVALID_PARAMS, "missing `uri`".to_string()))?;
                 let tool = match uri {
-                    DOCUMENT_URI => "doc_inspect",
-                    COMMANDS_URI => "command_list",
+                    DOCUMENT_URI | LEGACY_DOCUMENT_URI => "doc_inspect",
+                    COMMANDS_URI | LEGACY_COMMANDS_URI => "command_list",
                     _ => return Err((RESOURCE_NOT_FOUND, format!("resource not found: {uri}"))),
                 };
                 match self.guarded(tool, &json!({})) {
@@ -275,8 +275,11 @@ impl McpServer {
 }
 
 /// The craft catalog resources (docs/mcp.md).
-const DOCUMENT_URI: &str = "effectcraft://document";
-const COMMANDS_URI: &str = "effectcraft://commands";
+const DOCUMENT_URI: &str = "redrob-effects://document";
+const COMMANDS_URI: &str = "redrob-effects://commands";
+// legacy: the URIs the resources had before the rename still read
+const LEGACY_DOCUMENT_URI: &str = "effectcraft://document"; // legacy:
+const LEGACY_COMMANDS_URI: &str = "effectcraft://commands"; // legacy:
 
 /// Whether a request declares MCP 2026-07-28 or later in its `_meta` (a "modern" client, which
 /// negotiates per request instead of through `initialize`).

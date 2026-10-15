@@ -406,7 +406,7 @@ fn recent_footage_and_presets_are_remembered() {
 fn save_a_copy_as_xml_opens_again() {
     let mut s = session();
     solid(&mut s, "#ff0000");
-    let path = tmp("copy.ecprojx");
+    let path = tmp("copy.rfxx");
     s.execute("file.saveCopyAsXml", json!({"path": path.to_string_lossy()})).unwrap();
     let text = std::fs::read_to_string(&path).unwrap();
     assert!(text.starts_with("<?xml") && text.contains("<EffectCraftProject"));
@@ -655,9 +655,9 @@ fn rpf_camera_import_reads_json_and_csv_camera_data() {
 #[test]
 fn dynamic_menus_and_window_viewer_labels() {
     let mut s = session();
-    s.prefs.push_recent("/p/One.ecproj");
+    s.prefs.push_recent("/p/One.rfx");
     let (e, _) = crate::menus::dynamic(&s, "recentProjects", &Default::default());
-    assert_eq!((e[0].label.as_str(), e[0].command.as_str()), ("One.ecproj", "file.openRecent"));
+    assert_eq!((e[0].label.as_str(), e[0].command.as_str()), ("One.rfx", "file.openRecent"));
     assert_eq!(crate::menus::dynamic(&s, "history", &Default::default()).0.len(), s.history.undo.len());
     let a = solid(&mut s, "#ff0000");
     s.state.selected_layers = vec![LayerId(a)];

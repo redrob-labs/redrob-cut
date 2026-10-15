@@ -1,6 +1,6 @@
 //! Essential Graphics ▸ Browse (Graphics Templates), the template properties in the Edit tab and
 //! the Export As Motion Graphics Template / Replace Fonts dialogs, driven headless through the
-//! control channel (like `graphics_ui.rs`). With `FILMCRAFT_UI_SHOTS=<dir>` it also renders the
+//! control channel (like `graphics_ui.rs`). With `REDROB_FILM_UI_SHOTS=<dir>` it also renders the
 //! UI with wgpu and writes PNGs there for review.
 
 use std::sync::mpsc::{Sender, channel};
@@ -26,7 +26,7 @@ impl Driver {
         session.prefs_path = Some(dir.join("prefs.json"));
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let shots = std::env::var_os("FILMCRAFT_UI_SHOTS").map(std::path::PathBuf::from);
+        let shots = std::env::var_os("REDROB_FILM_UI_SHOTS").map(std::path::PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if shots.is_some() {
             b = b.wgpu().with_pixels_per_point(1.0);

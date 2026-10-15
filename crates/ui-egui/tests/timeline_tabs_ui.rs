@@ -16,7 +16,7 @@ use serde_json::{Value, json};
 struct Driver {
     harness: Harness<'static, FilmcraftApp>,
     tx: Sender<ControlRequest>,
-    /// `FILMCRAFT_UI_SNAPSHOT_DIR`: where to write PNGs of the window (rendered with wgpu).
+    /// `REDROB_FILM_UI_SNAPSHOT_DIR`: where to write PNGs of the window (rendered with wgpu).
     snapshots: Option<PathBuf>,
 }
 
@@ -26,7 +26,7 @@ impl Driver {
         s.execute("file.openDemoProject", json!({})).unwrap();
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(s).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();
@@ -259,7 +259,7 @@ fn a_reopened_project_shows_its_tabs_as_they_were_left() {
     let dir = std::env::temp_dir().join(format!("filmcraft-tabs-ui-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
-    let path = dir.join("tabs.fcproj").to_string_lossy().to_string();
+    let path = dir.join("tabs.rfilm").to_string_lossy().to_string();
 
     let mut d = Driver::new();
     let main = d.active();

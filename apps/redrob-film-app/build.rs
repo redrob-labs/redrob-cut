@@ -2,13 +2,13 @@
 //! shows in Explorer, the taskbar, the Start menu and Alt-Tab.
 //!
 //! On every other target this does nothing (`winresource` is only a build-dependency on Windows
-//! hosts). A missing resource compiler is a warning, unless `FILMCRAFT_REQUIRE_WINRES=1` (for
+//! hosts). A missing resource compiler is a warning, unless `REDROB_FILM_REQUIRE_WINRES=1` (for
 //! release builds) turns it into an error.
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=../../assets/app-icon/redrob-film.ico");
-    println!("cargo:rerun-if-env-changed=FILMCRAFT_REQUIRE_WINRES");
+    println!("cargo:rerun-if-env-changed=REDROB_FILM_REQUIRE_WINRES");
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
@@ -26,7 +26,7 @@ mod windows {
             .set("OriginalFilename", "redrob-film.exe")
             .set("InternalName", "redrob-film");
         if let Err(e) = res.compile() {
-            if std::env::var_os("FILMCRAFT_REQUIRE_WINRES").is_some() {
+            if std::env::var_os("REDROB_FILM_REQUIRE_WINRES").is_some() {
                 panic!("embedding Windows resources failed: {e}");
             }
             println!("cargo:warning=redrob-film.exe built without icon/version resources: {e}");

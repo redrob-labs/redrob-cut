@@ -364,7 +364,7 @@ fn apply_output(om: &mut OutputModule, templates: &RenderTemplates, roi: Option<
     if let Some(l) = b_p(p, "includeProjectLink") {
         om.include_project_link = l;
     }
-    // (Without the `.ecproj` a save dialog filtered to projects appended, #293.)
+    // (Without the `.rfx` a save dialog filtered to projects appended, #293.)
     if let Some(o) = str_p(p, "output").or(str_p(p, "path")).map(without_project_extension) {
         om.output = o.to_string();
         // Only an extension the format doesn't write changes it: `.mp4` is H.264's, HEVC's and AV1's.
