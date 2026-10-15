@@ -31,7 +31,7 @@ fn docs(s: &mut Session, p: &Value) -> Result<Value> {
 pub fn specs() -> Vec<CommandSpec> {
     vec![
         cmd!("help.docs", "Redrob Film Help...", [], Some("F1"), "{page?: help|scripting|expressions|effects|agents}", always, docs),
-        cmd!("help.discord", "Redrob community...", ["Help"], None, "{}", always, |s, _| open(s, links::DISCORD.into())),
+        cmd!("help.issues", "Report an issue...", ["Help"], None, "{}", always, |s, _| open(s, links::ISSUES.into())),
         cmd!("help.website", "Redrob website", ["Help"], None, "{}", always, |s, _| open(s, links::WEBSITE.into())),
         cmd!("help.appPage", "Redrob Film Home Page", ["Help"], None, "{}", always, |s, _| open(s, links::APP_PAGE.into())),
         cmd!("help.github", "Redrob Film on GitHub", ["Help"], None, "{}", always, |s, _| open(s, links::GITHUB.into())),

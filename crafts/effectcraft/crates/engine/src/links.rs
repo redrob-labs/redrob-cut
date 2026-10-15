@@ -1,9 +1,8 @@
 //! Community and project links (shown in Help ▸, the About dialog, the start screen and the
-//! header's Discord button).
+//! header's issue button).
 
 pub const APP_NAME: &str = "Redrob Film";
 pub const APP_SLUG: &str = "effectcraft";
-pub const DISCORD: &str = "https://github.com/redrob-labs/redrob-film/issues";
 pub const WEBSITE: &str = "https://redrob.ai";
 pub const APP_PAGE: &str = "https://redrob.ai";
 pub const GITHUB: &str = "https://github.com/redrob-labs/redrob-film";

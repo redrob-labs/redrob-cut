@@ -1244,7 +1244,7 @@ Help
   Enable Logging | help.enableLogging
   Reveal Logging File | help.revealLogFile
   ---
-  Redrob community... | help.discord
+  Report an issue... | help.issues
   Provide Feedback... | help.reportIssue
   ---
   Redrob website | help.website

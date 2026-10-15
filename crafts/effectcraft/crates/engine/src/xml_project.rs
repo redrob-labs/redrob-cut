@@ -16,7 +16,7 @@
 
 use serde_json::{Map, Value};
 
-const ROOT: &str = "Redrob FilmProject";
+const ROOT: &str = "EffectCraftProject"; // file-format id of upstream .ecproj XML; kept so existing files open
 
 /// How deep `arr`/`obj` elements may nest: the JSON reader's own limit (`serde_json` stops at
 /// 128), so every project the JSON form can hold reads from XML too. Without a limit a deeply

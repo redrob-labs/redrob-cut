@@ -56,7 +56,7 @@ REPLACEMENTS = [
 # Stored in files or compared on read-back; changing them breaks existing projects.
 KEEP = re.compile(
     r"GPU Acceleration \(wgpu\)|Software Only \(CPU\)|CreatorTool|FILMCRAFT_|filmcraft_|filmcraft-"
-    r"|FilmCraft(Version|BuildCommit)\b|the FilmCraft contributors|the EffectCraft contributors|EFFECTCRAFT_|effectcraft_|effectcraft-"
+    r"|FilmCraft(Version|BuildCommit)\b|the FilmCraft contributors|the EffectCraft contributors|EFFECTCRAFT_|effectcraft_|effectcraft-|EffectCraftProject"
 )
 
 STRING_RE = re.compile(r'"((?:[^"\\]|\\.)*)"')
