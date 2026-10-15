@@ -1,7 +1,16 @@
 # Project files
 
-FilmCraft projects are `.rfilm` files: UTF-8 JSON with an explicit schema version. Reading and
+Redrob Film projects are `.rfilm` files: UTF-8 JSON with an explicit schema version. Reading and
 writing them is `crates/format` (`redrob-film-format`); the engine's `file.*` commands use it.
+Projects saved by earlier builds (and by upstream) carry the pre-rename extension
+(`redrob_film_format::LEGACY_EXTENSION`); they open everywhere a `.rfilm` does -- command line, open
+dialog, recents, media browser, templates, recovery -- and auto-save rotation and schema backups
+include them. Saving always writes `.rfilm` (`redrob_film_format::EXTENSION`); the read-side
+acceptance of the old extension is the only place it appears, marked `// legacy:` for
+`scripts/check_brand.py`. The effects project stored beside an Edit project follows its name
+(`<name>.rfilm.effects.json`); stand-alone effects projects are `.rfx` (XML copies `.rfxx`, root
+`<RedrobEffectsProject>`), with upstream's extensions and XML root read the same way (UPSTREAM.md
+lists them).
 
 ## Format
 
