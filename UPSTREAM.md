@@ -86,3 +86,17 @@ Then update `base`, `baseTag`, `baseDate`, `baseSubject` and `lastSyncedUpstream
 Upstream's copyright line in [`NOTICE`](./NOTICE) is retained verbatim, with ours added below it. Both
 license texts ([`LICENSE-MIT`](./LICENSE-MIT), [`LICENSE-APACHE`](./LICENSE-APACHE)) are unchanged.
 Per-asset attribution continues in [`ATTRIBUTION.md`](./ATTRIBUTION.md).
+
+## effectcraft (Effects mode)
+
+`crafts/effectcraft/` is [storytold/effectcraft](https://github.com/storytold/effectcraft) as a git
+subtree, pinned at `0311bdc34d0dc10c2d18ff7875b4f52d483e5e27` (2026-10-15), MIT OR Apache-2.0; its
+LICENSE-* and NOTICE stay intact under that directory. Its own `Cargo.toml` is parked as
+`Cargo.upstream.toml`; `tools/merge_effectcraft.py` folds its crates and dependencies into this
+workspace (its `filmcraft-*` git dependencies become this repository's crates). Update:
+
+```bash
+git subtree pull --prefix crafts/effectcraft https://github.com/storytold/effectcraft.git <sha> --squash
+python3 tools/merge_effectcraft.py
+python3 tools/rebrand_crafts.py
+```

@@ -30,7 +30,7 @@ pub fn presets_dir() -> Option<std::path::PathBuf> {
         return Some(d.into());
     }
     let home = std::env::var("HOME").or_else(|_| std::env::var("USERPROFILE")).ok()?;
-    Some(std::path::Path::new(&home).join("Documents").join("EffectCraft").join("Presets"))
+    Some(std::path::Path::new(&home).join("Documents").join("Redrob Film").join("Presets"))
 }
 
 /// The `.ecpreset` files in `dir`, sorted by name.

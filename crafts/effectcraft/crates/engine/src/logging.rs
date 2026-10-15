@@ -180,7 +180,7 @@ pub fn log_dir(config_dir: Option<&Path>) -> PathBuf {
 
 /// Help ▸ Enable Logging's file inside `config_dir` (the settings folder), or the temporary folder.
 pub fn log_path(config_dir: Option<&Path>) -> PathBuf {
-    log_dir(config_dir).join("EffectCraft Log.txt")
+    log_dir(config_dir).join("Redrob Film Log.txt")
 }
 
 fn numbered(dir: &Path, n: usize) -> PathBuf {

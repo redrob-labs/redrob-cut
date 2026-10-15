@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCAN = ["crates/ui-egui/src", "apps/filmcraft/src", "crates/engine", "crates/automation"]
+SCAN = ["crates/ui-egui/src", "apps/filmcraft/src", "crates/engine", "crates/automation", "crafts/effectcraft/crates"]
 
 HOME = "https://redrob.ai"
 REPO = "https://github.com/redrob-labs/redrob-film"
@@ -48,13 +48,15 @@ REPLACEMENTS = [
     (r"ArtCraft Team", "Redrob"),
     (r"ArtCraft", "Redrob"),
     (r"getartcraft\.com", "redrob.ai"),
+    (r"https?://github\.com/storytold/effectcraft[^\s\"')]*", "https://github.com/redrob-labs/redrob-film"),
     (r"FilmCraft", "Redrob Film"),
+    (r"EffectCraft", "Redrob Film"),
 ]
 
 # Stored in files or compared on read-back; changing them breaks existing projects.
 KEEP = re.compile(
     r"GPU Acceleration \(wgpu\)|Software Only \(CPU\)|CreatorTool|FILMCRAFT_|filmcraft_|filmcraft-"
-    r"|FilmCraft(Version|BuildCommit)\b|the FilmCraft contributors"
+    r"|FilmCraft(Version|BuildCommit)\b|the FilmCraft contributors|the EffectCraft contributors|EFFECTCRAFT_|effectcraft_|effectcraft-"
 )
 
 STRING_RE = re.compile(r'"((?:[^"\\]|\\.)*)"')

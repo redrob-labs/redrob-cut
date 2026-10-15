@@ -44,7 +44,7 @@ pub(crate) fn open(s: &mut Session, p: &Value) -> Result<Value> {
     // XML copies (File ▸ Save a Copy As XML…) open like the JSON project.
     let text = if crate::xml_project::is_xml(&text) { crate::xml_project::from_xml(&text).map_err(EngineError::Other)? } else { text };
     let (mut proj, repaired) =
-        Project::from_json_repaired(&text).map_err(|e| EngineError::Other(format!("{path} is not a project EffectCraft can open: {e}")))?;
+        Project::from_json_repaired(&text).map_err(|e| EngineError::Other(format!("{path} is not a project Redrob Film can open: {e}")))?;
     resolve_relative_footage(&mut proj, path, s.services.as_ref());
     s.replace_project(proj, Some(path.to_string()));
     s.restore_view(&effectcraft_project::saved_view(&text));
@@ -54,13 +54,13 @@ pub(crate) fn open(s: &mut Session, p: &Value) -> Result<Value> {
         let more = repaired.len().saturating_sub(3);
         let shown = repaired.iter().take(3).cloned().collect::<Vec<_>>().join("; ");
         let more = if more > 0 { format!(" and {more} more") } else { String::new() };
-        s.toast(format!("This project had values outside EffectCraft's limits, corrected when it opened: {shown}{more}."));
+        s.toast(format!("This project had values outside Redrob Film's limits, corrected when it opened: {shown}{more}."));
     }
     // Written by a newer EffectCraft: what this version doesn't know would be lost on saving.
     let saved_by = effectcraft_project::saved_by(&text);
     if let Some(v) = saved_by.as_deref().filter(|v| effectcraft_project::is_newer_version(v, effectcraft_project::APP_VERSION)) {
         s.toast(format!(
-            "This project was saved by EffectCraft {v}, newer than this version ({}). Settings this version doesn't know are lost if you save it.",
+            "This project was saved by Redrob Film {v}, newer than this version ({}). Settings this version doesn't know are lost if you save it.",
             effectcraft_project::APP_VERSION
         ));
     }

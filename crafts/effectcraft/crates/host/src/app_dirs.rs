@@ -16,9 +16,9 @@ use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 /// Files beside the executable that switch on portable mode (either one; contents are ignored).
-pub const PORTABLE_MARKERS: [&str; 2] = ["portable.txt", "EffectCraft.portable"];
+pub const PORTABLE_MARKERS: [&str; 2] = ["portable.txt", "Redrob Film.portable"];
 /// The data folder created beside the executable in portable mode.
-pub const PORTABLE_DATA_DIR: &str = "EffectCraftData";
+pub const PORTABLE_DATA_DIR: &str = "Redrob FilmData";
 
 /// How [`DataDir::dir`] was chosen.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -79,10 +79,10 @@ pub fn resolve(env: impl Fn(&str) -> Option<OsString>, exe_dir: Option<&Path>) -
 pub fn platform_dir(env: &impl Fn(&str) -> Option<OsString>) -> Option<PathBuf> {
     let home = || env("HOME").map(PathBuf::from);
     if cfg!(target_os = "macos") {
-        return home().map(|h| h.join("Library/Application Support/EffectCraft"));
+        return home().map(|h| h.join("Library/Application Support/Redrob Film"));
     }
     if cfg!(target_os = "windows") {
-        return env("APPDATA").map(|a| PathBuf::from(a).join("EffectCraft"));
+        return env("APPDATA").map(|a| PathBuf::from(a).join("Redrob Film"));
     }
     env("XDG_CONFIG_HOME").map(PathBuf::from).or_else(|| home().map(|h| h.join(".config"))).map(|c| c.join("effectcraft"))
 }
@@ -138,9 +138,9 @@ mod tests {
         assert!(d.warning.is_none());
         let dir = d.dir.unwrap();
         if cfg!(target_os = "macos") {
-            assert_eq!(dir, root.join("home/Library/Application Support/EffectCraft"));
+            assert_eq!(dir, root.join("home/Library/Application Support/Redrob Film"));
         } else if cfg!(target_os = "windows") {
-            assert_eq!(dir, root.join("appdata").join("EffectCraft"));
+            assert_eq!(dir, root.join("appdata").join("Redrob Film"));
         } else {
             assert_eq!(dir, root.join("home/.config/effectcraft"));
         }
@@ -152,14 +152,14 @@ mod tests {
     fn either_marker_keeps_everything_beside_the_exe() {
         for marker in PORTABLE_MARKERS {
             let root = temp("portable");
-            let exe = root.join("EffectCraft");
+            let exe = root.join("Redrob Film");
             std::fs::create_dir_all(&exe).unwrap();
             std::fs::write(exe.join(marker), b"").unwrap();
             let d = resolve(fake_home(&root), Some(&exe));
             assert_eq!(d.mode, Mode::Portable, "{marker}");
             assert!(d.warning.is_none());
             let dir = d.dir.unwrap();
-            assert_eq!(dir, exe.join("EffectCraftData"));
+            assert_eq!(dir, exe.join("Redrob FilmData"));
             assert!(dir.is_dir(), "the data folder is created");
             assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 0, "the write probe is removed");
             assert!(!root.join("home").exists() && !root.join("appdata").exists(), "nothing written to the user folder");
