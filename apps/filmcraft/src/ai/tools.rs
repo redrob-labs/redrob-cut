@@ -69,12 +69,7 @@ pub fn catalogue(caps: Capabilities) -> Vec<Value> {
     };
     vec![
         entry(SWITCH_MODE, "Switch Mode", r#"{"mode":"edit"|"effects"}"#, true),
-        entry(
-            SEND_SELECTION_TO_EFFECTS,
-            "Send Selection to Effects",
-            r#"{"name":str? (the new composition's name)}"#,
-            caps.can_send_selection,
-        ),
+        entry(SEND_SELECTION_TO_EFFECTS, "Send Selection to Effects", r#"{"name":str? (the new composition's name)}"#, caps.can_send_selection),
         entry(
             PLACE_COMPOSITION_ON_TIMELINE,
             "Place Composition on Timeline",

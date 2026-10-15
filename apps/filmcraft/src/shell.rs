@@ -432,7 +432,8 @@ impl ShellApp {
             .on_disabled_hover_text("open a sequence with clips to send first");
         if send.clicked() {
             ui.close();
-            self.send_selection_to_effects(&json!({}));
+            // The status line already carries the outcome.
+            let _ = self.send_selection_to_effects(&json!({}));
         }
         let place = ui
             .add_enabled(caps.can_place_composition, egui::Button::new("Place Composition on Timeline"))
@@ -440,7 +441,7 @@ impl ShellApp {
             .on_disabled_hover_text("open a composition in Effects and a sequence in Edit first");
         if place.clicked() {
             ui.close();
-            self.place_composition_on_timeline(&json!({}));
+            let _ = self.place_composition_on_timeline(&json!({}));
         }
         ui.separator();
         for mode in Mode::ALL {
@@ -717,10 +718,8 @@ impl ShellApp {
 
     /// What the hand-offs could do, for the menu and the agent's catalogue.
     fn refresh_caps(&mut self) {
-        self.caps = Capabilities {
-            can_send_selection: handoff::can_send_selection(&self.edit.session),
-            can_place_composition: handoff::can_place_composition(self),
-        };
+        self.caps =
+            Capabilities { can_send_selection: handoff::can_send_selection(&self.edit.session), can_place_composition: handoff::can_place_composition(self) };
     }
 
     /// The editor area below the top bar: the active editor draws its own panels inside it.

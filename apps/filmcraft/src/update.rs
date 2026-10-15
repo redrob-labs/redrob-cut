@@ -292,7 +292,12 @@ pub enum Status {
     Checking,
     UpToDate,
     /// A newer release: its version, this platform's asset URL, the checksum file, the release page.
-    Available { version: Version, url: String, sums_url: String, release_url: String },
+    Available {
+        version: Version,
+        url: String,
+        sums_url: String,
+        release_url: String,
+    },
     /// Download in progress, percent of the asset (0 when the size is unknown).
     Downloading(u8),
     /// Downloaded and its SHA-256 verified.
@@ -807,10 +812,7 @@ deadbeef  too-short.zip
             _ => None,
         };
         assert_eq!(launcher_manifest_path_with("linux", env), Some(PathBuf::from("/home/u/.local/share/redrob-launcher/installed.json")));
-        assert_eq!(
-            launcher_manifest_path_with("macos", env),
-            Some(PathBuf::from("/home/u/Library/Application Support/redrob-launcher/installed.json"))
-        );
+        assert_eq!(launcher_manifest_path_with("macos", env), Some(PathBuf::from("/home/u/Library/Application Support/redrob-launcher/installed.json")));
         assert_eq!(launcher_manifest_path_with("windows", env), Some(PathBuf::from("C:\\Users\\u\\AppData\\Local/redrob-launcher/installed.json")));
         let xdg = |key: &str| match key {
             "XDG_DATA_HOME" => Some(OsString::from("/data")),

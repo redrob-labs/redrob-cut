@@ -76,6 +76,6 @@ mod tests {
         dock.toggle();
         assert!(!dock.open);
         const { assert!(TOGGLE_SHORTCUT.modifiers.shift && TOGGLE_SHORTCUT.modifiers.command) };
-        assert!(MIN_WIDTH <= DEFAULT_WIDTH && DEFAULT_WIDTH <= MAX_WIDTH);
+        const { assert!(MIN_WIDTH <= DEFAULT_WIDTH && DEFAULT_WIDTH <= MAX_WIDTH) };
     }
 }

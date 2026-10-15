@@ -42,6 +42,7 @@ effectcraft-engine = { workspace = true }
 effectcraft-project = { workspace = true }
 effectcraft-render = { workspace = true }
 effectcraft-time = { workspace = true }
+effectcraft-color = { workspace = true }
 # `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
 filmcraft-automation = { workspace = true }
 tokio = { version = "1", features = ["rt-multi-thread"] }

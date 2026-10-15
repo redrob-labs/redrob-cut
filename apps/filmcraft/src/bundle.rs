@@ -11,6 +11,7 @@
 //! - `write_project` with `adopt` (Save, Save As; L3814) sets `saved_revision = revision` (L3841)
 //!   and `path` (L3838) without touching the pool: a changed `saved_revision` with the same pool
 //!   is a save, and the shell writes the effects file next to the new path.
+//!
 //! After a load, the composition clips of the Edit project get their live sources back
 //! ([`crate::handoff::rebind_composition_sources`]).
 //!

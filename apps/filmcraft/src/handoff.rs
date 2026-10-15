@@ -586,7 +586,7 @@ mod tests {
         let rate = effectcraft_time::FrameRate::FPS_30;
         let mut project = effectcraft_project::Project::default();
         let comp = effectcraft_project::Comp::new(64, 32, rate, effectcraft_time::Tick(2 * SEC));
-        let cid = project.add_item("C", effectcraft_project::Label::Sandstone, None, effectcraft_project::ItemKind::Comp(comp.into()));
+        let cid = project.add_item("C", effectcraft_color::Label::Sandstone, None, effectcraft_project::ItemKind::Comp(comp.into()));
         let src = CompSource::new("C", Arc::new(project), cid, Arc::new(effectcraft_render::NoFootage)).unwrap();
         let f = src.video_frame(FrameRequest::full(Tick(SEC))).unwrap();
         assert_eq!((f.width, f.height), (64, 32));
