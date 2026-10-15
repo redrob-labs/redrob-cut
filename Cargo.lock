@@ -1588,7 +1588,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-automation"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-engine",
  "effectcraft-host",
@@ -1600,14 +1600,14 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-av1enc"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-av1",
 ]
 
 [[package]]
 name = "effectcraft-color"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "proptest",
  "serde",
@@ -1615,7 +1615,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-effects"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-geom",
@@ -1632,7 +1632,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-engine"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-effects",
@@ -1665,7 +1665,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-export"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-av1enc",
  "effectcraft-color",
@@ -1695,7 +1695,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-expr"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "boa_engine",
  "effectcraft-color",
@@ -1712,7 +1712,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-geom"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "proptest",
  "serde",
@@ -1720,7 +1720,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-gpu"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "bytemuck",
  "effectcraft-color",
@@ -1742,14 +1742,14 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-hevcenc"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-hevc",
 ]
 
 [[package]]
 name = "effectcraft-host"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-engine",
  "effectcraft-export",
@@ -1774,7 +1774,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-interchange"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-keyframe",
@@ -1793,7 +1793,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-keyframe"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-geom",
@@ -1805,7 +1805,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-lottie"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-effects",
@@ -1822,7 +1822,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-media"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-model",
  "effectcraft-pdf",
@@ -1849,7 +1849,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-model"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-geom",
  "image",
@@ -1861,14 +1861,14 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-opusenc"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-opus",
 ]
 
 [[package]]
 name = "effectcraft-path"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-geom",
  "effectcraft-keyframe",
@@ -1880,7 +1880,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-pdf"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-raster",
  "effectcraft-svg",
@@ -1894,7 +1894,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-plugin"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-effects",
  "effectcraft-keyframe",
@@ -1906,7 +1906,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-project"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-geom",
@@ -1919,14 +1919,14 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-psd"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "miniz_oxide 0.8.9",
 ]
 
 [[package]]
 name = "effectcraft-raster"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-geom",
@@ -1935,7 +1935,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-render"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-color",
  "effectcraft-effects",
@@ -1957,7 +1957,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-script"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "boa_engine",
  "effectcraft-engine",
@@ -1974,7 +1974,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-segment"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "miniz_oxide 0.8.9",
  "ndarray",
@@ -1983,7 +1983,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-svg"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-geom",
  "effectcraft-path",
@@ -1995,7 +1995,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-text"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-keyframe",
  "harfrust",
@@ -2007,7 +2007,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-time"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "proptest",
  "serde",
@@ -2015,7 +2015,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-track"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "effectcraft-raster",
  "effectcraft-segment",
@@ -2027,7 +2027,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-ui-egui"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "craft-ui",
  "effectcraft-color",
@@ -2059,7 +2059,7 @@ dependencies = [
 
 [[package]]
 name = "effectcraft-vp9enc"
-version = "0.0.2"
+version = "0.1.0"
 
 [[package]]
 name = "eframe"
@@ -2464,7 +2464,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "arboard",
  "chrono",
@@ -2489,6 +2489,7 @@ dependencies = [
  "open",
  "rfd",
  "serde_json",
+ "sha2",
  "sys-locale",
  "tokio",
  "ureq",
@@ -2499,7 +2500,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-aac"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2509,7 +2510,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-ac3"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
  "thiserror 2.0.21",
@@ -2517,7 +2518,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-apv"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2527,14 +2528,14 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-audio-dsp"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
 ]
 
 [[package]]
 name = "filmcraft-automation"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
  "filmcraft-engine",
@@ -2550,7 +2551,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-av1"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2561,14 +2562,14 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-bitstream"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "proptest",
 ]
 
 [[package]]
 name = "filmcraft-captions"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "filmcraft-project",
@@ -2581,11 +2582,11 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-cfb"
-version = "0.0.2"
+version = "0.1.0"
 
 [[package]]
 name = "filmcraft-cli"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-automation",
  "filmcraft-codecs",
@@ -2606,7 +2607,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-codecs"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-aac",
  "filmcraft-ac3",
@@ -2640,7 +2641,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-color"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "proptest",
  "serde",
@@ -2648,7 +2649,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-dnx"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2658,7 +2659,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-edit"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-geom",
  "filmcraft-media",
@@ -2671,7 +2672,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-engine"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-audio-dsp",
  "filmcraft-captions",
@@ -2703,7 +2704,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-export"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-aac",
  "filmcraft-apv",
@@ -2733,7 +2734,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-format"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-media",
  "filmcraft-project",
@@ -2746,7 +2747,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-frame"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "filmcraft-time",
@@ -2756,7 +2757,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-geom"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "proptest",
  "serde",
@@ -2764,7 +2765,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-golden"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "filmcraft-frame",
@@ -2781,7 +2782,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-gpu"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "filmcraft-export",
@@ -2800,7 +2801,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-h264"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2810,7 +2811,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-h264enc"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2820,7 +2821,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-hevc"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2830,7 +2831,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-interchange"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-cfb",
  "filmcraft-color",
@@ -2847,7 +2848,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-isobmff"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2858,7 +2859,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-matroska"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
  "serde_json",
@@ -2866,7 +2867,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-media"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "filmcraft-frame",
@@ -2879,7 +2880,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-mpeg2v"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
  "rayon",
@@ -2888,7 +2889,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-mpegts"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
  "thiserror 2.0.21",
@@ -2896,28 +2897,28 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-mxf"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
 ]
 
 [[package]]
 name = "filmcraft-ogg"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
 ]
 
 [[package]]
 name = "filmcraft-opus"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
 ]
 
 [[package]]
 name = "filmcraft-platform"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-codecs",
@@ -2943,7 +2944,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-project"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "filmcraft-geom",
@@ -2957,7 +2958,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-prores"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "filmcraft-testkit",
@@ -2967,7 +2968,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-render"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-audio-dsp",
  "filmcraft-captions",
@@ -2987,7 +2988,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-scopes"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "serde",
@@ -2996,7 +2997,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-speech"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "candle-core",
  "candle-nn",
@@ -3014,14 +3015,14 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-testkit"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "png",
 ]
 
 [[package]]
 name = "filmcraft-text"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-color",
  "harfrust",
@@ -3033,7 +3034,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-time"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "proptest",
  "serde",
@@ -3041,7 +3042,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-tts"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "candle-core",
  "candle-nn",
@@ -3055,7 +3056,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-tts-text"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "serde",
  "thiserror 2.0.21",
@@ -3063,7 +3064,7 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-ui-egui"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "cpu-time",
  "eframe",
@@ -3100,35 +3101,11 @@ dependencies = [
 
 [[package]]
 name = "filmcraft-vp9"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-bitstream",
  "rayon",
  "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-web"
-version = "0.0.2"
-dependencies = [
- "eframe",
- "egui",
- "filmcraft-codecs",
- "filmcraft-color",
- "filmcraft-engine",
- "filmcraft-format",
- "filmcraft-frame",
- "filmcraft-isobmff",
- "filmcraft-media",
- "filmcraft-time",
- "filmcraft-ui-egui",
- "js-sys",
- "log",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "web-time",
 ]
 
 [[package]]
@@ -8650,7 +8627,7 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.0.2"
+version = "0.1.0"
 dependencies = [
  "filmcraft-testkit",
  "serde_json",

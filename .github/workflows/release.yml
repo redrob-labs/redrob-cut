@@ -1,7 +1,11 @@
-# Release pipeline: a `vX.Y.Z` tag pushed on `main` builds installers for every platform and
-# creates or updates the draft GitHub Release "Redrob Film vX.Y.Z". See docs/releasing.md.
+# Release pipeline: a `vX.Y.Z` tag pushed on `main` builds the three release targets (Linux
+# x86_64 tar.gz + deb, macOS universal dmg, Windows x64 portable.zip + msi) and publishes the
+# GitHub Release "Redrob Film vX.Y.Z" through the shared redrob-labs publish workflow. See
+# docs/releasing.md.
 #
-# The tag must equal the Cargo.toml version; the version job fails otherwise. The jobs that sign
+# The tag must equal the Cargo.toml version; the validate job fails otherwise. It also checks
+# formatting, the upstream pins and the notices; clippy and the tests ran on the pull request
+# (.github/workflows/ci.yml) and are not repeated here. The jobs that sign
 # (macOS, Windows) and the one that drafts the GitHub Release run in the `release` environment.
 # Signing secrets are the redrob-labs organization's (Apple Developer ID certificate + App Store
 # Connect API key for notarization). Every secret is optional: missing ones produce unsigned
@@ -35,8 +39,8 @@ env:
   INPUT_VERSION: ${{ inputs.version }}
 
 jobs:
-  version:
-    name: version
+  validate:
+    name: validate
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
@@ -44,6 +48,26 @@ jobs:
       prerelease: ${{ steps.v.outputs.prerelease }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Formatting
+        run: cargo fmt --all --check
+      - name: Upstream pins, notices, brand
+        run: |
+          python3 scripts/check_upstream_boundary.py
+          python3 scripts/check_no_upstream_services.py
+          python3 scripts/check_brand.py
+      - name: Changelog has this version
+        # A dry run with a version override is not a release, so it needs no changelog entry.
+        if: inputs.version == ''
+        run: |
+          . packaging/env.sh
+          v="${INPUT_VERSION#v}"
+          v="${v:-$VERSION}"
+          grep -Fq "## $v" ROADMAP.md || { echo "::error::ROADMAP.md has no '## $v' section"; exit 1; }
       - id: v
         name: Resolve version
         run: |
@@ -68,14 +92,14 @@ jobs:
 
   macos:
     name: macOS universal
-    needs: version
+    needs: validate
     # Standard hosted runner: redrob-labs has no larger macOS runners configured, and a job that
     # names one waits in the queue forever.
     runs-on: macos-latest
     environment: release
     env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
+      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
+      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -116,8 +140,8 @@ jobs:
           if [ -n "${MACOS_KEYCHAIN:-}" ]; then security delete-keychain "$MACOS_KEYCHAIN" || true; fi
 
   windows:
-    name: Windows ${{ matrix.arch }}
-    needs: version
+    name: Windows x64
+    needs: validate
     runs-on: windows-latest
     # `release` is the environment the organization's federated credential names
     # (repo:redrob-labs@<org id>/<repo>@<id>:environment:release); any other name is refused.
@@ -126,18 +150,9 @@ jobs:
       contents: read
       # The OIDC token `azure/login` exchanges for the Artifact Signing credential.
       id-token: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { arch: x64, target: x86_64-pc-windows-msvc }
-          - { arch: x86, target: i686-pc-windows-msvc }
-          # Windows on ARM: cross-compiled on the x64 runner, so signing and WiX run as above.
-          # .github/workflows/windows-arm64.yml installs and runs it on ARM64 hardware.
-          - { arch: arm64, target: aarch64-pc-windows-msvc }
     env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
+      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
+      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
       # Plain IDs (not credentials); here so the login step can be skipped when signing is not set up.
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
@@ -151,10 +166,10 @@ jobs:
           path: craft-fonts
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: x86_64-pc-windows-msvc
       - uses: Swatinem/rust-cache@v2
         with:
-          key: release-windows-${{ matrix.arch }}
+          key: release-windows-x64
       - name: Apply version override
         if: inputs.version != ''
         shell: bash
@@ -164,7 +179,7 @@ jobs:
         run: dotnet tool install --global wix --version 5.0.2
       - name: Build and stage
         shell: pwsh
-        run: ./packaging/windows/package.ps1 -Arch ${{ matrix.arch }} -BuildOnly
+        run: ./packaging/windows/package.ps1 -Arch x64 -BuildOnly
 
       # The login comes after the build on purpose: the OpenID Connect token is short-lived and a
       # long build left signtool without a usable credential (it then waited on a browser).
@@ -179,7 +194,7 @@ jobs:
       - name: Sign the executables
         uses: redrob-labs/.github/actions/sign-windows@main
         with:
-          files: target/windows-package/${{ matrix.arch }}/*.exe
+          files: target/windows-package/x64/*.exe
           description: Redrob Film
           url: https://github.com/redrob-labs/redrob-film
           endpoint: ${{ secrets.ARTIFACT_SIGNING_ENDPOINT }}
@@ -188,7 +203,7 @@ jobs:
 
       - name: Package (MSI, portable zip)
         shell: pwsh
-        run: ./packaging/windows/package.ps1 -Arch ${{ matrix.arch }} -SkipBuild
+        run: ./packaging/windows/package.ps1 -Arch x64 -SkipBuild
 
       - name: Sign the installer
         uses: redrob-labs/.github/actions/sign-windows@main
@@ -202,26 +217,20 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: release-windows-${{ matrix.arch }}
+          name: release-windows-x64
           path: dist/release/*
           if-no-files-found: error
 
   linux:
-    name: Linux ${{ matrix.arch }}
-    needs: version
+    name: Linux x86_64
+    needs: validate
     # The oldest GitHub-hosted image, so the binaries only need glibc >= 2.35 (Ubuntu 22.04+,
-    # Debian 12+, Fedora 36+, RHEL 10). See docs/releasing.md.
-    runs-on: ${{ matrix.runner }}
+    # Debian 12+). See docs/releasing.md.
+    runs-on: ubuntu-22.04
     # No `environment: release`: this job signs nothing, so it gets no release secrets.
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { arch: x86_64, runner: ubuntu-22.04, deb: amd64 }
-          - { arch: aarch64, runner: ubuntu-22.04-arm, deb: arm64 }
     env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
+      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
+      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
       NFPM_VERSION: 2.47.0
     steps:
       - uses: actions/checkout@v4
@@ -235,18 +244,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libasound2-dev \
-            desktop-file-utils appstream python3-yaml zsync
+            desktop-file-utils appstream
           curl -fsSL -o "$RUNNER_TEMP/nfpm.deb" \
-            "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_${{ matrix.deb }}.deb"
+            "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_amd64.deb"
           sudo dpkg -i "$RUNNER_TEMP/nfpm.deb"
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          key: release-linux-${{ matrix.arch }}
+          key: release-linux-x86_64
       - name: Apply version override
         if: inputs.version != ''
         run: cargo xtask version set "$FILMCRAFT_VERSION"
-      - name: Build and package (AppImage, deb, rpm, tar.gz)
+      - name: Build and package (tar.gz, deb)
         env:
           CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
           CRAFT_FONTS_REQUIRED: "1"
@@ -256,30 +265,25 @@ jobs:
           dpkg-deb --info dist/release/*.deb
           dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-film$|metainfo|applications'
           ldd target/release/redrob-film
-          python3 -c "import yaml; m = yaml.safe_load(open('packaging/linux/flatpak/ai.redrob.film.yml')); assert m['id'] == 'ai.redrob.film'"
-          for appimage in dist/release/*.AppImage; do
-            chmod +x "$appimage"
-            APPIMAGE_EXTRACT_AND_RUN=1 "$appimage" --version
-            # Update information is embedded, and the .zsync for delta updates sits beside it.
-            # Without APPIMAGE_EXTRACT_AND_RUN: with it, the runtime passes --appimage-* options
-            # on to the app (which then tries to open a window) instead of answering them.
-            "$appimage" --appimage-updateinformation | grep -F 'gh-releases-zsync|'
-            test -s "$appimage.zsync"
-          done
+          # Exactly the two Linux assets the launcher and the in-app updater (apps/filmcraft/src/update.rs) expect.
+          test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.tar.gz"
+          test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.deb"
+          extra="$(find dist/release -mindepth 1 -maxdepth 1 -printf '%f\n' | grep -vE '^redrob-film-.*-linux-x86_64\.(tar\.gz|deb)$' || true)"
+          if [ -n "$extra" ]; then echo "::error::unexpected Linux asset: $extra"; exit 1; fi
       - uses: actions/upload-artifact@v4
         with:
-          name: release-linux-${{ matrix.arch }}
+          name: release-linux-x86_64
           path: dist/release/*
           if-no-files-found: error
 
   publish:
-    needs: [version, macos, windows, linux]
+    needs: [validate, macos, windows, linux]
     if: always() && github.ref_type == 'tag' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
     uses: redrob-labs/.github/.github/workflows/release-publish.yml@main
     permissions:
       contents: write
     with:
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ needs.validate.outputs.version }}
       title: Redrob Film
       launcher_manifest: true
       publish: true

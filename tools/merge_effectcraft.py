@@ -90,7 +90,11 @@ def main() -> None:
         elif isinstance(spec, dict) and "path" in spec:
             spec = dict(spec)
             spec["path"] = f"crafts/effectcraft/{spec['path']}"
-        added.append(f"{name} = {toml_value(spec)}")
+        line = f"{name} = {toml_value(spec)}"
+        if isinstance(spec, dict) and "storytold/" in str(spec.get("git", "")):
+            # a pinned upstream library, not a product or update endpoint (scripts/check_no_upstream_services.py)
+            line += "  # upstream library pin"
+        added.append(line)
     # keys we both define but the subtree needs extra features of
     for name, spec in up.get("dependencies", {}).items():
         if name in ours and isinstance(spec, dict) and spec.get("features"):

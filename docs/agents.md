@@ -7,10 +7,13 @@ Redrob Film from an agent. Part 2 covers developing Redrob Film as an agent.
 
 ## Redrob Code (built in)
 
-Redrob Film ships with an agent: the **Agent** panel (the first tab of the right column in the
-Editing workspace, or Window ▸ Agent) is a chat with [Redrob Code](https://code.redrob.ai). Type
-what you want done to the edit; Redrob Code works through the same MCP tools listed below, on the
-open window.
+Redrob Film ships with an agent: the **AI dock** (the AI button in the top bar's right slot, Mode ▸
+Show AI, or Ctrl+Shift+A; in Edit mode also the Agent panel of the right column) is a chat with
+[Redrob Code](https://code.redrob.ai), shown beside whichever mode is active. Type what you want done
+to the edit or the composition; Redrob Code works through the same MCP tools listed below, on the
+open window, plus the shell's own commands for the two modes: `mode.switch`, `mode.status`,
+`mode.sendSelectionToEffects`, `mode.placeCompositionOnTimeline` and `effects.run` (the Effects
+editor's commands).
 
 - The app starts `redrob acp --attach` (Agent Client Protocol on stdio) on the first message. It
   looks for `redrob` in `REDROB_CODE_PATH`, then `PATH`, then `~/.redrob/bin`, `~/.local/bin`,
@@ -72,9 +75,10 @@ The release packages ship `redrob-film-cli` alongside the desktop app, so no bui
 
 | Install | CLI |
 |---|---|
-| Windows (MSI) | `C:\Program Files\Redrob Film\redrob-film-cli.exe` by default (wherever you installed it otherwise), not on `PATH` |
-| Linux (deb, rpm) | `/usr/bin/redrob-film-cli` |
-| macOS | the separate `redrob-film-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
+| Windows x64 (MSI) | `C:\Program Files\Redrob Film\redrob-film-cli.exe` by default (wherever you installed it otherwise), not on `PATH`; the portable zip has it next to `redrob-film.exe` |
+| Linux x86_64 (deb) | `/usr/bin/redrob-film-cli`; the tar.gz's `install.sh` puts it in `<prefix>/bin` (`~/.local/bin` by default) |
+| Redrob Launcher | `<launcher data dir>/apps/redrob-film/…/redrob-film-cli` (the launcher's `installed.json` records the path) |
+| macOS | the separate `redrob-film-cli-<version>-macos-universal.zip` release asset (the `.app` holds only the desktop app) |
 
 ```sh
 # Windows, default install folder

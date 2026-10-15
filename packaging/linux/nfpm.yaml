@@ -1,4 +1,4 @@
-# .deb and .rpm packages (nfpm: https://nfpm.goreleaser.com). Run by package.sh, which stages
+# The .deb package (nfpm: https://nfpm.goreleaser.com). Run by package.sh, which stages
 # the file tree, substitutes its path for ${STAGE} (nfpm doesn't expand env vars in `src`) and
 # exports VERSION and NFPM_ARCH.
 #
@@ -7,20 +7,19 @@ name: redrob-film
 arch: ${NFPM_ARCH}
 platform: linux
 version: ${VERSION}
-# semver: 0.2.0-rc.1 becomes 0.2.0~rc.1 in deb/rpm, so pre-releases sort before the release.
+# semver: 0.2.0-rc.1 becomes 0.2.0~rc.1 in the deb, so pre-releases sort before the release.
 version_schema: semver
 release: 1
 section: video
 priority: optional
 maintainer: ${FILMCRAFT_MAINTAINER}
 vendor: McKinley Rice, Inc.
-homepage: https://redrob.io/cut
+homepage: https://github.com/redrob-labs/redrob-film
 license: MIT OR Apache-2.0
 description: |-
-  Open-source, native video editor: edit video, color and sound.
-  Timeline editing with source and program monitors, color grading and scopes,
-  effects and keyframes, titles and captions, audio mixing with loudness meters,
-  and export; GPU compositing (wgpu).
+  Redrob Film is an agentic video editor: Edit (the timeline) and Effects
+  (motion graphics, compositing) in one window, with an AI dock that drives
+  the same commands a person does. Pure Rust codecs, GPU compositing (wgpu).
   Includes redrob-film-cli, a headless command runner, MCP server and exporter.
 
 # The binaries link only glibc and libgcc_s directly. Windowing (X11/Wayland, xkbcommon) and the
@@ -41,22 +40,6 @@ overrides:
       - libxcursor1
       - libxi6
       - libxrandr2
-      - mesa-vulkan-drivers
-      - xdg-desktop-portal
-  rpm:
-    depends:
-      # the same floor as the deb: built on glibc 2.35, so RHEL 9 (2.34) must refuse the install
-      # instead of installing binaries that can't start (#93)
-      - glibc >= 2.35
-      - libxkbcommon
-      - (vulkan-loader or libglvnd-egl)
-      - alsa-lib
-    recommends:
-      - libwayland-client
-      - libX11
-      - libXcursor
-      - libXi
-      - libXrandr
       - mesa-vulkan-drivers
       - xdg-desktop-portal
 

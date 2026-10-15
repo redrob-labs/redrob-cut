@@ -28,8 +28,8 @@ FORBIDDEN = re.compile(
     r"|Redrob Cut|redrob-cut|redrob_cut|ai\.redrob\.cut|REDROB_CUT|RedrobCut"
 )
 SURFACES = (
-    "crates/ui-egui/src/", "apps/filmcraft/src/", "apps/filmcraft-cli/src/", "apps/filmcraft-web/src/",
-    "apps/filmcraft-web/web/", "crates/engine/src/", "crates/automation/src/", "packaging/", ".github/workflows/",
+    "crates/ui-egui/src/", "apps/filmcraft/src/", "apps/filmcraft-cli/src/",
+    "crates/engine/src/", "crates/automation/src/", "packaging/", ".github/workflows/",
 )
 # Kept on purpose: written into or read back from files, so changing them breaks existing projects
 # and interchange round trips. UPSTREAM.md lists them.

@@ -34,9 +34,6 @@ def derived():
     for p in sorted(a.rglob("*")):
         if p.is_file() and p.name not in ("LICENSE.txt", "README.md") and not p.name.endswith(".attribution"):
             out.append((p, f"Redrob Film app icon ({p.relative_to(a)}), derived from the Redrob tile"))
-    w = ROOT / "apps/filmcraft-web/web"
-    out.append((w / "favicon.png", "Redrob Film web favicon (the 64 px Redrob tile)"))
-    out.append((w / "favicon.svg", "Redrob Film web favicon (the vector Redrob tile)"))
     return out
 
 

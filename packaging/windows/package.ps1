@@ -3,9 +3,10 @@
   Build and package Redrob Film for Windows.
 
 .DESCRIPTION
-  Produces, in $env:DIST (default: dist/release):
-    redrob-film-<version>-windows-<arch>.msi            per-machine installer (WiX v5)
-    redrob-film-<version>-windows-<arch>-portable.zip   redrob-film.exe + redrob-film-cli.exe + portable.txt
+  Produces, in $env:DIST (default: dist/release), for Windows x64 (the only Windows release target;
+  Redrob Launcher and the in-app updater, apps/filmcraft/src/update.rs, look for exactly these names):
+    redrob-film-<version>-windows-x64.msi            per-machine installer (WiX v5)
+    redrob-film-<version>-windows-x64-portable.zip   redrob-film.exe + redrob-film-cli.exe + portable.txt
 
   The binaries link the C runtime statically (+crt-static), so neither the MSI nor the portable
   zip needs the Visual C++ redistributable. This script does not sign: the release workflow signs
@@ -18,12 +19,11 @@
 
 .EXAMPLE
   pwsh packaging/windows/package.ps1 -Arch x64
-  pwsh packaging/windows/package.ps1 -Arch x86 -SkipBuild
   pwsh packaging/windows/package.ps1 -Arch x64 -BuildOnly  # CI: build first, log in to Azure, then -SkipBuild
-  pwsh packaging/windows/package.ps1 -Arch arm64     # cross-compiled; needs the MSVC ARM64 build tools
+  pwsh packaging/windows/package.ps1 -Arch x64 -SkipBuild
 #>
 param(
-  [ValidateSet('x64', 'x86', 'arm64')] [string] $Arch = 'x64',
+  [ValidateSet('x64')] [string] $Arch = 'x64',
   [switch] $SkipBuild,
   [switch] $BuildOnly
 )
@@ -50,7 +50,7 @@ if (-not $Version) { throw 'could not read [workspace.package] version from Carg
 # MSI ProductVersion is numeric (major.minor.build); pre-release tags are dropped there.
 $MsiVersion = ($Version -split '-')[0]
 
-$Target = switch ($Arch) { 'x64' { 'x86_64-pc-windows-msvc' } 'x86' { 'i686-pc-windows-msvc' } 'arm64' { 'aarch64-pc-windows-msvc' } }
+$Target = 'x86_64-pc-windows-msvc'
 $Dist = if ($env:DIST) { $env:DIST } else { Join-Path $Root 'dist\release' }
 $TargetDir = if ($env:CARGO_TARGET_DIR) { $env:CARGO_TARGET_DIR } else { Join-Path $Root 'target' }
 New-Item -ItemType Directory -Force -Path $Dist | Out-Null
@@ -83,8 +83,8 @@ if (-not $SkipBuild) {
 }
 if ($BuildOnly) { exit 0 }
 
-# Check both binaries' PE headers before packaging. Machine (COFF header) must match -Arch, so an
-# x64 build can never ship labelled arm64. Subsystem (optional header): 2 = Windows GUI, 3 = console.
+# Check both binaries' PE headers before packaging. Machine (COFF header) must be x64 (0x8664), so
+# nothing else can ever ship under the x64 name. Subsystem (optional header): 2 = Windows GUI, 3 = console.
 # The app must be GUI (no console window opens with it); the CLI must stay console so its output
 # reaches the terminal.
 function Get-PeHeader([string] $Path) {
@@ -92,7 +92,7 @@ function Get-PeHeader([string] $Path) {
   $pe = [BitConverter]::ToInt32($bytes, 0x3C)
   return @{ Machine = [BitConverter]::ToUInt16($bytes, $pe + 4); Subsystem = [BitConverter]::ToUInt16($bytes, $pe + 0x5C) }
 }
-$Machine = switch ($Arch) { 'x64' { 0x8664 } 'x86' { 0x14C } 'arm64' { 0xAA64 } }
+$Machine = 0x8664
 foreach ($check in @(@('redrob-film.exe', 2), @('redrob-film-cli.exe', 3))) {
   if (-not (Test-Path (Join-Path $Stage $check[0]))) { throw "$($check[0]) is not staged in $Stage; run with -BuildOnly first" }
   $h = Get-PeHeader (Join-Path $Stage $check[0])
@@ -134,12 +134,6 @@ $Zip = Join-Path $Dist "redrob-film-$Version-windows-$Arch-portable.zip"
 Remove-Item -Force $Zip -ErrorAction SilentlyContinue
 Compress-Archive -Path $Portable -DestinationPath $Zip
 
-# Smoke-test the CLI when this machine can run it. An ARM64 build made on an x64 runner can't run
-# here; .github/workflows/windows-arm64.yml installs and runs it on ARM64 instead.
-$HostArch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLowerInvariant()
-if ($Arch -ne 'arm64' -or $HostArch -eq 'arm64') {
-  Invoke-Native 'redrob-film-cli --version' { & (Join-Path $Stage 'redrob-film-cli.exe') --version }
-} else {
-  Write-Output "skipping redrob-film-cli --version: an $Arch build doesn't run on this $HostArch machine"
-}
+# Smoke-test the CLI.
+Invoke-Native 'redrob-film-cli --version' { & (Join-Path $Stage 'redrob-film-cli.exe') --version }
 Get-Item $Msi, $Zip | Format-Table Name, Length

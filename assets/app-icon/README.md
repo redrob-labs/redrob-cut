@@ -18,9 +18,6 @@ When a Cut glyph is added to the design system's `assets/Products/`, replace the
 | `redrob-film.icns` | macOS bundle icon (`CFBundleIconFile`) |
 | `redrob-film.ico` | Windows icon, 16-256 px (embedded in the exe by `apps/filmcraft/build.rs`) |
 
-The web app's `apps/filmcraft-web/web/favicon.png` and `favicon.svg` are the design system's own
-64 px and vector tiles.
-
 ## Rules
 
 Design system `10-logo.md` and `assets/Favicons/README.md`: one design, no dark-mode variant;

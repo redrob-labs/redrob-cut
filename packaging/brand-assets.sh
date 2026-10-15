@@ -13,7 +13,6 @@
 #   redrob-film-256.png               the window icon: the 256 above
 #   redrob-film.ico                   16, 32, 48, 64 as is + 256 resized down from 512
 #   redrob-film.icns                  16, 32, 128, 256, 512
-#   apps/filmcraft-web/web/          favicon.png (the 64 tile) and favicon.svg, as is
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 B="$ROOT/assets/brand"
@@ -46,10 +45,6 @@ cp "$B/icon-512.png" "$A/redrob-film-512.png"
 python3 "$ROOT/packaging/make-icns.py" "$A/redrob-film.icns" \
   16="$B/favicon-16x16.png" 32="$B/favicon-32x32.png" \
   128="$A/hicolor/128x128/apps/$ID.png" 256="$A/redrob-film-256.png" 512="$B/icon-512.png"
-
-W="$ROOT/apps/filmcraft-web/web"
-cp "$B/favicon-64x64.png" "$W/favicon.png"
-cp "$B/favicon.svg" "$W/favicon.svg"
 
 # Every derived file gets an attribution sidecar (cargo xtask assets).
 python3 "$ROOT/packaging/brand-sidecars.py"

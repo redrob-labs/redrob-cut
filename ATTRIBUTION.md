@@ -143,8 +143,6 @@ NOTICE requires of forks.
 | `assets/app-icon/redrob-film-512.png` | Redrob (McKinley Rice, Inc.) | Redrob Film app icon (redrob-film-512.png), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
 | `assets/app-icon/redrob-film.icns` | Redrob (McKinley Rice, Inc.) | Redrob Film app icon (redrob-film.icns), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
 | `assets/app-icon/redrob-film.ico` | Redrob (McKinley Rice, Inc.) | Redrob Film app icon (redrob-film.ico), derived from the Redrob tile | Redrob trademark (`assets/brand/README.md`) |
-| `apps/filmcraft-web/web/favicon.png` | Redrob (McKinley Rice, Inc.) | Redrob Film web favicon (the 64 px Redrob tile) | Redrob trademark (`assets/brand/README.md`) |
-| `apps/filmcraft-web/web/favicon.svg` | Redrob (McKinley Rice, Inc.) | Redrob Film web favicon (the vector Redrob tile) | Redrob trademark (`assets/brand/README.md`) |
 | `packaging/macos/dmg/background-source.svg` | Redrob (McKinley Rice, Inc.) | Original layout: the Redrob primary lockup and the name Cut, after the design system's product lockup | Redrob trademark (the lockup); layout MIT OR Apache-2.0 |
 | `packaging/macos/dmg/background.svg` | Redrob (McKinley Rice, Inc.) | `background-source.svg` with its text outlined (Pretendard SemiBold, OFL-1.1) and the lockup embedded | Redrob trademark (the lockup); layout MIT OR Apache-2.0 |
 | `packaging/macos/dmg/background.tiff` | Redrob (McKinley Rice, Inc.) | Rendered from `packaging/macos/dmg/background.svg` by `packaging/macos/dmg/generate.py` | Redrob trademark (the lockup); layout MIT OR Apache-2.0 |

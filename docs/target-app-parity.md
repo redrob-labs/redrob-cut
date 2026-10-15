@@ -149,13 +149,12 @@ Evidence for the cross-cutting rows:
   a CPU fallback adapter rendering everything in software (#632).
 - **Stability ~45%.** Never-crash rules enforced by lints; hostile-input fuzzing. But open
   launch crashes on macOS 12 (missing VideoToolbox symbol, #468 / #661, #655), Intel UHD graphics
-  (#512), Windows 11 (#380, #582), a generic "keeps crashing" (#687), and **no workflow runs the
-  test suite on pull requests** (`.github/workflows` has release, packaging lint, FreeBSD and
-  Windows ARM64 builds only); `cargo xtask ci` runs locally only.
-- **Platforms ~60%.** Releases for macOS, Windows (x64, ARM64), Linux (AppImage, Flatpak, deb,
-  tar) and FreeBSD; Linux is something Premiere doesn't run on at all. Runtime testing is still
-  mostly macOS; Windows and Linux reports dominate the issue list. The web build runs but its shell
-  is incomplete. No mobile.
+  (#512), Windows 11 (#380, #582), a generic "keeps crashing" (#687), and pull-request CI
+  (`.github/workflows/ci.yml`: fmt, clippy, tests of our crates with `--profile ci`) runs on Linux
+  only; `cargo xtask ci` covers the rest locally.
+- **Platforms ~60%.** Releases for macOS (universal), Windows x64 and Linux x86_64 (tar.gz, deb);
+  Linux is something Premiere doesn't run on at all. Runtime testing is still mostly macOS; Windows
+  and Linux reports dominate the issue list. No web build (removed 2026-10-15), no mobile.
 - **Plugins ~5%.** No VST3 / Audio Units, no OpenFX, no Premiere / After Effects plug-in API, no
   UXP panels (#325). Needs an owner decision (FFI). MCP, CLI and the control channel are ahead of
   Premiere's scripting.

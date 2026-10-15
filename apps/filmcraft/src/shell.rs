@@ -743,10 +743,12 @@ fn control_reply(r: Result<Value, String>) -> Value {
     }
 }
 
-/// The update status in the top bar's right slot. Redrob Film is installed by the Redrob
-/// launcher, which owns updates; this is where a "Restart to update" hint lands when the launcher
-/// reports one (not wired yet: nothing is drawn).
-fn update_status(_ui: &mut egui::Ui) {}
+/// The update status in the top bar's right slot: the Updates menu and, when a newer release
+/// exists, the "Update to vX.Y.Z" / "Install and restart" button (`update.rs`). Under Redrob
+/// Launcher, which owns updates, only the menu is drawn and it says so.
+fn update_status(ui: &mut egui::Ui) {
+    crate::update::top_bar(ui);
+}
 
 impl eframe::App for ShellApp {
     fn logic(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
