@@ -1,16 +1,19 @@
 # Agents
 
-Redrob Cut is built to be driven by AI agents, and largely built by them. Part 1 covers using
-Redrob Cut from an agent. Part 2 covers developing Redrob Cut as an agent.
+Redrob Film is built to be driven by AI agents, and largely built by them. Part 1 covers using
+Redrob Film from an agent. Part 2 covers developing Redrob Film as an agent.
 
-# Part 1: driving Redrob Cut
+# Part 1: driving Redrob Film
 
 ## Redrob Code (built in)
 
-Redrob Cut ships with an agent: the **Agent** panel (the first tab of the right column in the
-Editing workspace, or Window ▸ Agent) is a chat with [Redrob Code](https://code.redrob.ai). Type
-what you want done to the edit; Redrob Code works through the same MCP tools listed below, on the
-open window.
+Redrob Film ships with an agent: the **AI dock** (the AI button in the top bar's right slot, Mode ▸
+Show AI, or Ctrl+Shift+A; in Edit mode also the Agent panel of the right column) is a chat with
+[Redrob Code](https://code.redrob.ai), shown beside whichever mode is active. Type what you want done
+to the edit or the composition; Redrob Code works through the same MCP tools listed below, on the
+open window, plus the shell's own commands for the two modes: `mode.switch`, `mode.status`,
+`mode.sendSelectionToEffects`, `mode.placeCompositionOnTimeline` and `effects.run` (the Effects
+editor's commands).
 
 - The app starts `redrob acp --attach` (Agent Client Protocol on stdio) on the first message. It
   looks for `redrob` in `REDROB_CODE_PATH`, then `PATH`, then `~/.redrob/bin`, `~/.local/bin`,
@@ -18,69 +21,70 @@ open window.
   Code daemon shared by every Redrob app on the machine (`~/.redrob/run/server.json`, started on
   demand with `redrob service start`) instead of running an engine of its own; the daemon stops by
   itself after ten minutes with no client attached.
-- The tools reach the agent as an MCP server named `redrob-cut`: this same executable, run as
-  `redrob-cut mcp --connect 127.0.0.1:<port>`, on a free control port opened at launch and gated by
-  a per-launch token (`REDROB_CUT_CONTROL_TOKEN`, handed only to that server). Nothing is written
+- The tools reach the agent as an MCP server named `redrob-film`: this same executable, run as
+  `redrob-film mcp --connect 127.0.0.1:<port>`, on a free control port opened at launch and gated by
+  a per-launch token (`REDROB_FILM_CONTROL_TOKEN`, handed only to that server). Nothing is written
   to your Redrob Code config for this.
 - Model calls are billed to the connected Redrob workspace (Help ▸ Connect to Redrob…). The first
   message asks you to connect one; editing never does. The key reaches Redrob Code as
-  `REDROB_API_KEY`. `REDROB_CUT_MODEL` picks the model (default `redrob/auto`).
+  `REDROB_API_KEY`. `REDROB_FILM_MODEL` picks the model (default `redrob/auto`).
 - Commands for scripts and other agents: `agent.status`, `agent.send {text}`, `agent.stop`.
 
-**Redrob Code in a terminal.** Help ▸ Add Redrob Cut to Redrob Code (or the button in the Agent
-panel) adds `redrob-cut` to `~/.config/redrob/redrob.json` as a local server, `[<app>, "mcp"]`, the
+**Redrob Code in a terminal.** Help ▸ Add Redrob Film to Redrob Code (or the button in the Agent
+panel) adds `redrob-film` to `~/.config/redrob/redrob.json` as a local server, `[<app>, "mcp"]`, the
 headless mode below, keeping everything else in that file. In this repository,
 `.redrob/redrob.json` registers the same two development servers as `.mcp.json`.
 
-Other agents (Claude Code, Codex, any MCP client) connect as before, through `redrob-cut-cli mcp`.
+Other agents (Claude Code, Codex, any MCP client) connect as before, through `redrob-film-cli mcp`.
 
 ## 1. MCP server
 
-`redrob-cut-cli mcp` serves MCP on stdio. It has two modes:
+`redrob-film-cli mcp` serves MCP on stdio. It has two modes:
 
 | Mode | Command | What it drives |
 |---|---|---|
-| Headless | `redrob-cut-cli mcp --demo` or `--project p.fcproj` (neither = empty project) | an in-process engine session, no window |
-| Bridge | `redrob-cut-cli mcp --bridge 127.0.0.1:9876` | the running desktop app started with `redrob-cut --control 9876` |
+| Headless | `redrob-film-cli mcp --demo` or `--project p.fcproj` (neither = empty project) | an in-process engine session, no window |
+| Bridge | `redrob-film-cli mcp --bridge 127.0.0.1:9876` | the running desktop app started with `redrob-film --control 9876` |
 
 Headless mode also takes `--data-dir DIR` (user presets). Any other option is rejected (exit 2):
 there are no folder-confinement flags such as `--automation-read-root`, so the server can read
 and write wherever the user can.
 
 **Claude Code.** The repository's `.mcp.json` registers both servers (`filmcraft` = bridge,
-`filmcraft-headless` = demo). Both point at `target/release/redrob-cut-cli`, so build it first:
+`filmcraft-headless` = demo). Both point at `target/release/redrob-film-cli`, so build it first:
 
 ```sh
 cargo build --release -p filmcraft-cli -p filmcraft
-./target/release/redrob-cut --control 9876 &      # only for the bridge server
+./target/release/redrob-film --control 9876 &      # only for the bridge server
 claude                                           # approve the project MCP servers when asked
 ```
 
 To register the server by hand, or for another MCP client, use the absolute binary path:
 
 ```sh
-claude mcp add filmcraft-headless -- /abs/path/filmcraft/target/release/redrob-cut-cli mcp --demo
+claude mcp add filmcraft-headless -- /abs/path/filmcraft/target/release/redrob-film-cli mcp --demo
 ```
 
 ```json
-{ "mcpServers": { "filmcraft": { "command": "/abs/path/redrob-cut-cli", "args": ["mcp", "--bridge", "127.0.0.1:9876"] } } }
+{ "mcpServers": { "filmcraft": { "command": "/abs/path/redrob-film-cli", "args": ["mcp", "--bridge", "127.0.0.1:9876"] } } }
 ```
 
 ### From an installed release
 
-The release packages ship `redrob-cut-cli` alongside the desktop app, so no build is needed:
+The release packages ship `redrob-film-cli` alongside the desktop app, so no build is needed:
 
 | Install | CLI |
 |---|---|
-| Windows (MSI) | `C:\Program Files\Redrob Cut\redrob-cut-cli.exe` by default (wherever you installed it otherwise), not on `PATH` |
-| Linux (deb, rpm) | `/usr/bin/redrob-cut-cli` |
-| macOS | the separate `redrob-cut-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
+| Windows x64 (MSI) | `C:\Program Files\Redrob Film\redrob-film-cli.exe` by default (wherever you installed it otherwise), not on `PATH`; the portable zip has it next to `redrob-film.exe` |
+| Linux x86_64 (deb) | `/usr/bin/redrob-film-cli`; the tar.gz's `install.sh` puts it in `<prefix>/bin` (`~/.local/bin` by default) |
+| Redrob Launcher | `<launcher data dir>/apps/redrob-film/…/redrob-film-cli` (the launcher's `installed.json` records the path) |
+| macOS | the separate `redrob-film-cli-<version>-macos-universal.zip` release asset (the `.app` holds only the desktop app) |
 
 ```sh
 # Windows, default install folder
-claude mcp add filmcraft -- "C:\Program Files\Redrob Cut\redrob-cut-cli.exe" mcp
+claude mcp add filmcraft -- "C:\Program Files\Redrob Film\redrob-film-cli.exe" mcp
 # Linux, or macOS with the CLI unzipped onto PATH
-claude mcp add filmcraft -- redrob-cut-cli mcp
+claude mcp add filmcraft -- redrob-film-cli mcp
 ```
 
 ### Tools
@@ -111,11 +115,11 @@ Typical loop: `project_inspect` / `sequence_inspect` → get ids → `command_ru
 ### Conventions
 
 The server follows a few conventions that make it predictable for agents. They are not
-Redrob Cut-specific: the sibling craft apps' MCP servers can follow the same ones, so an agent that has
+Redrob Film-specific: the sibling craft apps' MCP servers can follow the same ones, so an agent that has
 driven one app can drive the others.
 
 - **Core tools.** `command_list`, `command_run`, `command_batch`, `doc_inspect` and `render_preview`
-  work in both modes. The Redrob Cut tools above stay as they are.
+  work in both modes. The Redrob Film tools above stay as they are.
 - **Titles and annotations.** Every tool has a `title` and the four MCP hints (`readOnlyHint`,
   `destructiveHint`, `idempotentHint`, `openWorldHint`), so a client can let the read-only tools
   (lists, inspects, renders, screenshots) run without asking and ask before edits. When you add a
@@ -154,11 +158,11 @@ progress and stop it:
   ignore the token.
 - Bridge mode works the same way: the export runs as an app job (the app stays responsive and shows
   "Exporting… NN%" in its status bar) and the call returns when it is written, however long it
-  takes. `redrob-cut-cli --bridge … exec file.exportMedia … wait=true` blocks the same way.
+  takes. `redrob-film-cli --bridge … exec file.exportMedia … wait=true` blocks the same way.
 
 ## 2. Control channel
 
-`redrob-cut --control 9876` (or `FILMCRAFT_CONTROL_PORT=9876`) listens on `127.0.0.1` only. Send one
+`redrob-film --control 9876` (or `FILMCRAFT_CONTROL_PORT=9876`) listens on `127.0.0.1` only. Send one
 JSON request per line and get one JSON reply per line. Full method table:
 [control-protocol.md](control-protocol.md).
 
@@ -209,32 +213,32 @@ Notes:
 - `timeline.move` takes linked partners along while Linked Selection is on: moving a picture
   clip moves its sound by the same offset (pass `"linked": false` to move only the listed clips).
   It returns `{"moved": [ids]}`, every clip that moved.
-- Without a window, `redrob-cut-cli run script.jsonl` (lines of `{"id":"…","params":{…}}`) runs the
+- Without a window, `redrob-film-cli run script.jsonl` (lines of `{"id":"…","params":{…}}`) runs the
   same commands headlessly. See §2b for the rest of the CLI.
 
 ## 2b. Command-line interface
 
 Every command is also one shell call away. Options go anywhere; output is JSON; exit status is 0 on
-success, 1 when a command fails and 2 on a usage error. `redrob-cut-cli help`, `redrob-cut-cli --help`
-and `redrob-cut-cli -h` print the reference and exit successfully.
-If the reader of stdout closes the pipe early (`redrob-cut-cli commands | head`), the CLI drops the rest
+success, 1 when a command fails and 2 on a usage error. `redrob-film-cli help`, `redrob-film-cli --help`
+and `redrob-film-cli -h` print the reference and exit successfully.
+If the reader of stdout closes the pipe early (`redrob-film-cli commands | head`), the CLI drops the rest
 of its output but still finishes the work, saves included, and the exit status still reports
 failures; any other stdout write error is reported and makes the status 1.
 
 ```sh
-redrob-cut-cli commands razor                     # find ids (add --json for machine output)
-redrob-cut-cli describe timeline.razor            # one command: menu, shortcut, params, enabled now
-redrob-cut-cli --demo inspect sequence            # project / sequence as JSON
-redrob-cut-cli --project p.fcproj --save exec timeline.razor seconds=3.5
-redrob-cut-cli --project p.fcproj exec effects.apply '{"effect":"Gaussian Blur"}'
-redrob-cut-cli --project p.fcproj exec markers.exportCsv path=review.csv
-redrob-cut-cli --project p.fcproj --save import a.mov b.wav
-redrob-cut-cli --project p.fcproj export out.mp4  # format from the extension; waits for the job
-redrob-cut-cli --project p.fcproj export out --preset "YouTube 1080p Full HD" --start 0 --end 10
-redrob-cut-cli export --list-presets prores       # built-in + user presets (--data-dir for another library)
-redrob-cut-cli --project p.fcproj exec export.queue.add preset="Apple ProRes 422 HQ" path=renders/ start=true wait=true
-echo '{"id":"file.newBin","params":{"name":"Selects"}}' | redrob-cut-cli --project p.fcproj --save run -
-redrob-cut-cli --bridge 127.0.0.1:9876 exec window.workspace.color   # the running app
+redrob-film-cli commands razor                     # find ids (add --json for machine output)
+redrob-film-cli describe timeline.razor            # one command: menu, shortcut, params, enabled now
+redrob-film-cli --demo inspect sequence            # project / sequence as JSON
+redrob-film-cli --project p.fcproj --save exec timeline.razor seconds=3.5
+redrob-film-cli --project p.fcproj exec effects.apply '{"effect":"Gaussian Blur"}'
+redrob-film-cli --project p.fcproj exec markers.exportCsv path=review.csv
+redrob-film-cli --project p.fcproj --save import a.mov b.wav
+redrob-film-cli --project p.fcproj export out.mp4  # format from the extension; waits for the job
+redrob-film-cli --project p.fcproj export out --preset "YouTube 1080p Full HD" --start 0 --end 10
+redrob-film-cli export --list-presets prores       # built-in + user presets (--data-dir for another library)
+redrob-film-cli --project p.fcproj exec export.queue.add preset="Apple ProRes 422 HQ" path=renders/ start=true wait=true
+echo '{"id":"file.newBin","params":{"name":"Selects"}}' | redrob-film-cli --project p.fcproj --save run -
+redrob-film-cli --bridge 127.0.0.1:9876 exec window.workspace.color   # the running app
 ```
 
 `key=value` values are parsed as JSON when they can be (`3.5`, `true`, `[1,2]`), otherwise taken as
@@ -268,10 +272,10 @@ For any UI change, look at the result:
 3. Assert on `ui.inspect`, `ui.elements` and `sequence.inspect`.
 4. Take `ui.screenshot` (the whole window and the panel you changed) and open the PNG.
 
-Screenshots you commit must follow [AGENTS.md](../AGENTS.md) §1: Redrob Cut only, openly licensed
+Screenshots you commit must follow [AGENTS.md](../AGENTS.md) §1: Redrob Film only, openly licensed
 media, sidecar and `ATTRIBUTION.md` entry.
 
-# Part 2: developing Redrob Cut
+# Part 2: developing Redrob Film
 
 ## 4. Orientation, in this order
 

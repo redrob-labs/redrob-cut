@@ -22,7 +22,7 @@ Rules that bind here (design system `10-logo.md`, `assets/Favicons/README.md`, `
   and right, x = symbol height). The product name follows it at the UI's 600 weight, never inside
   the lockup's letterforms.
 
-Redrob Cut has no product glyph of its own in the design system yet, so the app carries the Redrob
+Redrob Film has no product glyph of its own in the design system yet, so the app carries the Redrob
 tile. When a Cut glyph is added to `assets/Products/`, replace these sources, update `SHA256SUMS`
 and rerun the script; nothing else changes.
 

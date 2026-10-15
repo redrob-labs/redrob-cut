@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/redrob-cut-<version>-macos-<arch>.dmg          Redrob Cut.app on a drag-to-Applications DMG
-#   $DIST/redrob-cut-cli-<version>-macos-<arch>.zip      the headless CLI
+#   $DIST/redrob-film-<version>-macos-<arch>.dmg          Redrob Film.app on a drag-to-Applications DMG
+#   $DIST/redrob-film-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 #
@@ -40,9 +40,9 @@ export MACOSX_DEPLOYMENT_TARGET=11.0
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
-APP="$WORK/Redrob Cut.app"
-DMG="$DIST/redrob-cut-$VERSION-macos-$ARCH.dmg"
-CLI_ZIP="$DIST/redrob-cut-cli-$VERSION-macos-$ARCH.zip"
+APP="$WORK/Redrob Film.app"
+DMG="$DIST/redrob-film-$VERSION-macos-$ARCH.dmg"
+CLI_ZIP="$DIST/redrob-film-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
 NOTARY_AUTH=()
@@ -64,7 +64,7 @@ else
   warn "macOS: no notarization credentials (APPLE_NOTARY_API_KEY_* or APPLE_ID/APPLE_PASSWORD/APPLE_TEAM_ID); signed but not notarized"
 fi
 
-echo "==> Redrob Cut $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
+echo "==> Redrob Film $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
 
 # ---- build -------------------------------------------------------------------------------------
 if [ "$SKIP_BUILD" = 0 ]; then
@@ -75,7 +75,7 @@ fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK/bin"
-for bin in redrob-cut redrob-cut-cli; do
+for bin in redrob-film redrob-film-cli; do
   inputs=()
   for t in "${TARGETS[@]}"; do inputs+=("$CARGO_TARGET_DIR/$t/release/$bin"); done
   lipo -create -output "$WORK/bin/$bin" "${inputs[@]}"
@@ -109,12 +109,12 @@ notarize() {
   fi
 }
 
-# ---- Redrob Cut.app ----------------------------------------------------------------------------
+# ---- Redrob Film.app ----------------------------------------------------------------------------
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/redrob-cut" "$APP/Contents/MacOS/Redrob Cut"
-cp "$ROOT/assets/app-icon/redrob-cut.icns" "$APP/Contents/Resources/Redrob Cut.icns"
+cp "$WORK/bin/redrob-film" "$APP/Contents/MacOS/Redrob Film"
+cp "$ROOT/assets/app-icon/redrob-film.icns" "$APP/Contents/Resources/Redrob Film.icns"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
   -e "s/@BUILD_SHA@/${FILMCRAFT_BUILD_SHA:-unknown}/g" \
   "$HERE/Info.plist.in" >"$APP/Contents/Info.plist"
@@ -125,13 +125,13 @@ copy_font_licences "$APP/Contents/Resources"
 
 # Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
 # Today the only nested code is the main executable; frameworks/helpers would be signed here too.
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/Redrob Cut"
+sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/Redrob Film"
 sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP"
 codesign --verify --strict --deep --verbose=2 "$APP"
 
 if [ "$NOTARIZE" = 1 ]; then
-  ditto -c -k --keepParent "$APP" "$WORK/RedrobCut-notarize.zip"
-  notarize "$WORK/RedrobCut-notarize.zip"
+  ditto -c -k --keepParent "$APP" "$WORK/RedrobFilm-notarize.zip"
+  notarize "$WORK/RedrobFilm-notarize.zip"
   xcrun stapler staple "$APP"
   xcrun stapler validate "$APP"
   spctl --assess --type execute -vvv "$APP"
@@ -141,7 +141,7 @@ fi
 echo "==> building $DMG"
 STAGE="$WORK/dmg"
 mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/Redrob Cut.app"
+ditto "$APP" "$STAGE/Redrob Film.app"
 ln -s /Applications "$STAGE/Applications"
 # Finder window layout: background, icon size and positions (packaging/macos/dmg/README.md).
 mkdir -p "$STAGE/.background"
@@ -151,7 +151,7 @@ rm -f "$DMG" "$WORK/raw.dmg"
 # makehybrid + convert builds the image without attaching a device, unlike `create -srcfolder`,
 # which is flaky on CI runners ("Resource busy") and hangs in sandboxed sessions.
 # The volume name has no version: .DS_Store finds the background through an alias that includes it.
-hdiutil makehybrid -hfs -hfs-volume-name "Redrob Cut" -hfs-openfolder "$STAGE" -o "$WORK/raw.dmg" "$STAGE"
+hdiutil makehybrid -hfs -hfs-volume-name "Redrob Film" -hfs-openfolder "$STAGE" -o "$WORK/raw.dmg" "$STAGE"
 hdiutil convert "$WORK/raw.dmg" -format UDZO -imagekey zlib-level=9 -o "$DMG"
 rm -f "$WORK/raw.dmg"
 sign "$DMG"
@@ -165,17 +165,17 @@ fi
 
 # ---- CLI ---------------------------------------------------------------------------------------
 echo "==> building $CLI_ZIP"
-CLI_DIR="$WORK/redrob-cut-cli-$VERSION-macos-$ARCH"
+CLI_DIR="$WORK/redrob-film-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"
-cp "$WORK/bin/redrob-cut-cli" "$CLI_DIR/"
+cp "$WORK/bin/redrob-film-cli" "$CLI_DIR/"
 copy_docs "$CLI_DIR"
-sign --options runtime "$CLI_DIR/redrob-cut-cli"
-codesign --verify --strict --verbose=2 "$CLI_DIR/redrob-cut-cli"
+sign --options runtime "$CLI_DIR/redrob-film-cli"
+codesign --verify --strict --verbose=2 "$CLI_DIR/redrob-film-cli"
 rm -f "$CLI_ZIP"
 ditto -c -k --keepParent "$CLI_DIR" "$CLI_ZIP"
 # A bare Mach-O can't carry a stapled ticket; Gatekeeper looks the notarization up online.
 if [ "$NOTARIZE" = 1 ]; then notarize "$CLI_ZIP"; fi
 
-"$WORK/bin/redrob-cut-cli" --version
+"$WORK/bin/redrob-film-cli" --version
 echo "==> done"
 ls -lh "$DMG" "$CLI_ZIP"

@@ -1,10 +1,10 @@
-# Redrob Cut app icon
+# Redrob Film app icon
 
 The Redrob tile: a white symbol on a Redrob Blue (`#2B52FF`) tile, from the Redrob design system.
 Every file here is derived from the pinned sources in [`../brand/`](../brand/README.md) by
 `packaging/brand-assets.sh` and nothing else; do not edit them by hand.
 
-Redrob Cut has no product glyph of its own in the design system yet, so it carries the Redrob tile.
+Redrob Film has no product glyph of its own in the design system yet, so it carries the Redrob tile.
 When a Cut glyph is added to the design system's `assets/Products/`, replace the sources in
 `assets/brand/`, update `SHA256SUMS` and rerun the script.
 
@@ -12,14 +12,11 @@ When a Cut glyph is added to the design system's `assets/Products/`, replace the
 
 | File | What |
 |---|---|
-| `hicolor/<size>/apps/ai.redrob.cut.png`, `hicolor/scalable/apps/ai.redrob.cut.svg` | Linux icon theme, used by `packaging/linux/ai.redrob.cut.desktop` |
-| `redrob-cut-256.png` | runtime window icon on Windows and Linux (embedded by `apps/filmcraft/src/main.rs`) |
-| `redrob-cut-512.png` | runtime Dock icon on macOS |
-| `redrob-cut.icns` | macOS bundle icon (`CFBundleIconFile`) |
-| `redrob-cut.ico` | Windows icon, 16-256 px (embedded in the exe by `apps/filmcraft/build.rs`) |
-
-The web app's `apps/filmcraft-web/web/favicon.png` and `favicon.svg` are the design system's own
-64 px and vector tiles.
+| `hicolor/<size>/apps/ai.redrob.film.png`, `hicolor/scalable/apps/ai.redrob.film.svg` | Linux icon theme, used by `packaging/linux/ai.redrob.film.desktop` |
+| `redrob-film-256.png` | runtime window icon on Windows and Linux (embedded by `apps/filmcraft/src/main.rs`) |
+| `redrob-film-512.png` | runtime Dock icon on macOS |
+| `redrob-film.icns` | macOS bundle icon (`CFBundleIconFile`) |
+| `redrob-film.ico` | Windows icon, 16-256 px (embedded in the exe by `apps/filmcraft/build.rs`) |
 
 ## Rules
 

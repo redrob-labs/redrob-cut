@@ -83,9 +83,10 @@ platforms** G4, G9, G17; **performance** G16; **ecosystem** G11; **measurement**
 - **Evidence:** open issues: macOS 12 Monterey aborts on a missing VideoToolbox symbol (#468,
   #661, #655), Intel UHD graphics (`igvk64.dll`, #512), Windows 11 does not run or fails after setup
   (#380, #582, #413, #477), crash on new project + import (#439), "it just keeps crashing" (#687).
-  `.github/workflows/` holds release, packaging lint, FreeBSD and Windows ARM64 builds; **none runs
-  `cargo test` or `cargo xtask ci` on a pull request**, so 243 PRs merged since 10-05 were gated by
-  contributors' local runs (main needed "green again after the batch merges" on 10-10).
+  Until 2026-10-15 no workflow ran `cargo test` on a pull request, so 243 PRs merged since 10-05
+  were gated by contributors' local runs (main needed "green again after the batch merges" on 10-10).
+  `.github/workflows/ci.yml` now runs fmt, clippy and the tests of our crates (`--profile ci`) on
+  Linux; macOS and Windows runs are still missing.
 - **Impact:** a user who cannot start the app gets zero value; regressions land unnoticed.
 - **Done when:** weak-linked or runtime-loaded OS symbols on old macOS, a software / safe-mode
   start when the GPU adapter fails, a PR workflow running `cargo xtask ci` on macOS, Windows and
@@ -252,9 +253,8 @@ platforms** G4, G9, G17; **performance** G16; **ecosystem** G11; **measurement**
 
 ## G20. The web app shell
 
-- **Missing:** file access, WebCodecs decode, audio in the browser build beyond what exists;
-  image-sequence export downloads drop frames in Chrome (#378).
-- **Estimate:** 40–80 h. Doc: [web.md](web.md).
+- **Closed (2026-10-15):** Redrob Film does not ship a browser build. `apps/filmcraft-web` and the web
+  packaging were removed with the release trim to three desktop targets ([releasing.md](releasing.md)).
 
 ## Revision history
 

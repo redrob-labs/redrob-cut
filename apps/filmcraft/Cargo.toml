@@ -4,12 +4,12 @@ description = "FilmCraft desktop app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-default-run = "redrob-cut"
+default-run = "redrob-film"
 build = "build.rs"
 
-# The executable is Redrob Cut's; the package keeps upstream's name so syncs merge cleanly.
+# The executable is Redrob Film's; the package keeps upstream's name so syncs merge cleanly.
 [[bin]]
-name = "redrob-cut"
+name = "redrob-film"
 path = "src/main.rs"
 
 [lints]
@@ -31,6 +31,18 @@ filmcraft-time = { workspace = true }
 filmcraft-gpu = { workspace = true }
 filmcraft-ui-egui = { workspace = true }
 filmcraft-platform = { workspace = true }
+# The shell's hand-offs: a composition as a timeline source (`MediaSource` over the effects renderer).
+filmcraft-media = { workspace = true }
+filmcraft-frame = { workspace = true }
+filmcraft-color = { workspace = true }
+# Effects mode: effectcraft hosted as the second editor of the one window (`shell.rs`).
+effectcraft-ui-egui = { workspace = true }
+effectcraft-host = { workspace = true }
+effectcraft-engine = { workspace = true }
+effectcraft-project = { workspace = true }
+effectcraft-render = { workspace = true }
+effectcraft-time = { workspace = true }
+effectcraft-color = { workspace = true }
 # `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
 filmcraft-automation = { workspace = true }
 tokio = { version = "1", features = ["rt-multi-thread"] }
@@ -46,8 +58,11 @@ chrono = { version = "0.4", default-features = false, features = ["clock"] }
 sys-locale = "0.3"
 # Help menu / About links and the console approval page in the system browser (MIT).
 open = "5"
-# The console's device flow (two JSON POSTs). rustls only: no system TLS, no OpenSSL.
+# The console's device flow (two JSON POSTs) and the in-app update check (`update.rs`: the GitHub
+# release JSON, SHA256SUMS.txt and the installer download). rustls only: no system TLS, no OpenSSL.
 ureq = { version = "=3.4.2", default-features = false, features = ["rustls"] }
+# SHA-256 of the downloaded installer against the release's SHA256SUMS.txt (`update.rs`).
+sha2 = { workspace = true }
 
 [dev-dependencies]
 glob = "0.3"

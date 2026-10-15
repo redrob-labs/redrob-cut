@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """No upstream service, store or community endpoint may remain in shipped code or packaging.
 
-Redrob Cut is free and talks to no third-party service of upstream's: no community chat, no
+Redrob Film is free and talks to no third-party service of upstream's: no community chat, no
 upstream website, no upstream store manifest, no upstream repository in a link the product opens.
 This scans the code and packaging trees (not the Markdown documents, where upstream is attributed
 on purpose: UPSTREAM.md, NOTICE, ATTRIBUTION.md).

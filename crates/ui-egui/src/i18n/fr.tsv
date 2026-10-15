@@ -4,7 +4,7 @@
 # French video-editing vocabulary. No proprietary localisation resource, string table or product UI
 # was consulted or copied; add entries the same way. Commands use the infinitive ("Enregistrer
 # sous…"), messages address the user as "vous", and labels use French sentence case. Product,
-# format and technology names (Redrob Cut, ArtCraft, Lumetri, ProRes, LUFS, EDL, AAF…) keep their
+# format and technology names (Redrob Film, Lumetri, ProRes, LUFS, EDL, AAF…) keep their
 # spelling. French spacing: a space before ":", ";", "?" and "!". This catalog has the same entries
 # as `es.tsv` plus the native macOS Settings menu; strings added later show in English until they
 # are translated. A native-speaker review is welcome.
@@ -16,7 +16,7 @@
 # décalage, overwrite = écraser, scopes = oscilloscopes, preferences (also the native macOS
 # Settings menu) = Préférences, settings = paramètres.
 
-	About Redrob Cut	À propos de Redrob Cut
+	About Redrob Film	À propos de Redrob Film
 	Add Audio Submix Track	Ajouter une piste de sous-mixage audio
 	Add Caption at Playhead	Ajouter un sous-titre à la tête de lecture
 	Add Chapter Marker…	Ajouter un marqueur de chapitre…
@@ -134,7 +134,7 @@
 	File	Fichier
 	File…	Fichier…
 	Fill frame	Remplir l'image
-	Redrob Cut Help…	Aide de Redrob Cut…
+	Redrob Film Help…	Aide de Redrob Film…
 	Find Next	Rechercher le suivant
 	Find…	Rechercher…
 	Fit	Adapter
@@ -302,7 +302,7 @@
 	Select Previous Graphic	Sélectionner le graphique précédent
 	Select Previous Layer	Sélectionner le calque précédent
 	Selection Follows Playhead	La sélection suit la tête de lecture
-	Selection as Redrob Cut Project…	Sélection en tant que projet Redrob Cut…
+	Selection as Redrob Film Project…	Sélection en tant que projet Redrob Film…
 	Selection…	Sélection…
 	Send Backward	Reculer
 	Send to Back	Mettre à l'arrière-plan
@@ -429,8 +429,8 @@
 	No background jobs.	Aucune tâche en arrière-plan.
 	Recover Unsaved Changes	Récupérer les modifications non enregistrées
 	Untitled	Sans titre
-	Redrob Cut was closed while “{name}” had unsaved changes.	Redrob Cut a été fermé alors que « {name} » contenait des modifications non enregistrées.
-	Redrob Cut quit unexpectedly while “{name}” had unsaved changes.	Redrob Cut s'est fermé de manière inattendue alors que « {name} » contenait des modifications non enregistrées.
+	Redrob Film was closed while “{name}” had unsaved changes.	Redrob Film a été fermé alors que « {name} » contenait des modifications non enregistrées.
+	Redrob Film quit unexpectedly while “{name}” had unsaved changes.	Redrob Film s'est fermé de manière inattendue alors que « {name} » contenait des modifications non enregistrées.
 	Recover unsaved changes from {when}?	Récupérer les modifications non enregistrées de {when} ?
 	The project had not been saved yet.	Le projet n'avait pas encore été enregistré.
 	{n} sessions have unsaved changes:	{n} sessions contiennent des modifications non enregistrées :
@@ -953,7 +953,7 @@
 	Font family	Famille de polices
 	Label Colors	Couleurs d'étiquette
 	Decoded frames held for the monitors and thumbnails: {used} of {budget}.	Images décodées conservées pour les moniteurs et les vignettes : {used} sur {budget}.
-	Redrob Cut keeps the rest of the RAM free for other applications.	Redrob Cut laisse le reste de la RAM libre pour les autres applications.
+	Redrob Film keeps the rest of the RAM free for other applications.	Redrob Film laisse le reste de la RAM libre pour les autres applications.
 	not available in this session	non disponible dans cette session
 	Currently: {loc} — {files} file(s), {size}	Actuellement : {loc} — {files} fichier(s), {size}
 	 ({ch} output channels)	 ({ch} canaux de sortie)
@@ -1064,7 +1064,7 @@
 	Video Frame	Cadre vidéo
 	Pin To	Épingler à
 	Pinned Edges	Bords épinglés
-	Redrob Cut Graphics Template	Modèle de graphiques Redrob Cut
+	Redrob Film Graphics Template	Modèle de graphiques Redrob Film
 	{n} Font	Police de {n}
 	{n} Size	Taille de {n}
 	{n} Color	Couleur de {n}
@@ -1074,7 +1074,7 @@
 	Export As Motion Graphics Template	Exporter en tant que modèle d'animation graphique
 	Category:	Catégorie :
 	Editable properties:	Propriétés modifiables :
-	Saved as a Redrob Cut graphics template (.fcgt) in your templates folder.	Enregistré en tant que modèle de graphiques Redrob Cut (.fcgt) dans votre dossier de modèles.
+	Saved as a Redrob Film graphics template (.fcgt) in your templates folder.	Enregistré en tant que modèle de graphiques Redrob Film (.fcgt) dans votre dossier de modèles.
 	Exported graphics template to {path}	Modèle de graphiques exporté vers {path}
 	Replace Fonts in Projects	Remplacer les polices dans les projets
 	Fonts used in the project:	Polices utilisées dans le projet :
@@ -1444,7 +1444,7 @@
 	Center of Sphere	Centre de la sphère
 	Cents	Cents
 	Change to Color	Changer en couleur
-	Changes are copied in the background a moment after each edit. If Redrob Cut quits unexpectedly, they are offered the next time it starts.	Les changements sont copiés en arrière-plan peu après chaque opération de montage. Si Redrob Cut se ferme de manière inattendue, ils vous sont proposés au démarrage suivant.
+	Changes are copied in the background a moment after each edit. If Redrob Film quits unexpectedly, they are offered the next time it starts.	Les changements sont copiés en arrière-plan peu après chaque opération de montage. Si Redrob Film se ferme de manière inattendue, ils vous sont proposés au démarrage suivant.
 	Channel	Canal
 	Channel Blur	Flou de canal
 	Channel Mix	Mixage des canaux
@@ -1817,7 +1817,7 @@
 	Hard Limiter	Limiteur dur
 	Hard Mix	Mélange dur
 	Hardware decoding	Décodage matériel
-	Hardware decoding: Auto uses the system's video decoder (VideoToolbox on macOS, Media Foundation on Windows, VA-API or NVDEC for H.264 and HEVC on Linux) for the streams it supports, and Redrob Cut's own decoder for everything else or if the hardware fails. Media that is already open keeps its decoder until it is reopened.	Décodage matériel : Auto utilise le décodeur vidéo du système (VideoToolbox sur macOS, Media Foundation sur Windows, VA-API ou NVDEC pour H.264 et HEVC sous Linux) pour les flux qu'il prend en charge, et le décodeur propre à Redrob Cut pour tout le reste ou en cas d'échec du matériel. Les médias déjà ouverts conservent leur décodeur jusqu'à leur réouverture.
+	Hardware decoding: Auto uses the system's video decoder (VideoToolbox on macOS, Media Foundation on Windows, VA-API or NVDEC for H.264 and HEVC on Linux) for the streams it supports, and Redrob Film's own decoder for everything else or if the hardware fails. Media that is already open keeps its decoder until it is reopened.	Décodage matériel : Auto utilise le décodeur vidéo du système (VideoToolbox sur macOS, Media Foundation sur Windows, VA-API ou NVDEC pour H.264 et HEVC sous Linux) pour les flux qu'il prend en charge, et le décodeur propre à Redrob Film pour tout le reste ou en cas d'échec du matériel. Les médias déjà ouverts conservent leur décodeur jusqu'à leur réouverture.
 	Head Size	Taille de la tête
 	Heart	Cœur
 	Height	Hauteur
@@ -2092,7 +2092,7 @@
 	Night	Nuit
 	No Motion	Aucun mouvement
 	No Scroll	Aucun défilement
-	No plugins are installed. Changes will take effect the next time you start Redrob Cut.	Aucun plug-in n'est installé. Les modifications prendront effet au prochain démarrage de Redrob Cut.
+	No plugins are installed. Changes will take effect the next time you start Redrob Film.	Aucun plug-in n'est installé. Les modifications prendront effet au prochain démarrage de Redrob Film.
 	Noise	Bruit
 	Noise & Grain	Bruit et grain
 	Noise (Legacy)	Bruit (ancien)
@@ -2523,7 +2523,7 @@
 	Template Properties	Propriétés du modèle
 	Text Animator	Animateur de texte
 	Text Color	Couleur du texte
-	The media cache holds render previews of unsaved projects and other files Redrob Cut can recreate. Deleting them is always safe; Redrob Cut rebuilds them as needed.	Le cache média contient les aperçus de rendu des projets non enregistrés et d'autres fichiers que Redrob Cut peut recréer. Vous pouvez toujours les supprimer sans risque ; Redrob Cut les reconstruit au besoin.
+	The media cache holds render previews of unsaved projects and other files Redrob Film can recreate. Deleting them is always safe; Redrob Film rebuilds them as needed.	Le cache média contient les aperçus de rendu des projets non enregistrés et d'autres fichiers que Redrob Film peut recréer. Vous pouvez toujours les supprimer sans risque ; Redrob Film les reconstruit au besoin.
 	Thickness	Épaisseur
 	Tile Gradient	Dégradé en mosaïque
 	Tilt	Inclinaison
@@ -2733,7 +2733,7 @@
 	System Compatibility Report	Rapport de compatibilité système
 	no GPU adapter: the CPU compositor is used	aucun adaptateur GPU : le compositeur CPU est utilisé
 	Avid Log Exchange	Avid Log Exchange
-	Redrob Cut Project	Projet Redrob Cut
+	Redrob Film Project	Projet Redrob Film
 	{name} Selection.fcproj	{name} Sélection.fcproj
 	{name} (Simplified)	{name} (simplifiée)
 	Find in:	Rechercher dans :
@@ -2873,7 +2873,7 @@
 	Start Queue	Lancer la file d'attente
 	Stop	Arrêter
 	Clear Finished	Effacer les éléments terminés
-	Not supported by Redrob Cut's encoders yet	Pas encore pris en charge par les encodeurs de Redrob Cut
+	Not supported by Redrob Film's encoders yet	Pas encore pris en charge par les encodeurs de Redrob Film
 	Sequence name	Nom de la séquence
 	Folder	Dossier
 	Preset	Préréglage
@@ -2959,7 +2959,7 @@
 	Drag a clip to slide it between its neighbours.	Faites glisser un clip pour le faire coulisser entre ses voisins.
 	Drag to scroll the timeline.	Faites glisser pour faire défiler la timeline.
 	Click to zoom in; Opt-click to zoom out.	Cliquez pour un zoom avant ; Option+clic pour un zoom arrière.
-	Redrob Cut hit an error	Redrob Cut a rencontré une erreur
+	Redrob Film hit an error	Redrob Film a rencontré une erreur
 	Details: {path}	Détails : {path}
 	Opened {url}	{url} ouvert
 	(empty)	(vide)
@@ -3201,7 +3201,7 @@
 	QuickTime, ProRes 4444 (4:4:4) with alpha channel, 24-bit 48 kHz PCM	QuickTime, ProRes 4444 (4:4:4) avec couche alpha, PCM 24 bits 48 kHz
 	QuickTime, ProRes 4444 XQ (4:4:4), 24-bit 48 kHz PCM	QuickTime, ProRes 4444 XQ (4:4:4), PCM 24 bits 48 kHz
 	QuickTime, ProRes 422, 24-bit 48 kHz PCM	QuickTime, ProRes 422, PCM 24 bits 48 kHz
-	Quit Redrob Cut	Quitter Redrob Cut
+	Quit Redrob Film	Quitter Redrob Film
 	Rate Stretch Tool	Outil Étirement de la vitesse
 	Razor Tool	Outil Cutter
 	Rectangle Tool	Outil Rectangle
@@ -3500,8 +3500,8 @@
 	Composite in Linear Color	Composer en couleur linéaire
 	Auto Tone Map Media (HDR and log into SDR)	Mappage automatique des tons des médias (HDR et log vers SDR)
 	Configure…	Configurer…
-	Not supported in Redrob Cut yet	Pas encore pris en charge dans Redrob Cut
-	Redrob Cut always composites in linear light	Redrob Cut compose toujours en lumière linéaire
+	Not supported in Redrob Film yet	Pas encore pris en charge dans Redrob Film
+	Redrob Film always composites in linear light	Redrob Film compose toujours en lumière linéaire
 	Loop marked range	Boucler la plage marquée
 	Play Source	Lire la source
 	Source Play/Stop	Lire/arrêter la source
@@ -3538,7 +3538,7 @@
 	Settings	Préférences
 
 	Redrob Website	Site web de Redrob
-	Redrob Cut on redrob.io	Redrob Cut sur redrob.io
+	Redrob Film on redrob.io	Redrob Film sur redrob.io
 	An agentic, pure-Rust non-linear video editor by Redrob.	Un éditeur vidéo non linéaire agentique, en pur Rust, par Redrob.
 	Links	Liens
 	Connect to Redrob…	Se connecter à Redrob…
@@ -3559,9 +3559,9 @@
 	Connect a Redrob workspace	Connecter un espace de travail Redrob
 	Redrob Account…	Compte Redrob…
 	Agent	Agent
-	Add Redrob Cut to Redrob Code	Ajouter Redrob Cut à Redrob Code
+	Add Redrob Film to Redrob Code	Ajouter Redrob Film à Redrob Code
 	Add to Redrob Code	Ajouter à Redrob Code
-	Added Redrob Cut to Redrob Code ({path})	Redrob Cut ajouté à Redrob Code ({path})
+	Added Redrob Film to Redrob Code ({path})	Redrob Film ajouté à Redrob Code ({path})
 	Allow {tool}?	Autoriser {tool} ?
 	Ask Redrob Code to cut, arrange, caption or check this edit.	Demandez à Redrob Code de couper, d’arranger, de sous-titrer ou de vérifier ce montage.
 	Connect…	Connecter…

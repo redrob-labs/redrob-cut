@@ -1,7 +1,11 @@
-# Release pipeline: a `vX.Y.Z` tag pushed on `main` builds installers for every platform and
-# creates or updates the draft GitHub Release "Redrob Cut vX.Y.Z". See docs/releasing.md.
+# Release pipeline: a `vX.Y.Z` tag pushed on `main` builds the three release targets (Linux
+# x86_64 tar.gz + deb, macOS universal dmg, Windows x64 portable.zip + msi) and publishes the
+# GitHub Release "Redrob Film vX.Y.Z" through the shared redrob-labs publish workflow. See
+# docs/releasing.md.
 #
-# The tag must equal the Cargo.toml version; the version job fails otherwise. The jobs that sign
+# The tag must equal the Cargo.toml version; the validate job fails otherwise. It also checks
+# formatting, the upstream pins and the notices; clippy and the tests ran on the pull request
+# (.github/workflows/ci.yml) and are not repeated here. The jobs that sign
 # (macOS, Windows) and the one that drafts the GitHub Release run in the `release` environment.
 # Signing secrets are the redrob-labs organization's (Apple Developer ID certificate + App Store
 # Connect API key for notarization). Every secret is optional: missing ones produce unsigned
@@ -35,8 +39,8 @@ env:
   INPUT_VERSION: ${{ inputs.version }}
 
 jobs:
-  version:
-    name: version
+  validate:
+    name: validate
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
@@ -44,6 +48,26 @@ jobs:
       prerelease: ${{ steps.v.outputs.prerelease }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Formatting
+        run: cargo fmt --all --check
+      - name: Upstream pins, notices, brand
+        run: |
+          python3 scripts/check_upstream_boundary.py
+          python3 scripts/check_no_upstream_services.py
+          python3 scripts/check_brand.py
+      - name: Changelog has this version
+        # A dry run with a version override is not a release, so it needs no changelog entry.
+        if: inputs.version == ''
+        run: |
+          . packaging/env.sh
+          v="${INPUT_VERSION#v}"
+          v="${v:-$VERSION}"
+          grep -Fq "## $v" ROADMAP.md || { echo "::error::ROADMAP.md has no '## $v' section"; exit 1; }
       - id: v
         name: Resolve version
         run: |
@@ -64,18 +88,18 @@ jobs:
             echo "date=$(date -u +%Y-%m-%d)"
             echo "prerelease=$pre"
           } >>"$GITHUB_OUTPUT"
-          echo "### Redrob Cut v$v (\`${GITHUB_SHA::9}\`)" >>"$GITHUB_STEP_SUMMARY"
+          echo "### Redrob Film v$v (\`${GITHUB_SHA::9}\`)" >>"$GITHUB_STEP_SUMMARY"
 
   macos:
     name: macOS universal
-    needs: version
+    needs: validate
     # Standard hosted runner: redrob-labs has no larger macOS runners configured, and a job that
     # names one waits in the queue forever.
     runs-on: macos-latest
     environment: release
     env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
+      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
+      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -116,22 +140,23 @@ jobs:
           if [ -n "${MACOS_KEYCHAIN:-}" ]; then security delete-keychain "$MACOS_KEYCHAIN" || true; fi
 
   windows:
-    name: Windows ${{ matrix.arch }}
-    needs: version
+    name: Windows x64
+    needs: validate
     runs-on: windows-latest
+    # `release` is the environment the organization's federated credential names
+    # (repo:redrob-labs@<org id>/<repo>@<id>:environment:release); any other name is refused.
     environment: release
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { arch: x64, target: x86_64-pc-windows-msvc }
-          - { arch: x86, target: i686-pc-windows-msvc }
-          # Windows on ARM: cross-compiled on the x64 runner, so signing and WiX run as above.
-          # .github/workflows/windows-arm64.yml installs and runs it on ARM64 hardware.
-          - { arch: arm64, target: aarch64-pc-windows-msvc }
+    permissions:
+      contents: read
+      # The OIDC token `azure/login` exchanges for the Artifact Signing credential.
+      id-token: write
     env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
+      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
+      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
+      # Plain IDs (not credentials); here so the login step can be skipped when signing is not set up.
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
+      CRAFT_FONTS_REQUIRED: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -141,10 +166,10 @@ jobs:
           path: craft-fonts
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: x86_64-pc-windows-msvc
       - uses: Swatinem/rust-cache@v2
         with:
-          key: release-windows-${{ matrix.arch }}
+          key: release-windows-x64
       - name: Apply version override
         if: inputs.version != ''
         shell: bash
@@ -152,42 +177,60 @@ jobs:
       - name: Install WiX
         shell: pwsh
         run: dotnet tool install --global wix --version 5.0.2
-      - name: Build, sign, package
+      - name: Build and stage
         shell: pwsh
-        env:
-          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
-          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          AZURE_CERT_PROFILE: ${{ secrets.AZURE_CERT_PROFILE }}
-          CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
-          CRAFT_FONTS_REQUIRED: "1"
-        run: ./packaging/windows/package.ps1 -Arch ${{ matrix.arch }}
+        run: ./packaging/windows/package.ps1 -Arch x64 -BuildOnly
+
+      # The login comes after the build on purpose: the OpenID Connect token is short-lived and a
+      # long build left signtool without a usable credential (it then waited on a browser).
+      - name: Log in to Azure (OIDC)
+        if: env.AZURE_CLIENT_ID != ''
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign the executables
+        uses: redrob-labs/.github/actions/sign-windows@main
+        with:
+          files: target/windows-package/x64/*.exe
+          description: Redrob Film
+          url: https://github.com/redrob-labs/redrob-film
+          endpoint: ${{ secrets.ARTIFACT_SIGNING_ENDPOINT }}
+          account: ${{ secrets.ARTIFACT_SIGNING_ACCOUNT }}
+          cert-profile: ${{ secrets.ARTIFACT_SIGNING_CERT_PROFILE }}
+
+      - name: Package (MSI, portable zip)
+        shell: pwsh
+        run: ./packaging/windows/package.ps1 -Arch x64 -SkipBuild
+
+      - name: Sign the installer
+        uses: redrob-labs/.github/actions/sign-windows@main
+        with:
+          files: dist/release/*.msi
+          description: Redrob Film
+          url: https://github.com/redrob-labs/redrob-film
+          endpoint: ${{ secrets.ARTIFACT_SIGNING_ENDPOINT }}
+          account: ${{ secrets.ARTIFACT_SIGNING_ACCOUNT }}
+          cert-profile: ${{ secrets.ARTIFACT_SIGNING_CERT_PROFILE }}
+
       - uses: actions/upload-artifact@v4
         with:
-          name: release-windows-${{ matrix.arch }}
+          name: release-windows-x64
           path: dist/release/*
           if-no-files-found: error
 
   linux:
-    name: Linux ${{ matrix.arch }}
-    needs: version
+    name: Linux x86_64
+    needs: validate
     # The oldest GitHub-hosted image, so the binaries only need glibc >= 2.35 (Ubuntu 22.04+,
-    # Debian 12+, Fedora 36+, RHEL 10). See docs/releasing.md.
-    runs-on: ${{ matrix.runner }}
+    # Debian 12+). See docs/releasing.md.
+    runs-on: ubuntu-22.04
     # No `environment: release`: this job signs nothing, so it gets no release secrets.
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { arch: x86_64, runner: ubuntu-22.04, deb: amd64 }
-          - { arch: aarch64, runner: ubuntu-22.04-arm, deb: arm64 }
     env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
+      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
+      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
       NFPM_VERSION: 2.47.0
     steps:
       - uses: actions/checkout@v4
@@ -201,18 +244,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libasound2-dev \
-            desktop-file-utils appstream python3-yaml zsync
+            desktop-file-utils appstream
           curl -fsSL -o "$RUNNER_TEMP/nfpm.deb" \
-            "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_${{ matrix.deb }}.deb"
+            "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_amd64.deb"
           sudo dpkg -i "$RUNNER_TEMP/nfpm.deb"
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          key: release-linux-${{ matrix.arch }}
+          key: release-linux-x86_64
       - name: Apply version override
         if: inputs.version != ''
         run: cargo xtask version set "$FILMCRAFT_VERSION"
-      - name: Build and package (AppImage, deb, rpm, tar.gz)
+      - name: Build and package (tar.gz, deb)
         env:
           CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
           CRAFT_FONTS_REQUIRED: "1"
@@ -220,214 +263,27 @@ jobs:
       - name: Check the packages
         run: |
           dpkg-deb --info dist/release/*.deb
-          dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-cut$|metainfo|applications'
-          ldd target/release/redrob-cut
-          python3 -c "import yaml; m = yaml.safe_load(open('packaging/linux/flatpak/ai.redrob.cut.yml')); assert m['id'] == 'ai.redrob.cut'"
-          for appimage in dist/release/*.AppImage; do
-            chmod +x "$appimage"
-            APPIMAGE_EXTRACT_AND_RUN=1 "$appimage" --version
-            # Update information is embedded, and the .zsync for delta updates sits beside it.
-            # Without APPIMAGE_EXTRACT_AND_RUN: with it, the runtime passes --appimage-* options
-            # on to the app (which then tries to open a window) instead of answering them.
-            "$appimage" --appimage-updateinformation | grep -F 'gh-releases-zsync|'
-            test -s "$appimage.zsync"
-          done
+          dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-film$|metainfo|applications'
+          ldd target/release/redrob-film
+          # Exactly the two Linux assets the launcher and the in-app updater (apps/filmcraft/src/update.rs) expect.
+          test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.tar.gz"
+          test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.deb"
+          extra="$(find dist/release -mindepth 1 -maxdepth 1 -printf '%f\n' | grep -vE '^redrob-film-.*-linux-x86_64\.(tar\.gz|deb)$' || true)"
+          if [ -n "$extra" ]; then echo "::error::unexpected Linux asset: $extra"; exit 1; fi
       - uses: actions/upload-artifact@v4
         with:
-          name: release-linux-${{ matrix.arch }}
+          name: release-linux-x86_64
           path: dist/release/*
           if-no-files-found: error
 
-  flatpak:
-    name: Flatpak ${{ matrix.arch }}
-    needs: [version, linux]
-    # Repackages the Linux job's tarball (the same binaries as the AppImage/deb/rpm); no Rust
-    # build here. 24.04 for a newer flatpak-builder (1.4) than 22.04 ships.
-    runs-on: ${{ matrix.runner }}
-    # No `environment: release`: this job signs nothing, so it gets no release secrets.
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { arch: x86_64, runner: ubuntu-24.04 }
-          - { arch: aarch64, runner: ubuntu-24.04-arm }
-    env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-linux-${{ matrix.arch }}
-          path: dist/linux
-      - name: Install flatpak-builder
-        run: |
-          sudo apt-get update
-          # librsvg2-common: the SVG pixbuf loader. flatpak-builder runs the host's
-          # `appstreamcli compose`, which renders the scalable icon and fails without it.
-          sudo apt-get install -y --no-install-recommends flatpak flatpak-builder librsvg2-common
-          # Ubuntu 24.04's AppArmor blocks the unprivileged user namespaces bubblewrap needs.
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-      - name: Build the Flatpak bundle
-        run: packaging/linux/flatpak-bundle.sh "dist/linux/redrob-cut-$FILMCRAFT_VERSION-linux-${{ matrix.arch }}.tar.gz"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-flatpak-${{ matrix.arch }}
-          path: dist/release/*.flatpak
-          if-no-files-found: error
-
-  web:
-    name: Web (wasm)
-    needs: version
-    runs-on: ubuntu-latest
-    # No `environment: release`: this job signs nothing, so it gets no release secrets.
-    env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
-      WASM_BINDGEN_VERSION: 0.2.129
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          repository: storytold/craft-fonts
-          ref: abb83316d96aa59c1cf64784289e378fe9fa5695 # craft-fonts: bump deliberately
-          path: craft-fonts
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: release-web
-      - name: Install wasm-bindgen CLI
-        run: |
-          # Must match the wasm-bindgen crate version exactly (WASM_BINDGEN in xtask/src/main.rs).
-          if ! { command -v wasm-bindgen >/dev/null && wasm-bindgen --version | grep -q "$WASM_BINDGEN_VERSION"; }; then
-            cargo install wasm-bindgen-cli --version "$WASM_BINDGEN_VERSION" --locked
-          fi
-          wasm-bindgen --version
-      - name: Apply version override
-        if: inputs.version != ''
-        run: cargo xtask version set "$FILMCRAFT_VERSION"
-      - name: Build and zip
-        env:
-          CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
-          CRAFT_FONTS_REQUIRED: "1"
-        run: packaging/web/package.sh
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-web
-          path: dist/release/*
-          if-no-files-found: error
-
-  freebsd:
-    name: FreeBSD x86_64
-    needs: version
-    # GitHub has no FreeBSD runners: build in a FreeBSD 14.3 VM, the same image and packages as
-    # .github/workflows/freebsd.yml. Best effort: the draft release does not wait for success.
-    runs-on: ubuntu-latest
-    timeout-minutes: 300
-    # No `environment: release`: this job signs nothing, so it gets no release secrets.
-    env:
-      FILMCRAFT_VERSION: ${{ needs.version.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.version.outputs.date }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          repository: storytold/craft-fonts
-          ref: abb83316d96aa59c1cf64784289e378fe9fa5695 # craft-fonts: bump deliberately
-          path: craft-fonts
-      - name: Build and package in a FreeBSD VM (tar.gz)
-        # vmactions/freebsd-vm v1.5.9, pinned by commit (it runs our build).
-        uses: vmactions/freebsd-vm@c46abacb49f09938ca4e1702d15d836285d694cc # v1.5.9
-        with:
-          release: "14.3"
-          usesh: true
-          # A private repository's GitHub-hosted runner has 2 vCPUs and about 7 GB of RAM: a
-          # bigger guest fails at boot ("cannot set up guest memory").
-          cpu: 2
-          mem: 5120
-          # Passed into the VM by name; never templated into the script below.
-          envs: "FILMCRAFT_VERSION FILMCRAFT_BUILD_DATE FILMCRAFT_BUILD_SHA INPUT_VERSION"
-          # Bring dist/ back to the runner. The target dir lives outside the checkout, so it stays.
-          copyback: true
-          # The FreeBSD CI packages (.github/workflows/freebsd.yml), plus bash for the script.
-          prepare: |
-            pkg install -y bash git curl pkgconf cmake python3 libxkbcommon wayland libX11 libXcursor libXrandr libXi libxcb mesa-libs vulkan-loader gtk3 fontconfig freetype2 alsa-lib
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
-          run: |
-            set -e
-            . "$HOME/.cargo/env"
-            git config --global --add safe.directory "*"
-            # Build outside the checkout so only dist/ is copied back out of the VM (copying the
-            # target dir back fails on large builds). 2 jobs: more runs the VM out of memory.
-            export CARGO_TARGET_DIR=/var/tmp/filmcraft-target CARGO_BUILD_JOBS=2
-            if [ -n "$INPUT_VERSION" ]; then cargo xtask version set "$FILMCRAFT_VERSION"; fi
-            # craft-fonts was checked out next to the sources and synced into the VM with them.
-            export CRAFT_FONTS_DIR="$PWD/craft-fonts" CRAFT_FONTS_REQUIRED=1
-            bash packaging/freebsd/package.sh
-            tar -tzf dist/release/redrob-cut-*-freebsd-x86_64.tar.gz \
-              | grep -E '/bin/redrob-cut$|/bin/redrob-cut-cli$|/share/applications/ai\.redrob\.cut\.desktop$|/share/doc/redrob-cut/LICENSE-MIT$'
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-freebsd-x86_64
-          path: dist/release/*
-          if-no-files-found: error
-
-  release:
-    name: Draft GitHub Release
-    needs: [version, macos, windows, linux, flatpak, web, freebsd]
-    # Only a version tag publishes; a manual dispatch stops before this job. FreeBSD does not hold
-    # the release back: its VM is the least reliable job on the hosted runners, and a release
-    # without the FreeBSD archive beats no release. Every other platform must succeed.
-    if: >-
-      always() && github.ref_type == 'tag' &&
-      needs.version.result == 'success' && needs.macos.result == 'success' &&
-      needs.windows.result == 'success' && needs.linux.result == 'success' &&
-      needs.flatpak.result == 'success' && needs.web.result == 'success'
-    runs-on: ubuntu-latest
-    environment: release
+  publish:
+    needs: [validate, macos, windows, linux]
+    if: always() && github.ref_type == 'tag' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
+    uses: redrob-labs/.github/.github/workflows/release-publish.yml@main
     permissions:
       contents: write
-    env:
-      VERSION: ${{ needs.version.outputs.version }}
-      PRERELEASE: ${{ needs.version.outputs.prerelease }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GH_REPO: ${{ github.repository }}
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: release-*
-          path: artifacts
-          merge-multiple: true
-      - name: Checksums
-        working-directory: artifacts
-        run: |
-          sha256sum -- * | tee SHA256SUMS.txt
-      - name: Create or update the draft release
-        working-directory: artifacts
-        run: |
-          tag="v$VERSION"
-          title="Redrob Cut v$VERSION"
-          pre=()
-          if [ "$PRERELEASE" = true ]; then pre=(--prerelease); fi
-          if draft="$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null)"; then
-            if [ "$draft" != "true" ]; then
-              echo "::error::Release $tag is already published. Bump the version (cargo xtask version set) and tag again."
-              exit 1
-            fi
-            echo "Updating draft $tag: replacing its assets"
-            gh release view "$tag" --json assets --jq '.assets[].name' | while read -r asset; do
-              gh release delete-asset "$tag" "$asset" --yes
-            done
-            gh release edit "$tag" --draft --title "$title" --target "$GITHUB_SHA" --prerelease="$PRERELEASE"
-            gh release upload "$tag" --clobber -- *
-          else
-            echo "Creating draft $tag"
-            gh release create "$tag" --draft --title "$title" --target "$GITHUB_SHA" --generate-notes "${pre[@]}" -- *
-          fi
-          {
-            echo "Draft release **$title** at \`${GITHUB_SHA::9}\`:"
-            echo
-            sed 's/^/    /' SHA256SUMS.txt
-          } >>"$GITHUB_STEP_SUMMARY"
+    with:
+      version: ${{ needs.validate.outputs.version }}
+      title: Redrob Film
+      launcher_manifest: true
+      publish: true

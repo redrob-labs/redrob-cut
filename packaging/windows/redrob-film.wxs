@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Redrob Film MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
+
+    wix build redrob-film.wxs -arch x64 -d Version=1.2.3 -d BinDir=... -d IconPath=... -o out.msi
+
+  Per-machine install into Program Files and a Start Menu shortcut. No file associations.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+      Name="Redrob Film"
+      Manufacturer="McKinley Rice, Inc."
+      Version="$(var.Version)"
+      UpgradeCode="C52419A1-1F34-48D1-8A89-E23E06B0C13A"
+      Scope="perMachine"
+      Compressed="yes"
+      Language="1033">
+    <SummaryInformation Description="Redrob Film video editor" Manufacturer="McKinley Rice, Inc." />
+    <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
+         (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes"
+        DowngradeErrorMessage="A newer version of Redrob Film is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="FilmcraftIcon.ico" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="FilmcraftIcon.ico" />
+    <Property Id="ARPURLINFOABOUT" Value="https://redrob.io/cut" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://redrob.io/cut" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/redrob-labs/redrob-film/issues" />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Redrob Film" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <Feature Id="Main" Title="Redrob Film" Level="1">
+      <ComponentGroupRef Id="FilmcraftFiles" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="FilmcraftFiles" Directory="INSTALLFOLDER">
+      <Component Id="FilmcraftApp" Guid="77D5A811-1B10-4142-B33A-C406D957E2FF">
+        <File Id="FilmcraftExe" Source="$(var.BinDir)\redrob-film.exe" KeyPath="yes">
+          <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="Redrob Film"
+              Description="Redrob Film video editor" WorkingDirectory="INSTALLFOLDER" Advertise="yes"
+              Icon="FilmcraftIcon.ico" IconIndex="0" />
+        </File>
+
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\redrob-film.exe" Value="[#FilmcraftExe]" Type="string" />
+      </Component>
+
+      <Component Id="FilmcraftCli">
+        <File Id="FilmcraftCliExe" Source="$(var.BinDir)\redrob-film-cli.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

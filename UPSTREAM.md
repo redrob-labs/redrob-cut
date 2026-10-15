@@ -42,8 +42,8 @@ Every icon is now derived from the Redrob design system's files in `assets/brand
 
 ### Renamed, and kept on purpose
 
-What a person sees or installs is Redrob Cut's: the name, app id `ai.redrob.cut`, the executables
-`redrob-cut` and `redrob-cut-cli`, installers, data folders (`Redrob Cut` / `redrob-cut`), log files, the
+What a person sees or installs is Redrob Film's: the name, app id `ai.redrob.film`, the executables
+`redrob-film` and `redrob-film-cli`, installers, data folders (`Redrob Film` / `redrob-film`), log files, the
 MCP server name, links, icons, the About and Home lockup, and the brand colours (`redrob_tokens`,
 generated from redrob-ui). `scripts/check_brand.py` keeps it that way.
 
@@ -58,7 +58,7 @@ them would make every upstream sync conflict:
   the `filmcraft://` MCP resource URIs.
 - Built-in decoder names (`FilmCraft H.264` and so on), test data and code comments in the lower-layer
   crates. The name the app writes into exported files (MP4 encoder tag, MXF/AAF/OMF identification,
-  caption and LUT headers, the project `generator`) and the messages people read are Redrob Cut's.
+  caption and LUT headers, the project `generator`) and the messages people read are Redrob Film's.
 - Upstream's own documentation under `docs/` (except `docs/agents.md`), which describes upstream.
 
 Upstream's `release.yml` was removed rather than kept: it called a reusable workflow in upstream's own
@@ -86,3 +86,17 @@ Then update `base`, `baseTag`, `baseDate`, `baseSubject` and `lastSyncedUpstream
 Upstream's copyright line in [`NOTICE`](./NOTICE) is retained verbatim, with ours added below it. Both
 license texts ([`LICENSE-MIT`](./LICENSE-MIT), [`LICENSE-APACHE`](./LICENSE-APACHE)) are unchanged.
 Per-asset attribution continues in [`ATTRIBUTION.md`](./ATTRIBUTION.md).
+
+## effectcraft (Effects mode)
+
+`crafts/effectcraft/` is [storytold/effectcraft](https://github.com/storytold/effectcraft) as a git
+subtree, pinned at `0311bdc34d0dc10c2d18ff7875b4f52d483e5e27` (2026-10-15), MIT OR Apache-2.0; its
+LICENSE-* and NOTICE stay intact under that directory. Its own `Cargo.toml` is parked as
+`Cargo.upstream.toml`; `tools/merge_effectcraft.py` folds its crates and dependencies into this
+workspace (its `filmcraft-*` git dependencies become this repository's crates). Update:
+
+```bash
+git subtree pull --prefix crafts/effectcraft https://github.com/storytold/effectcraft.git <sha> --squash
+python3 tools/merge_effectcraft.py
+python3 tools/rebrand_crafts.py
+```

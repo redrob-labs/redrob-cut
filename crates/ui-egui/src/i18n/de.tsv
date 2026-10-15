@@ -4,7 +4,7 @@
 # German video-editing vocabulary. No proprietary localisation resource, string table or product UI
 # was consulted or copied; add entries the same way. Like the German catalogs of the other Craft
 # apps, text addresses the user informally ("du") and commands use the infinitive ("Projekt
-# öffnen…"). Product, format and feature names (Redrob Cut, ArtCraft, Lumetri, Essential Graphics,
+# öffnen…"). Product, format and feature names (Redrob Film, Lumetri, Essential Graphics,
 # EDL, AAF…) keep their spelling. This catalog covers every menu, including the native macOS
 # Settings menu; anything else is shown in English.
 #
@@ -14,7 +14,7 @@
 # menu) = Voreinstellungen. "Timeline" is not translated.
 
 	AAF…	AAF…
-	About Redrob Cut	Über Redrob Cut
+	About Redrob Film	Über Redrob Film
 	Add Audio Submix Track	Audio-Submix-Spur hinzufügen
 	Add Caption at Playhead	Untertitel an Abspielposition hinzufügen
 	Add Chapter Marker…	Kapitelmarker hinzufügen…
@@ -143,7 +143,7 @@
 	File	Datei
 	File…	Datei…
 	Fill frame	Bild füllen
-	Redrob Cut Help…	Redrob Cut-Hilfe…
+	Redrob Film Help…	Redrob Film-Hilfe…
 	Final Cut Pro XML…	Final Cut Pro XML…
 	Find Next	Weitersuchen
 	Find…	Suchen…
@@ -320,7 +320,7 @@
 	Select Previous Graphic	Vorherige Grafik auswählen
 	Select Previous Layer	Vorherige Ebene auswählen
 	Selection Follows Playhead	Auswahl folgt Abspielposition
-	Selection as Redrob Cut Project…	Auswahl als Redrob Cut-Projekt…
+	Selection as Redrob Film Project…	Auswahl als Redrob Film-Projekt…
 	Selection…	Auswahl…
 	Send Backward	Schrittweise nach hinten
 	Send to Back	In den Hintergrund
@@ -382,9 +382,9 @@
 	Project Notes	Projektnotizen
 
 	Redrob Website	Redrob-Website
-	Redrob Cut on redrob.io	Redrob Cut auf redrob.io
+	Redrob Film on redrob.io	Redrob Film auf redrob.io
 	Source code on GitHub	Quellcode auf GitHub
 	Connect to Redrob…	Mit Redrob verbinden…
 	Redrob Account…	Redrob-Konto…
 	Agent	Agent
-	Add Redrob Cut to Redrob Code	Redrob Cut zu Redrob Code hinzufügen
+	Add Redrob Film to Redrob Code	Redrob Film zu Redrob Code hinzufügen

@@ -78,7 +78,7 @@ fn file_edit_clip_menu_order_and_shortcuts_match_premiere() {
         ("file.close", "Close", Some("Cmd+W")),
         ("file.importFromMediaBrowser", "Import from Media Browser", Some("Cmd+Alt+I")),
         ("file.mediaProperties", "Selection…", Some("Cmd+Shift+H")),
-        ("file.exportSelectionProject", "Selection as Redrob Cut Project…", None),
+        ("file.exportSelectionProject", "Selection as Redrob Film Project…", None),
         ("file.exportAle", "Avid Log Exchange…", None),
         ("edit.find", "Find…", Some("Cmd+F")),
         ("edit.editOriginal", "Edit Original", Some("Cmd+E")),
@@ -310,7 +310,7 @@ fn media_properties_settings_and_scratch_disks() {
     // Scratch Disks: previews follow the Video Previews folder once the project is saved
     let proj = dir.join("Show.fcproj").to_string_lossy().to_string();
     s.execute("file.saveAs", json!({"path": proj})).unwrap();
-    assert_eq!(crate::project_tools::previews_dir(&s).unwrap(), dir.join("Redrob Cut Previews").join("Show"));
+    assert_eq!(crate::project_tools::previews_dir(&s).unwrap(), dir.join("Redrob Film Previews").join("Show"));
     let scratch = dir.join("scratch").to_string_lossy().to_string();
     let r = s.execute("file.projectSettings.scratchDisks", json!({"videoPreviews": scratch, "autoSave": scratch})).unwrap();
     assert_eq!(crate::project_tools::previews_dir(&s).unwrap(), dir.join("scratch").join("Show"));

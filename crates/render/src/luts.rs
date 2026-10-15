@@ -75,7 +75,7 @@ impl Builtin {
             }
             BuiltinKind::Look(n) => Lut3d::from_fn(33, |c| crate::effects::apply_look(n, c).map(|v| v.clamp(0.0, 1.0))),
         };
-        cube.title = format!("Redrob Cut {}", self.label);
+        cube.title = format!("Redrob Film {}", self.label);
         Lut::from_cube(cube)
     }
 }

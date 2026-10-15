@@ -232,7 +232,7 @@ fn add_to_redrob_code(app: &mut FilmcraftApp) -> Result<Value, String> {
         return Err(tl!("The agent runs in the desktop app only.").to_string());
     };
     let path = f()?;
-    app.ui.status = tlf!("Added Redrob Cut to Redrob Code ({path})", path);
+    app.ui.status = tlf!("Added Redrob Film to Redrob Code ({path})", path);
     Ok(json!({"path": path}))
 }
 

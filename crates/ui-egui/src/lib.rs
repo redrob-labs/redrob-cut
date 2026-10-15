@@ -1,4 +1,4 @@
-//! The Redrob Cut egui frontend.
+//! The Redrob Film egui frontend.
 //!
 //! Thin by design: all project changes go through `filmcraft_engine::Session::execute`; this crate
 //! owns only presentation state ([`state::UiState`]), GPU textures, the playback clock and the
@@ -151,7 +151,7 @@ pub struct HostHooks {
     /// uses `egui::Context::system_theme`.
     pub system_theme: Option<SystemThemeFn>,
     /// Files or an image on the system clipboard, for Paste in the Timeline and the Project panel
-    /// (#611). Without it Paste only pastes clips copied in Redrob Cut.
+    /// (#611). Without it Paste only pastes clips copied in Redrob Film.
     pub clipboard_media: Option<Box<dyn FnMut() -> Option<ClipboardMedia>>>,
 }
 
@@ -251,7 +251,7 @@ pub(crate) const EXPORT_SAVE_DIALOGS: [(&str, &str, &str); 7] = [
     ("file.exportFcpxml", "FCPXML", "fcpxml"),
     ("file.exportOtio", "OpenTimelineIO", "otio"),
     ("file.exportAle", "Avid Log Exchange", "ale"),
-    ("file.exportSelectionProject", "Redrob Cut Project", "fcproj"),
+    ("file.exportSelectionProject", "Redrob Film Project", "fcproj"),
 ];
 
 pub struct FilmcraftApp {
@@ -1853,13 +1853,13 @@ impl FilmcraftApp {
 }
 
 impl FilmcraftApp {
-    /// The "Redrob Cut hit an error" window after a caught UI panic. Automation ids:
+    /// The "Redrob Film hit an error" window after a caught UI panic. Automation ids:
     /// `error.dismiss`, `error.save`.
     fn error_window(&mut self, ctx: &egui::Context) {
         let Some(msg) = self.ui_error.clone() else { return };
         let mut close = false;
-        egui::Window::new(tl!("Redrob Cut hit an error"))
-            .id(egui::Id::new("Redrob Cut hit an error"))
+        egui::Window::new(tl!("Redrob Film hit an error"))
+            .id(egui::Id::new("Redrob Film hit an error"))
             .collapsible(false)
             .resizable(false)
             .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
