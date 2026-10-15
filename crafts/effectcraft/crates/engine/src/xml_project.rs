@@ -4,12 +4,12 @@
 //!
 //! ```xml
 //! <?xml version="1.0" encoding="UTF-8"?>
-//! <EffectCraftProject encoding="json" version="1">
+//! <RedrobEffectsProject encoding="json" version="1">
 //!   <obj>
 //!     <m n="version"><num>3</num></m>
 //!     <m n="items"><arr>…</arr></m>
 //!   </obj>
-//! </EffectCraftProject>
+//! </RedrobEffectsProject>
 //! ```
 //!
 //! `obj`/`m n="key"` (object members), `arr`, `str`, `num`, `bool`, `null`.

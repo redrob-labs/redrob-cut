@@ -588,7 +588,7 @@ pub fn scan_candidates(data_dir: &Path, skip: Option<&Path>) -> Vec<RecoveryCand
     out
 }
 
-/// The snapshot file of a recovery session: `snapshot.rfilm`, or a pre-rename `snapshot.fcproj`.
+/// The snapshot file of a recovery session: `snapshot.rfilm`, or the pre-rename snapshot name.
 fn snapshot_file(dir: &Path) -> Option<PathBuf> {
     [SNAPSHOT, LEGACY_SNAPSHOT].iter().map(|n| dir.join(n)).find(|p| p.is_file()) // legacy: .fcproj snapshot
 }

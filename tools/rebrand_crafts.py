@@ -4,7 +4,7 @@
 Runs over the UI crate (including the i18n catalogs), the desktop app, the engine and the
 automation crate. Only STRING LITERAL contents in Rust and the message columns of the
 translation catalogs are touched: identifiers such as `FilmcraftApp` or `redrob_film_engine`,
-crate names, `REDROB_FILM_*` environment variables, the `.fcproj` format and the MIME type keep
+crate names, `REDROB_FILM_*` environment variables, the `.rfilm` format and the MIME type keep
 their spelling and are never matched. Values that are written into project files and read back
 (the renderer names, the XMP CreatorTool) are kept on purpose; they are listed in KEEP here and
 in scripts/check_brand.py. Re-run after every upstream sync.
@@ -55,8 +55,8 @@ REPLACEMENTS = [
 
 # Stored in files or compared on read-back; changing them breaks existing projects.
 KEEP = re.compile(
-    r"GPU Acceleration \(wgpu\)|Software Only \(CPU\)|CreatorTool|REDROB_FILM_|filmcraft_|filmcraft-"
-    r"|FilmCraft(Version|BuildCommit)\b|the FilmCraft contributors|the EffectCraft contributors|REDROB_EFFECTS_|effectcraft_|effectcraft-|EffectCraftProject"
+    r"GPU Acceleration \(wgpu\)|Software Only \(CPU\)|CreatorTool|REDROB_FILM_|REDROB_EFFECTS_|redrob_film_|redrob_effects_"
+    r"|FilmCraft(Version|BuildCommit)\b|the FilmCraft contributors|the EffectCraft contributors|EffectCraftProject|RedrobEffectsProject"
 )
 
 STRING_RE = re.compile(r'"((?:[^"\\]|\\.)*)"')

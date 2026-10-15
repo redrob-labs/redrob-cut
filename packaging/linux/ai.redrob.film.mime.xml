@@ -4,12 +4,12 @@
     <comment>Redrob Film project</comment>
     <sub-class-of type="application/json"/>
     <glob pattern="*.rfilm"/>
-    <glob pattern="*.fcproj"/>
+    <glob pattern="*.fcproj"/> <!-- legacy: pre-rename projects still open -->
   </mime-type>
   <mime-type type="application/x-redrob-effects">
     <comment>Redrob Film effects project</comment>
     <sub-class-of type="application/json"/>
     <glob pattern="*.rfx"/>
-    <glob pattern="*.ecproj"/>
+    <glob pattern="*.ecproj"/> <!-- legacy: pre-rename effects projects still open -->
   </mime-type>
 </mime-info>

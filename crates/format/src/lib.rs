@@ -59,13 +59,13 @@ pub const EXTENSION: &str = "rfilm";
 /// The extension of projects saved before the rename; still opened, never written. // legacy:
 pub const LEGACY_EXTENSION: &str = "fcproj"; // legacy: upstream .fcproj projects still open
 
-/// `path` names a project file: `.rfilm`, or a pre-rename `.fcproj`.
+/// `path` names a project file: `.rfilm`, or the pre-rename extension.
 pub fn is_project_path(path: &str) -> bool {
     let lower = path.to_ascii_lowercase();
     lower.ends_with(".rfilm") || lower.ends_with(".fcproj") // legacy: .fcproj still opens
 }
 
-/// `path` without its project extension (`.rfilm`, or a pre-rename `.fcproj`).
+/// `path` without its project extension (`.rfilm`, or the pre-rename one).
 pub fn strip_project_extension(path: &str) -> &str {
     path.strip_suffix(".rfilm").or_else(|| path.strip_suffix(".fcproj")).unwrap_or(path) // legacy: .fcproj
 }

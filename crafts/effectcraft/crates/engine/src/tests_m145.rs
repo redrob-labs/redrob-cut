@@ -409,11 +409,17 @@ fn save_a_copy_as_xml_opens_again() {
     let path = tmp("copy.rfxx");
     s.execute("file.saveCopyAsXml", json!({"path": path.to_string_lossy()})).unwrap();
     let text = std::fs::read_to_string(&path).unwrap();
-    assert!(text.starts_with("<?xml") && text.contains("<EffectCraftProject"));
+    assert!(text.starts_with("<?xml") && text.contains("<RedrobEffectsProject"));
     let before = s.project.to_json();
     let mut t = Session::default();
     t.execute("file.open", json!({"path": path.to_string_lossy()})).unwrap();
     assert_eq!(t.project.to_json(), before);
+    // legacy: a copy written before the rename, with upstream's root element, opens too
+    let legacy = tmp("legacy-copy.ecprojx"); // legacy:
+    std::fs::write(&legacy, text.replace("RedrobEffectsProject", "EffectCraftProject")).unwrap(); // legacy:
+    let mut u = Session::default();
+    u.execute("file.open", json!({"path": legacy.to_string_lossy()})).unwrap();
+    assert_eq!(u.project.to_json(), before);
     // Saving a project opened from XML writes XML.
     t.execute("file.save", json!({})).unwrap();
     assert!(std::fs::read_to_string(&path).unwrap().starts_with("<?xml"));

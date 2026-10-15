@@ -209,7 +209,7 @@ from?, newName?}`, `shortcuts.export {preset?, path?}`, `shortcuts.import {path?
 
 - Every *n* minutes (Settings ▸ Project ▸ Auto-Save) a project with unsaved changes is written
   to an `EffectCraft Auto-Save` folder next to it (or the custom folder) as
-  `<name> auto-save N.ecproj`. Slots rotate through 1…maximum versions, overwriting the oldest.
+  `<name> auto-save N.rfx`. Slots rotate through 1…maximum versions, overwriting the oldest.
   Untitled projects go to the custom folder, or to `EffectCraft Auto-Save` in the config directory.
 - Every project and auto-save write is atomic: a temporary file is written and flushed, then
   renamed over the target, so a crash mid-write leaves the previous file intact.
@@ -217,9 +217,9 @@ from?, newName?}`, `shortcuts.export {preset?, path?}`, `shortcuts.import {path?
   latest auto-save. A clean quit removes it. If it is still there at the next launch, the app
   offers to open the latest auto-save (Settings ▸ Startup & Repair can turn this off).
 - File ▸ Open Recent lists recent projects (stored in the settings), File ▸ Revert reloads the
-  saved project, File ▸ Increment and Save saves `Intro.ecproj` as `Intro 2.ecproj`.
+  saved project, File ▸ Increment and Save saves `Intro.rfx` as `Intro 2.rfx`.
 
-Headless MCP clients can opt in with `effectcraft-cli mcp --autosave`. Unlike the desktop's
+Headless MCP clients can opt in with `redrob-effects-cli mcp --autosave`. Unlike the desktop's
 interval, this writes changed dirty projects before sending each tool reply, with separate
 version slots per server under `EffectCraft Auto-Save/MCP/` (or the custom folder's `MCP/`).
 It reads settings without sharing the desktop's writable settings store or `session.lock`.

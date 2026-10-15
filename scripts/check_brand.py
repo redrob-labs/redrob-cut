@@ -8,6 +8,10 @@
    literals in the UI, the apps and the engine's messages, the translation catalogs, the packaging
    and the CI that builds it. Comments are not surfaces. What is kept on purpose (stored in files,
    or read back as an identifier) is listed in KEEP and in UPSTREAM.md.
+4. No upstream IDENTIFIER anywhere in the tree: crate names (`filmcraft-*`, `effectcraft-*`), the
+   `.fcproj`/`.ecproj` extensions, `FILMCRAFT_*`/`EFFECTCRAFT_*` variables, `filmcraft://` URIs, the
+   old MIME types and the `<EffectCraftProject>` root -- except on a line marked `// legacy:`, which
+   is how the explicit read paths for old files and variables are allowed.
 
     python3 scripts/check_brand.py
 """
@@ -35,13 +39,83 @@ SURFACES = (
 # Kept on purpose: written into or read back from files, so changing them breaks existing projects
 # and interchange round trips. UPSTREAM.md lists them.
 KEEP = re.compile(
-    r"GPU Acceleration \(wgpu\)|Software Only \(CPU\)|CreatorTool|\"generator\"|application/x-filmcraft"
-    r"|FILMCRAFT_|filmcraft_|filmcraft-(target|install-|sign-|signing|logging-|web|speech|engine|ui-egui)"
-    r"|-p filmcraft|apps/filmcraft|filmcraft\*=|name: filmcraft$|/run/build/filmcraft/|FilmcraftApp|Filmcraft(Icon|Files|App|Exe|Cli|CliExe|Output)\b"
+    r"GPU Acceleration \(wgpu\)|Software Only \(CPU\)|CreatorTool|\"generator\""
+    r"|filmcraft_|filmcraft-(target|install-|sign-|signing|logging-|web|speech|engine|ui-egui)"
+    r"|/run/build/filmcraft/|FilmcraftApp|Filmcraft(Icon|Files|App|Exe|Cli|CliExe|Output)\b"
     # internal plist keys; the copyright credit upstream's licence requires; a negative test
-    r"|FilmCraft(Version|BuildCommit)\b|the (FilmCraft|EffectCraft) contributors|desktop_file_exec_is_ours|EFFECTCRAFT_|effectcraft_|effectcraft-|EffectCraftProject"
+    r"|FilmCraft(Version|BuildCommit)\b|the (FilmCraft|EffectCraft) contributors|desktop_file_exec_is_ours|effectcraft_|EffectCraftProject"
 )
 COMMENT = re.compile(r"^\s*(//|#|<!--|\*|/\*|;|REM\b)")
+
+# 4. Upstream IDENTIFIERS (not names): crate names, file extensions, env-var prefixes, URI schemes,
+# MIME types and the XML root. tools/rename_crates.py and the de-upstream change renamed them; the
+# only place an old one may still appear is an explicit legacy READ path, whose line carries a
+# `// legacy:` (or `# legacy:`) marker, plus the attribution files and the scripts that know them.
+IDENT_SKIP_FILES = (
+    "NOTICE", "ATTRIBUTION.md", "LICENSE-APACHE", "LICENSE-MIT", "UPSTREAM.md", "UPSTREAM.ko.md", "upstream-base.json",
+    "CHANGELOG.md", "crafts/effectcraft/NOTICE", "crafts/effectcraft/ATTRIBUTION.md", "crafts/effectcraft/LICENSE-APACHE",
+    "crafts/effectcraft/LICENSE-MIT", "scripts/check_brand.py", "tools/rename_crates.py", "tools/rebrand_crafts.py",
+)
+IDENT_SKIP_SUFFIXES = (".png", ".jpg", ".ico", ".icns", ".tiff", ".svg", ".ttf", ".otf", ".attribution", ".lock", ".fcproj", ".ecproj")
+LEGACY = re.compile(r"(//|#|<!--)\s*legacy:")
+# the versioned old-format fixtures the format crate's tests decode: inputs, not writers
+LEGACY_FIXTURE = re.compile(r'fixture\("v\d+-[a-z-]+\.fcproj"\)')
+# Identifiers stored in files and read back, kept on purpose (UPSTREAM.md lists them): the JSON
+# `format` ids and the OTIO metadata namespace.
+IDENT_KEEP = re.compile(r"filmcraft\.(project|graphicsTemplate|export-presets)|\"filmcraft\"")
+
+
+def old_crate_names():
+    """The upstream names of every crate in the tree, derived from the Redrob names in place."""
+    out = set()
+    for pat in ("crates/*/Cargo.toml", "apps/*/Cargo.toml", "crafts/effectcraft/crates/*/Cargo.toml"):
+        for m in ROOT.glob(pat):
+            name = re.search(r'^name\s*=\s*"([^"]+)"', m.read_text(), re.M)
+            if not name:
+                continue
+            name = name.group(1)
+            for new, old in (("redrob-film-app", "filmcraft"), ("redrob-film-", "filmcraft-"), ("redrob-effects-", "effectcraft-")):
+                if name == new or (new.endswith("-") and name.startswith(new)):
+                    out.add(old + name[len(new):] if new.endswith("-") else old)
+                    break
+    return out
+
+
+def upstream_ident_re():
+    crates = sorted((n for n in old_crate_names() if n != "filmcraft"), key=len, reverse=True)
+    dash = "|".join(re.escape(c) for c in crates)
+    snake = "|".join(re.escape(c.replace("-", "_")) for c in crates)
+    return re.compile(
+        rf"(?<![A-Za-z0-9_-])(?:{dash})(?![A-Za-z0-9-])"      # crate names
+        rf"|(?<![A-Za-z0-9_])(?:{snake})(?![A-Za-z0-9_])"     # snake_case crate paths (`use`, log targets)
+        r"|(?:-p|--package)\s+filmcraft(?![A-Za-z0-9_.-])"   # the shell crate's old name in a -p list
+        r'|^name\s*=\s*"filmcraft"'                         # ... or as a package name
+        r"|\b(fcproj|ecproj|ecprojx)\b"                      # file extensions
+        r"|\b(FILMCRAFT|EFFECTCRAFT)_[A-Z0-9_]+"              # env-var prefixes
+        r"|(filmcraft|effectcraft)://"                       # URI schemes
+        r"|application/x-(filmcraft|effectcraft)"            # MIME types
+        r"|EffectCraftProject",                              # XML root
+        re.M,
+    )
+
+
+def tracked_identifier_errors(tracked):
+    errors = []
+    ident = upstream_ident_re()
+    for f in tracked:
+        if f in IDENT_SKIP_FILES or f.endswith(IDENT_SKIP_SUFFIXES):
+            continue
+        try:
+            text = (ROOT / f).read_text()
+        except (UnicodeDecodeError, OSError):
+            continue
+        for n, line in enumerate(text.split("\n"), 1):
+            if not ident.search(line) or LEGACY.search(line) or LEGACY_FIXTURE.search(line):
+                continue
+            if not ident.search(IDENT_KEEP.sub("", line)):
+                continue
+            errors.append(f"{f}:{n}: upstream identifier left behind (rename it, or mark the legacy read path `// legacy:`): {line.strip()[:120]}")
+    return errors
 
 
 def files():
@@ -96,6 +170,8 @@ def main() -> int:
             if tsv and line.startswith("#"):
                 continue
             errors.append(f"{f}:{n}: upstream brand on a user-facing surface: {line.strip()[:120]}")
+
+    errors.extend(tracked_identifier_errors(tracked))
 
     if errors:
         print("\n".join(errors))
