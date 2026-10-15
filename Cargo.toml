@@ -8,7 +8,7 @@ version = "0.0.2"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
-repository = "https://github.com/redrob-labs/redrob-cut"
+repository = "https://github.com/redrob-labs/redrob-film"
 
 [workspace.dependencies]
 # internal

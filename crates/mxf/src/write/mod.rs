@@ -339,7 +339,7 @@ impl WriterConfig {
             ids,
             first_track_id: 2,
             company: "Redrob".into(),
-            product: "Redrob Cut".into(),
+            product: "Redrob Film".into(),
             version: env!("CARGO_PKG_VERSION").into(),
             modified: Timestamp::default(),
         }

@@ -1,11 +1,11 @@
-//! Redrob Cut benchmark suite (`cargo xtask bench`): decode speed per codec, Program-monitor
+//! Redrob Film benchmark suite (`cargo xtask bench`): decode speed per codec, Program-monitor
 //! playback and scrubbing through the real frame scheduler, timeline UI frame time with a large
 //! sequence, export throughput, project save/open, and peak memory per section.
 //!
 //! ```sh
 //! cargo xtask bench                                   # every section, writes target/bench/bench-<label>.{json,md}
 //! cargo xtask bench --sections decode,scrub --repeat 3 --label after
-//! cargo xtask bench --sections decode --hw off --label hw-off   # Redrob Cut's own decoders only
+//! cargo xtask bench --sections decode --hw off --label hw-off   # Redrob Film's own decoders only
 //! cargo run --release -p filmcraft-ui-egui --example bench -- --section timeline   # one section, this process
 //! ```
 //!
@@ -105,7 +105,7 @@ fn orchestrate(args: &[String], o: &Opts) {
     std::fs::create_dir_all(&out).expect("output dir");
     let exe = std::env::current_exe().expect("exe");
     let machine = machine_info();
-    println!("Redrob Cut bench `{label}`: {}", machine["summary"].as_str().unwrap_or(""));
+    println!("Redrob Film bench `{label}`: {}", machine["summary"].as_str().unwrap_or(""));
     let mut results = Vec::new();
     for name in &wanted {
         let tmp = out.join(format!(".section-{name}-{}.json", std::process::id()));
@@ -360,7 +360,7 @@ pub fn section_markdown(v: &Value) -> String {
 fn markdown(doc: &Value) -> String {
     let m = &doc["machine"];
     let mut s = format!(
-        "# Redrob Cut benchmark `{}`\n\n- {}\n- repeat {} (best/median as noted), quick {}, monitor path {}\n\n",
+        "# Redrob Film benchmark `{}`\n\n- {}\n- repeat {} (best/median as noted), quick {}, monitor path {}\n\n",
         doc["label"].as_str().unwrap_or(""),
         m["summary"].as_str().unwrap_or(""),
         doc["repeat"],

@@ -1,6 +1,6 @@
 [package]
 name = "filmcraft-cli"
-description = "Redrob Cut headless CLI and MCP server"
+description = "Redrob Film headless CLI and MCP server"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,7 +9,7 @@ license.workspace = true
 workspace = true
 
 [[bin]]
-name = "redrob-cut-cli"
+name = "redrob-film-cli"
 path = "src/main.rs"
 
 [features]

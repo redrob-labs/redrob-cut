@@ -2,12 +2,12 @@
   "mcp": {
     "filmcraft": {
       "type": "local",
-      "command": ["target/release/redrob-cut-cli", "mcp", "--bridge", "127.0.0.1:9876"],
+      "command": ["target/release/redrob-film-cli", "mcp", "--bridge", "127.0.0.1:9876"],
       "enabled": true
     },
     "filmcraft-headless": {
       "type": "local",
-      "command": ["target/release/redrob-cut-cli", "mcp", "--demo"],
+      "command": ["target/release/redrob-film-cli", "mcp", "--demo"],
       "enabled": true
     }
   }

@@ -1,4 +1,4 @@
-//! Redrob Cut in the browser.
+//! Redrob Film in the browser.
 //!
 //! The same engine and egui UI as the desktop app, compiled to `wasm32-unknown-unknown` and run
 //! by eframe's web runner on WebGPU (WebGL2 fallback). What the desktop shell gets from the OS,
@@ -82,7 +82,7 @@ pub fn info() -> serde_json::Value {
     INFO.with(|i| i.borrow().clone())
 }
 
-/// The eframe app: the shared Redrob Cut UI plus the web host's per-frame duties.
+/// The eframe app: the shared Redrob Film UI plus the web host's per-frame duties.
 pub struct WebApp {
     pub app: FilmcraftApp,
     pub audio: Option<audio::Handle>,

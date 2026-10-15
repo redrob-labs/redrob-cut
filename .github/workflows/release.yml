@@ -1,5 +1,5 @@
 # Release pipeline: a `vX.Y.Z` tag pushed on `main` builds installers for every platform and
-# creates or updates the draft GitHub Release "Redrob Cut vX.Y.Z". See docs/releasing.md.
+# creates or updates the draft GitHub Release "Redrob Film vX.Y.Z". See docs/releasing.md.
 #
 # The tag must equal the Cargo.toml version; the version job fails otherwise. The jobs that sign
 # (macOS, Windows) and the one that drafts the GitHub Release run in the `release` environment.
@@ -64,7 +64,7 @@ jobs:
             echo "date=$(date -u +%Y-%m-%d)"
             echo "prerelease=$pre"
           } >>"$GITHUB_OUTPUT"
-          echo "### Redrob Cut v$v (\`${GITHUB_SHA::9}\`)" >>"$GITHUB_STEP_SUMMARY"
+          echo "### Redrob Film v$v (\`${GITHUB_SHA::9}\`)" >>"$GITHUB_STEP_SUMMARY"
 
   macos:
     name: macOS universal
@@ -180,8 +180,8 @@ jobs:
         uses: redrob-labs/.github/actions/sign-windows@main
         with:
           files: target/windows-package/${{ matrix.arch }}/*.exe
-          description: Redrob Cut
-          url: https://github.com/redrob-labs/redrob-cut
+          description: Redrob Film
+          url: https://github.com/redrob-labs/redrob-film
           endpoint: ${{ secrets.ARTIFACT_SIGNING_ENDPOINT }}
           account: ${{ secrets.ARTIFACT_SIGNING_ACCOUNT }}
           cert-profile: ${{ secrets.ARTIFACT_SIGNING_CERT_PROFILE }}
@@ -194,8 +194,8 @@ jobs:
         uses: redrob-labs/.github/actions/sign-windows@main
         with:
           files: dist/release/*.msi
-          description: Redrob Cut
-          url: https://github.com/redrob-labs/redrob-cut
+          description: Redrob Film
+          url: https://github.com/redrob-labs/redrob-film
           endpoint: ${{ secrets.ARTIFACT_SIGNING_ENDPOINT }}
           account: ${{ secrets.ARTIFACT_SIGNING_ACCOUNT }}
           cert-profile: ${{ secrets.ARTIFACT_SIGNING_CERT_PROFILE }}
@@ -254,9 +254,9 @@ jobs:
       - name: Check the packages
         run: |
           dpkg-deb --info dist/release/*.deb
-          dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-cut$|metainfo|applications'
-          ldd target/release/redrob-cut
-          python3 -c "import yaml; m = yaml.safe_load(open('packaging/linux/flatpak/ai.redrob.cut.yml')); assert m['id'] == 'ai.redrob.cut'"
+          dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-film$|metainfo|applications'
+          ldd target/release/redrob-film
+          python3 -c "import yaml; m = yaml.safe_load(open('packaging/linux/flatpak/ai.redrob.film.yml')); assert m['id'] == 'ai.redrob.film'"
           for appimage in dist/release/*.AppImage; do
             chmod +x "$appimage"
             APPIMAGE_EXTRACT_AND_RUN=1 "$appimage" --version
@@ -280,6 +280,6 @@ jobs:
       contents: write
     with:
       version: ${{ needs.version.outputs.version }}
-      title: Redrob Cut
+      title: Redrob Film
       launcher_manifest: true
       publish: true

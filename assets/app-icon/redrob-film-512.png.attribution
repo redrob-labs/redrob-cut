@@ -1,5 +1,5 @@
-asset:        ai.redrob.cut.png
-title:        Redrob Cut app icon (hicolor/512x512/apps/ai.redrob.cut.png), derived from the Redrob tile
+asset:        redrob-film-512.png
+title:        Redrob Film app icon (redrob-film-512.png), derived from the Redrob tile
 author:       Redrob (McKinley Rice, Inc.)
 source:       derived by packaging/brand-assets.sh from assets/brand/ (copied as is, or resized down)
 license:      Redrob trademark; not covered by the repository's MIT OR Apache-2.0 licence (assets/brand/README.md)

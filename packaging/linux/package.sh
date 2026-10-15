@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Build and package Redrob Cut for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
+# Build and package Redrob Film for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
 #
-#   $DIST/redrob-cut-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
-#   $DIST/redrob-cut-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
-#   $DIST/redrob-cut-<version>-linux-<arch>.deb       Debian, Ubuntu, Mint, Pop!_OS, ...
-#   $DIST/redrob-cut-<version>-linux-<arch>.rpm       Fedora, openSUSE, RHEL, ...
-#   $DIST/redrob-cut-<version>-linux-<arch>.tar.gz    plain FHS-style tree (bin/, share/)
+#   $DIST/redrob-film-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
+#   $DIST/redrob-film-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
+#   $DIST/redrob-film-<version>-linux-<arch>.deb       Debian, Ubuntu, Mint, Pop!_OS, ...
+#   $DIST/redrob-film-<version>-linux-<arch>.rpm       Fedora, openSUSE, RHEL, ...
+#   $DIST/redrob-film-<version>-linux-<arch>.tar.gz    plain FHS-style tree (bin/, share/)
 #
 # Usage: packaging/linux/package.sh [--skip-build] [--formats "appimage deb rpm tar"]
 #
@@ -21,7 +21,7 @@ set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
-APP_ID=ai.redrob.cut
+APP_ID=ai.redrob.film
 
 SKIP_BUILD=0
 FORMATS="appimage deb rpm tar"
@@ -42,9 +42,9 @@ case "$ARCH" in
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
 export FILMCRAFT_MAINTAINER="${FILMCRAFT_MAINTAINER:-Redrob (McKinley Rice, Inc.)}"
-BASENAME="redrob-cut-$VERSION-linux-$ARCH"
+BASENAME="redrob-film-$VERSION-linux-$ARCH"
 
-echo "==> Redrob Cut $VERSION for Linux $ARCH ($FORMATS)"
+echo "==> Redrob Film $VERSION for Linux $ARCH ($FORMATS)"
 
 if [ "$SKIP_BUILD" = 0 ]; then
   if [ -n "${CROSS_TARGET:-}" ]; then
@@ -59,9 +59,9 @@ STAGE="$WORK/root"
 rm -rf "$WORK"
 
 # ---- stage an FHS tree (shared by every format) -------------------------------------------------
-install -Dm755 "$BIN/redrob-cut" "$STAGE/usr/bin/redrob-cut"
-install -Dm755 "$BIN/redrob-cut-cli" "$STAGE/usr/bin/redrob-cut-cli"
-"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/redrob-cut" "$STAGE/usr/bin/redrob-cut-cli" 2>/dev/null || true
+install -Dm755 "$BIN/redrob-film" "$STAGE/usr/bin/redrob-film"
+install -Dm755 "$BIN/redrob-film-cli" "$STAGE/usr/bin/redrob-film-cli"
+"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/redrob-film" "$STAGE/usr/bin/redrob-film-cli" 2>/dev/null || true
 install -Dm644 "$HERE/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
 install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
 mkdir -p "$STAGE/usr/share/metainfo"
@@ -69,8 +69,8 @@ sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$FILMCRAFT_BUILD_DATE/g" \
   "$HERE/$APP_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
 mkdir -p "$STAGE/usr/share/icons"
 cp -R "$ROOT/assets/app-icon/hicolor" "$STAGE/usr/share/icons/"
-mkdir -p "$STAGE/usr/share/doc/redrob-cut"
-copy_docs "$STAGE/usr/share/doc/redrob-cut"
+mkdir -p "$STAGE/usr/share/doc/redrob-film"
+copy_docs "$STAGE/usr/share/doc/redrob-film"
 
 if command -v desktop-file-validate >/dev/null; then
   desktop-file-validate "$STAGE/usr/share/applications/$APP_ID.desktop"
@@ -104,10 +104,10 @@ fi
 
 # ---- AppImage -----------------------------------------------------------------------------------
 if has appimage; then
-  APPDIR="$WORK/RedrobCut.AppDir"
+  APPDIR="$WORK/RedrobFilm.AppDir"
   cp -R "$STAGE" "$APPDIR"
   mv "$APPDIR/usr/share/doc" "$WORK/doc-unused"
-  ln -s usr/bin/redrob-cut "$APPDIR/AppRun"
+  ln -s usr/bin/redrob-film "$APPDIR/AppRun"
   cp "$HERE/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"
   cp "$ROOT/assets/app-icon/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
   ln -s "$APP_ID.png" "$APPDIR/.DirIcon"
@@ -131,8 +131,8 @@ if has appimage; then
   # fetch only the blocks that changed in a newer release, through the .zsync published next to
   # each AppImage on GitHub Releases. `latest` is the newest published release that is not a
   # pre-release. A fork's builds point at its own releases through GITHUB_REPOSITORY.
-  REPO="${GITHUB_REPOSITORY:-redrob-labs/redrob-cut}"
-  UPDATE_INFO="gh-releases-zsync|${REPO%%/*}|${REPO#*/}|latest|redrob-cut-*-linux-$ARCH.AppImage.zsync"
+  REPO="${GITHUB_REPOSITORY:-redrob-labs/redrob-film}"
+  UPDATE_INFO="gh-releases-zsync|${REPO%%/*}|${REPO#*/}|latest|redrob-film-*-linux-$ARCH.AppImage.zsync"
   # Extract-and-run: works without FUSE (containers, CI). The output embeds the static runtime,
   # so users don't need libfuse2 either. With zsyncmake on the host (CI installs the zsync
   # package) appimagetool also writes the .zsync, into its working directory, hence the cd.
@@ -146,9 +146,9 @@ if has appimage; then
 fi
 
 if [ -z "${CROSS_TARGET:-}" ]; then
-  "$STAGE/usr/bin/redrob-cut-cli" --version
+  "$STAGE/usr/bin/redrob-film-cli" --version
 elif [ -n "${EMULATOR:-}" ]; then
-  "$EMULATOR" "$STAGE/usr/bin/redrob-cut-cli" --version
+  "$EMULATOR" "$STAGE/usr/bin/redrob-film-cli" --version
 fi
 echo "==> done"
 ls -lh "$DIST"

@@ -7,13 +7,13 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleDisplayName</key>
-  <string>Redrob Cut</string>
+  <string>Redrob Film</string>
   <key>CFBundleName</key>
-  <string>Redrob Cut</string>
+  <string>Redrob Film</string>
   <key>CFBundleExecutable</key>
-  <string>Redrob Cut</string>
+  <string>Redrob Film</string>
   <key>CFBundleIdentifier</key>
-  <string>ai.redrob.cut</string>
+  <string>ai.redrob.film</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundlePackageType</key>
@@ -29,7 +29,7 @@
   <key>FilmCraftBuildCommit</key>
   <string>@BUILD_SHA@</string>
   <key>CFBundleIconFile</key>
-  <string>Redrob Cut</string>
+  <string>Redrob Film</string>
   <key>LSApplicationCategoryType</key>
   <string>public.app-category.video</string>
   <!-- Must match MACOSX_DEPLOYMENT_TARGET in package.sh. Big Sur is the first release on
@@ -45,7 +45,7 @@
   <!-- Voice-over recording (timeline track header ▸ Voice-over Record) reads the microphone.
        Without this string macOS never asks and the app gets no input. -->
   <key>NSMicrophoneUsageDescription</key>
-  <string>Redrob Cut uses the microphone to record voice-over onto the timeline.</string>
+  <string>Redrob Film uses the microphone to record voice-over onto the timeline.</string>
   <key>NSHumanReadableCopyright</key>
   <string>Copyright © the FilmCraft contributors and Janghoon Lee (Redrob) and contributors. MIT OR Apache-2.0.</string>
 
@@ -54,16 +54,16 @@
   <array>
     <dict>
       <key>UTTypeIdentifier</key>
-      <string>ai.redrob.cut.project</string>
+      <string>ai.redrob.film.project</string>
       <key>UTTypeDescription</key>
-      <string>Redrob Cut Project</string>
+      <string>Redrob Film Project</string>
       <key>UTTypeConformsTo</key>
       <array>
         <string>public.data</string>
         <string>public.json</string>
       </array>
       <key>UTTypeIconFile</key>
-      <string>Redrob Cut</string>
+      <string>Redrob Film</string>
       <key>UTTypeTagSpecification</key>
       <dict>
         <key>public.filename-extension</key>

@@ -10,12 +10,12 @@
 //! non-drop-frame timecode for the NTSC rates, audio Channel Format and Sample Rate, Maximum Render
 //! Quality, and the Color Management tab (working colour space, wide gamut, auto tone map).
 //!
-//! Premiere settings Redrob Cut has no equivalent for yet are shown greyed out with their current
+//! Premiere settings Redrob Film has no equivalent for yet are shown greyed out with their current
 //! value and a "not supported yet" hint, rather than editable and silently ignored: Editing Mode,
 //! Pixel Aspect Ratio (rendered, and set by New Sequence From Clip, but not editable here yet), Fields, the Frames and Feet + Frames display
 //! formats, Number of Channels, audio Display Format, the Video Previews format, codec and size,
 //! Maximum Bit Depth, and the VR Properties tab. Composite in Linear Color is shown on and greyed:
-//! Redrob Cut always composites in linear light.
+//! Redrob Film always composites in linear light.
 //!
 //! Automation ids (`sequenceSettings.` + …): `tab.general`, `tab.color`, `tab.vr`; General:
 //! `name`, `editingMode`, `timebase` (+ `timebase.option.<num>/<den>` while open), `width`, `height`,
@@ -35,8 +35,8 @@ use crate::FilmcraftApp;
 use crate::i18n::t;
 use crate::state::SequenceSettingsDraft;
 
-const NOT_YET: &str = "Not supported in Redrob Cut yet";
-const LINEAR: &str = "Redrob Cut always composites in linear light";
+const NOT_YET: &str = "Not supported in Redrob Film yet";
+const LINEAR: &str = "Redrob Film always composites in linear light";
 
 /// The Timebase list (frames per second as num/den), Premiere's common rates.
 const TIMEBASES: [(i64, i64); 15] = [

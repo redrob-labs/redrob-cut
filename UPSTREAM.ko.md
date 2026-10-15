@@ -38,8 +38,8 @@ FilmCraft 앱 아이콘은 코드와 같은 라이선스의 원작이었고, 라
 
 ### 바꾼 것과 일부러 둔 것
 
-사람이 보거나 설치하는 것은 모두 레드롭 컷의 것입니다: 이름, 앱 ID `ai.redrob.cut`, 실행 파일 `redrob-cut`과
-`redrob-cut-cli`, 설치 프로그램, 데이터 폴더, 로그 파일, MCP 서버 이름, 링크, 아이콘, About·홈 화면의 로크업,
+사람이 보거나 설치하는 것은 모두 레드롭 필름의 것입니다: 이름, 앱 ID `ai.redrob.film`, 실행 파일 `redrob-film`과
+`redrob-film-cli`, 설치 프로그램, 데이터 폴더, 로그 파일, MCP 서버 이름, 링크, 아이콘, About·홈 화면의 로크업,
 브랜드 색(redrob-ui에서 생성한 `redrob_tokens`). `scripts/check_brand.py`가 이를 지킵니다.
 
 파일에 저장되거나 식별자로 다시 읽히는 것, 또는 이름을 바꾸면 상류 동기화마다 충돌하는 것은 상류 그대로 둡니다:
@@ -49,7 +49,7 @@ FilmCraft 앱 아이콘은 코드와 같은 라이선스의 원작이었고, 라
   프로젝트 설정에 저장되는 렌더러 이름, 인터체인지가 다시 읽는 AAF 태그 이름과 XMP
   `CreatorTool` 표시, MCP 리소스 URI `filmcraft://`.
 - 내장 디코더 이름(`FilmCraft H.264` 등), 하위 크레이트의 테스트 데이터와 코드 주석. 앱이 내보낸 파일에 적는 이름(MP4
-  인코더 태그, MXF·AAF·OMF 식별 정보, 자막·LUT 헤더, 프로젝트 `generator`)과 사람이 읽는 메시지는 레드롭 컷의 것입니다.
+  인코더 태그, MXF·AAF·OMF 식별 정보, 자막·LUT 헤더, 프로젝트 `generator`)과 사람이 읽는 메시지는 레드롭 필름의 것입니다.
 - `docs/` 아래 상류 문서(`docs/agents.md` 제외). 상류를 설명하는 문서입니다.
 
 상류의 `release.yml`은 유지하지 않고 제거했습니다. 상류 자체의 `craft-common-actions` 저장소에 있는 재사용

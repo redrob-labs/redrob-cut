@@ -4,12 +4,12 @@ description = "FilmCraft desktop app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-default-run = "redrob-cut"
+default-run = "redrob-film"
 build = "build.rs"
 
-# The executable is Redrob Cut's; the package keeps upstream's name so syncs merge cleanly.
+# The executable is Redrob Film's; the package keeps upstream's name so syncs merge cleanly.
 [[bin]]
-name = "redrob-cut"
+name = "redrob-film"
 path = "src/main.rs"
 
 [lints]

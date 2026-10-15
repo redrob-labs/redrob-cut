@@ -1,8 +1,8 @@
-//! The desktop app's command line (`redrob-cut --help`).
+//! The desktop app's command line (`redrob-film --help`).
 
-/// `redrob-cut --help`.
+/// `redrob-film --help`.
 pub const USAGE: &str = "\
-Usage: redrob-cut [options] [project.fcproj | media files...]
+Usage: redrob-film [options] [project.fcproj | media files...]
 
 Options:
   --control <port>   start the localhost JSON-lines control server
@@ -103,7 +103,7 @@ mod tests {
         }
     }
 
-    /// `redrob-cut --help` used to open the app with "--help" as a media file to import.
+    /// `redrob-film --help` used to open the app with "--help" as a media file to import.
     #[test]
     fn help_and_version_do_not_start_the_app() {
         assert_eq!(parse_args(&["--help"]), Ok(Cli::Help));

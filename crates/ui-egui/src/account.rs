@@ -294,7 +294,7 @@ mod tests {
         assert_eq!(app.dialog, Some(crate::Dialog::RedrobConnect));
         assert_eq!(app.ui.account_feature.as_deref(), Some("Redrob Code"));
 
-        let (mut app, _) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Cut".into(), via_launcher: false }));
+        let (mut app, _) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Film".into(), via_launcher: false }));
         assert!(require(&mut app, "Redrob Code"));
         assert_eq!(app.dialog, None);
 
@@ -316,9 +316,9 @@ mod tests {
         assert_eq!(*calls.borrow(), vec!["connect"]);
         assert!(route(&mut app, "account.nope").is_none());
 
-        let (mut app, calls) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Cut".into(), via_launcher: false }));
+        let (mut app, calls) = app_with(Some(Account { account_name: "Acme".into(), key_name: "Redrob Film".into(), via_launcher: false }));
         let s = route(&mut app, "account.status").unwrap().unwrap();
-        assert_eq!(s, json!({"connected": true, "available": true, "accountName": "Acme", "keyName": "Redrob Cut", "state": "idle"}));
+        assert_eq!(s, json!({"connected": true, "available": true, "accountName": "Acme", "keyName": "Redrob Film", "state": "idle"}));
         assert!(s.to_string().find("rk_").is_none());
         // connect while connected is a no-op
         assert_eq!(route(&mut app, "account.connect").unwrap().unwrap()["connected"], json!(true));

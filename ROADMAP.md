@@ -1,4 +1,13 @@
-# FilmCraft Roadmap
+# Redrob Film Roadmap
+
+## Changes
+
+- **Renamed to Redrob Film** (from Redrob Cut): executables `redrob-film` / `redrob-film-cli`, app id
+  `ai.redrob.film`, console product `film`, installers and release assets `redrob-film-<version>-…`.
+  Upstream crate names, `FILMCRAFT_*` environment variables, `.fcproj` and the MIME type are unchanged.
+  Effects mode (motion graphics, compositing) is coming in this release alongside Edit mode.
+
+## Premiere parity (upstream measure)
 
 **Stage: alpha** · next: beta, ~19 points of ready-for-real-work and ~400–700 h away, plus opening Premiere's `.prproj` ([why](docs/target-app-parity.md#stage); passes the [core-workflow gate](docs/roadmap.md#alpha-gate))
 
@@ -14,7 +23,7 @@ Progress toward parity with Adobe Premiere Pro. This page is the summary; the de
 | | Value | How |
 |---|---|---|
 | **Feature breadth** | **~86%** | Does each Premiere feature exist? Menus 92% (measured: label diff against Premiere 26.5.2's menu dump), effects / transitions / audio effects 100% (measured by tests), other areas estimated |
-| **Ready for real work** | **~56%** (51–61%) | How close FilmCraft is to replacing Premiere for an editor on real projects: depth, correctness, file compatibility, speed, stability, ecosystem. Estimated depth per area, combined by a [written formula](docs/target-app-parity.md#three-readiness-numbers) |
+| **Ready for real work** | **~56%** (51–61%) | How close the editor is to replacing Premiere for an editor on real projects: depth, correctness, file compatibility, speed, stability, ecosystem. Estimated depth per area, combined by a [written formula](docs/target-app-parity.md#three-readiness-numbers) |
 | **Mainstream practitioner** | **~55%** | A typical professional editor's weekly work only, discounted ×0.90 interaction, ×0.92 stability, ×0.88 file exchange with Premiere users ([method](docs/target-app-parity.md#mainstream-practitioner)) |
 | **Essentials user** | **~60%** | Import, cut, title, music, export at default settings, discounted ×0.88 launch / stability, ×0.90 discoverability, ×0.95 opening files people send ([method](docs/target-app-parity.md#essentials-user)) |
 | **To beta** | **~400–700 Opus 5.5 agent-hours** | Estimated, calibrated from this repo's PR history |

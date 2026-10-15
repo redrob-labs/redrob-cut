@@ -1,7 +1,7 @@
 # Flatpak manifest for the single-file bundle attached to every GitHub release
-# (redrob-cut-<version>-linux-<arch>.flatpak). Build it with packaging/linux/flatpak-bundle.sh.
+# (redrob-film-<version>-linux-<arch>.flatpak). Build it with packaging/linux/flatpak-bundle.sh.
 #
-# It repackages the release's own Linux tarball (redrob-cut-<version>-linux-<arch>.tar.gz,
+# It repackages the release's own Linux tarball (redrob-film-<version>-linux-<arch>.tar.gz,
 # built on Ubuntu 22.04 by package.sh) instead of compiling Rust inside flatpak-builder: no
 # network and no vendored crate sources during the build, a few seconds instead of 20+ minutes,
 # and byte-for-byte the same binaries as the AppImage/deb/rpm. The script unpacks the tarball
@@ -10,13 +10,13 @@
 # ALSA routes through PulseAudio/PipeWire), and the GPU driver comes from its
 # org.freedesktop.Platform.GL extension.
 #
-# ai.redrob.cut.yml (same directory) is the from-source manifest for Flathub. Keep
+# ai.redrob.film.yml (same directory) is the from-source manifest for Flathub. Keep
 # runtime-version and finish-args identical in both (packaging-lint checks this).
-id: ai.redrob.cut
+id: ai.redrob.film
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
-command: redrob-cut
+command: redrob-film
 finish-args:
   # X11 shared memory (MIT-SHM). Without it the X11 fallback is slow or fails.
   - --share=ipc
@@ -30,7 +30,7 @@ finish-args:
   - --device=dri
   # A project refers to its media by absolute path (docs/project-files.md), and the document
   # portal only exposes the file it was handed, not the media beside it: a project opened from
-  # ~/Videos found none of its clips (#107). So, as other video editors do, Redrob Cut reads and
+  # ~/Videos found none of its clips (#107). So, as other video editors do, Redrob Film reads and
   # writes the home directory (media, projects, exports, autosave next to the project) and the
   # usual mount points of external drives, where footage often lives. Open/Save dialogs still go
   # through the file-chooser portal; nothing outside these locations is granted.
@@ -39,21 +39,21 @@ finish-args:
   - --filesystem=/run/media
   - --filesystem=/mnt
   # Deliberately not granted: network (the optional --control server listens on 127.0.0.1 in
-  # the sandbox; `flatpak override --user --share=network ai.redrob.cut` exposes it
+  # the sandbox; `flatpak override --user --share=network ai.redrob.film` exposes it
   # to host agents) and host-wide filesystem access.
 modules:
   - name: filmcraft
     buildsystem: simple
     build-commands:
-      - install -Dm755 bin/redrob-cut /app/bin/redrob-cut
-      - install -Dm755 bin/redrob-cut-cli /app/bin/redrob-cut-cli
-      - install -Dm644 share/applications/ai.redrob.cut.desktop /app/share/applications/ai.redrob.cut.desktop
+      - install -Dm755 bin/redrob-film /app/bin/redrob-film
+      - install -Dm755 bin/redrob-film-cli /app/bin/redrob-film-cli
+      - install -Dm644 share/applications/ai.redrob.film.desktop /app/share/applications/ai.redrob.film.desktop
       # The same MIME file the deb/rpm install (no types of its own yet; the runtime's
       # shared-mime-info already knows the video and audio formats).
-      - install -Dm644 share/mime/packages/ai.redrob.cut.xml /app/share/mime/packages/ai.redrob.cut.xml
+      - install -Dm644 share/mime/packages/ai.redrob.film.xml /app/share/mime/packages/ai.redrob.film.xml
       # Already has the release's version and date substituted by package.sh.
-      - install -Dm644 share/metainfo/ai.redrob.cut.metainfo.xml /app/share/metainfo/ai.redrob.cut.metainfo.xml
-      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/redrob-cut /app/share/doc/
+      - install -Dm644 share/metainfo/ai.redrob.film.metainfo.xml /app/share/metainfo/ai.redrob.film.metainfo.xml
+      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/redrob-film /app/share/doc/
     sources:
       - type: dir
         path: stage

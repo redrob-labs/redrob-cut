@@ -1,6 +1,6 @@
 //! Project links (Help menu, About dialog, Home screen).
 //!
-//! Redrob Cut is a Redrob product: the product page lives on the Redrob website and the source in
+//! Redrob Film is a Redrob product: the product page lives on the Redrob website and the source in
 //! the redrob-labs organisation on GitHub. There is no third-party community service wired in.
 
 /// The app's short name, used in the website and repository URLs.
@@ -8,17 +8,17 @@ pub const APP: &str = "cut";
 
 /// The Redrob website.
 pub const WEBSITE: &str = "https://redrob.io";
-/// Redrob Cut's page on the Redrob website.
+/// Redrob Film's page on the Redrob website.
 pub const APP_PAGE: &str = "https://redrob.io/cut";
-/// Redrob Cut's source repository.
-pub const GITHUB: &str = "https://github.com/redrob-labs/redrob-cut";
-/// New issue on Redrob Cut's repository.
-pub const ISSUES: &str = "https://github.com/redrob-labs/redrob-cut/issues";
+/// Redrob Film's source repository.
+pub const GITHUB: &str = "https://github.com/redrob-labs/redrob-film";
+/// New issue on Redrob Film's repository.
+pub const ISSUES: &str = "https://github.com/redrob-labs/redrob-film/issues";
 
 /// (command id, label, url) for every link, in menu order.
 pub const ALL: [(&str, &str, &str); 4] = [
     ("help.website", "Redrob Website", WEBSITE),
-    ("help.appPage", "Redrob Cut on redrob.io", APP_PAGE),
+    ("help.appPage", "Redrob Film on redrob.io", APP_PAGE),
     ("help.github", "Source code on GitHub", GITHUB),
     ("help.reportIssue", "Report an Issue…", ISSUES),
 ];
@@ -49,7 +49,7 @@ mod tests {
     #[test]
     fn urls_follow_the_redrob_scheme() {
         assert_eq!(APP_PAGE, format!("{WEBSITE}/{APP}"));
-        assert_eq!(GITHUB, "https://github.com/redrob-labs/redrob-cut");
+        assert_eq!(GITHUB, "https://github.com/redrob-labs/redrob-film");
         assert_eq!(ISSUES, format!("{GITHUB}/issues"));
         assert!(ALL.iter().all(|(id, _, u)| id.starts_with("help.") && u.starts_with("https://")));
         assert_eq!(url_for("help.website"), Some(WEBSITE));
