@@ -3,11 +3,11 @@
 //! sRGB values as linear, so mid-grey `#808080` was stored as `#373737`), the square, slider and
 //! HSB / RGB fields set the colour, and Cancel / Escape / the original swatch restore it.
 
-use effectcraft_engine::Session;
-use effectcraft_engine::project::LayerId;
-use effectcraft_ui_egui::EffectcraftApp;
-use effectcraft_ui_egui::dock::PanelKind;
-use effectcraft_ui_egui::widgets;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::LayerId;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::dock::PanelKind;
+use redrob_effects_ui_egui::widgets;
 use egui::accesskit::Role;
 use egui::{Event, Key, Modifiers, Pos2, pos2, vec2};
 use egui_kittest::Harness;

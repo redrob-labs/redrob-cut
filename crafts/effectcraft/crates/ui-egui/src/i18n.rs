@@ -9,7 +9,7 @@ use crate::EffectcraftApp;
 pub(crate) mod effects;
 /// Translations for the panels, tooltips and dialogs below the menu bar (see the module docs).
 mod ui;
-use effectcraft_engine::menus::{MenuEntry, MenuNode};
+use redrob_effects_engine::menus::{MenuEntry, MenuNode};
 pub(crate) use ui::{set_current, tr, tr_args};
 
 /// Every language with a catalog, in the order Settings ▸ General ▸ Language lists them.
@@ -6613,13 +6613,13 @@ const CZECH: &[(&str, &str, &str)] = &[
 #[cfg(test)]
 mod tests {
     use super::*;
-    use effectcraft_engine::menus::{MenuNode, TREE, parse};
+    use redrob_effects_engine::menus::{MenuNode, TREE, parse};
     use serde_json::json;
     use std::collections::BTreeSet;
 
     #[test]
     fn czech_translates_menus_without_changing_bindings_or_user_names() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key": "general.language", "value": "en"})).unwrap();
         app.session.prefs.push_recent("File.ecproj");
         let en = crate::native_menu::build(&app);
@@ -6667,7 +6667,7 @@ mod tests {
 
     #[test]
     fn czech_undo_redo_keeps_history_labels_verbatim() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key": "general.language", "value": "cs"})).unwrap();
         let undo = MenuEntry { label: "Undo".into(), command: "edit.undo".into(), params: json!({}), shortcut: None, alt_shortcuts: vec![] };
         let redo = MenuEntry { label: "Redo".into(), command: "edit.redo".into(), params: json!({}), shortcut: None, alt_shortcuts: vec![] };
@@ -6681,7 +6681,7 @@ mod tests {
 
     #[test]
     fn czech_reveal_labels_follow_the_platform_file_manager() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key": "general.language", "value": "cs"})).unwrap();
         for command in ["file.revealInFinder", "layer.revealInFinder"] {
             for (source, translated) in [
@@ -6776,7 +6776,7 @@ mod tests {
     /// Windows/Linux catalog miss, while filenames and unrelated commands stay untouched.
     #[test]
     fn ukrainian_reveal_labels_follow_the_platform_file_manager() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key": "general.language", "value": "uk"})).unwrap();
         for command in ["file.revealInFinder", "layer.revealInFinder"] {
             for (source, translated) in [
@@ -6799,7 +6799,7 @@ mod tests {
 
     #[test]
     fn language_changes_native_labels_without_changing_commands_or_parameters() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"en"})).unwrap();
         let en = crate::native_menu::build(&app);
         let state = crate::native_menu::state_key(&app);
@@ -6863,7 +6863,7 @@ mod tests {
         ] {
             assert_eq!(supported(locale), language, "{locale:?}");
         }
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         assert_eq!(app.session.prefs.general.language, "system", "the default");
         assert_eq!(japanese(&app), system_language() == "ja");
         assert_eq!(simplified(&app), system_language() == "zh-hans");
@@ -6903,7 +6903,7 @@ mod tests {
 
     #[test]
     fn zh_hans_translates_labels_computed_titles_and_keeps_names_verbatim() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"zh-hans"})).unwrap();
         assert_eq!(language(&app), "zh-hans");
         assert!(simplified(&app));
@@ -6947,7 +6947,7 @@ mod tests {
 
     #[test]
     fn zh_hant_translates_labels_computed_titles_and_keeps_names_verbatim() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"zh-hant"})).unwrap();
         assert_eq!(language(&app), "zh-hant");
         assert!(traditional(&app));
@@ -6991,7 +6991,7 @@ mod tests {
 
     #[test]
     fn ukrainian_translates_menus_without_changing_bindings_or_user_names() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"en"})).unwrap();
         app.session.prefs.push_recent("/tmp/File.ecproj");
         let en = crate::native_menu::build(&app);
@@ -7028,7 +7028,7 @@ mod tests {
 
     #[test]
     fn ukrainian_undo_redo_keeps_history_labels_verbatim() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"uk"})).unwrap();
         let undo = MenuEntry { label: "Undo".into(), command: "edit.undo".into(), params: json!({}), shortcut: None, alt_shortcuts: vec![] };
         let redo = MenuEntry { label: "Redo".into(), command: "edit.redo".into(), params: json!({}), shortcut: None, alt_shortcuts: vec![] };
@@ -7042,16 +7042,16 @@ mod tests {
 
     #[test]
     fn ukrainian_catalog_matches_the_settings_registry() {
-        let codes: Vec<_> = effectcraft_engine::prefs::LANGUAGES.iter().map(|(_, code)| *code).filter(|code| !matches!(*code, "system" | "en")).collect();
+        let codes: Vec<_> = redrob_effects_engine::prefs::LANGUAGES.iter().map(|(_, code)| *code).filter(|code| !matches!(*code, "system" | "en")).collect();
         assert_eq!(codes, CATALOG_CODES);
-        assert!(effectcraft_engine::prefs::LANGUAGES.contains(&("Українська", "uk")));
+        assert!(redrob_effects_engine::prefs::LANGUAGES.contains(&("Українська", "uk")));
         assert_eq!(code("uk"), "uk");
         assert_eq!(code("unknown"), "en");
     }
 
     #[test]
     fn es_translates_labels_computed_titles_and_keeps_names_verbatim() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"es"})).unwrap();
         assert_eq!(language(&app), "es");
         assert!(spanish(&app));
@@ -7100,7 +7100,7 @@ mod tests {
 
     #[test]
     fn pt_br_translates_labels_computed_titles_and_keeps_names_verbatim() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         app.session.execute("prefs.set", json!({"key":"general.language", "value":"pt-br"})).unwrap();
         assert_eq!(language(&app), "pt-br");
         assert!(!japanese(&app));
@@ -7137,7 +7137,7 @@ mod tests {
 
     #[test]
     fn general_settings_exposes_the_language_automation_id() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         let ctx = egui::Context::default();
         let tokens = crate::theme::Tokens::for_kind(crate::theme::ThemeKind::Dark);
         crate::theme::install(&ctx, &tokens, language(&app));

@@ -1,9 +1,9 @@
 //! Essential Graphics: authoring controls, master properties (per-instance overrides, Push to
 //! Comp, Revert), `.ectemplate` export/import, and Responsive Design — Time.
 
-use effectcraft_project::essential;
-use effectcraft_project::{ItemId, LayerId};
-use effectcraft_time::Tick;
+use redrob_effects_project::essential;
+use redrob_effects_project::{ItemId, LayerId};
+use redrob_effects_time::Tick;
 use serde_json::{Value, json};
 
 use crate::Session;
@@ -85,7 +85,7 @@ fn controls_are_listed_typed_and_editable() {
     assert_eq!(c["type"], "dropdown");
     let comp = s.project.comp(card).unwrap();
     let menu = comp.layer(LayerId(solid)).unwrap().props.prop("effects/#2/menu").unwrap();
-    assert!(matches!(&menu.ui, effectcraft_project::ParamUi::Popup { options } if options.len() == 4 && options[3] == "Huge"));
+    assert!(matches!(&menu.ui, redrob_effects_project::ParamUi::Popup { options } if options.len() == 4 && options[3] == "Huge"));
 }
 
 #[test]
@@ -206,7 +206,7 @@ fn mirrored_and_linked_properties() {
     s.execute("essential.pushToComp", json!({"layer": a, "control": mirror})).unwrap();
     assert_eq!((opa(&s, solid), opa(&s, bg2)), (35.0, 35.0));
     // Saved and loaded with the project.
-    let back = effectcraft_project::Project::from_json(&s.project.to_json()).unwrap();
+    let back = redrob_effects_project::Project::from_json(&s.project.to_json()).unwrap();
     assert_eq!(back.comp(card).unwrap().essential, s.project.comp(card).unwrap().essential);
     // Unlink; removing the master removes its mirrors.
     s.execute("essential.unlinkProperty", json!({"comp": card.0, "control": opacity, "layer": bg2, "path": "transform/opacity"})).unwrap();
@@ -231,7 +231,7 @@ fn template_export_import_round_trip_with_overrides() {
     let kinds: Vec<&str> = info["controls"].as_array().unwrap().iter().map(|c| c["kind"].as_str().unwrap()).collect();
     assert_eq!(kinds, ["property", "property", "group", "property", "comment"]);
     assert_eq!(info["controls"][3]["group"], ids["group"]);
-    let entries = effectcraft_lottie::zip::read_stored(&std::fs::read(&path).unwrap());
+    let entries = redrob_effects_lottie::zip::read_stored(&std::fs::read(&path).unwrap());
     let names: Vec<&str> = entries.iter().map(|(n, _)| n.as_str()).collect();
     assert!(names.contains(&"manifest.json") && names.contains(&"project.ecproj") && names.contains(&"poster.png"), "{names:?}");
 
@@ -259,7 +259,7 @@ fn template_export_import_round_trip_with_overrides() {
     t.execute("essential.set", json!({"layer": inst, "control": color_ctl, "value": "#ffff00"})).unwrap();
     let px = center(&t, show);
     assert!(px[0] > 0.99 && px[1] > 0.99 && px[2] < 0.01, "yellow: {px:?}");
-    let saved = effectcraft_project::Project::from_json(&t.project.to_json()).unwrap();
+    let saved = redrob_effects_project::Project::from_json(&t.project.to_json()).unwrap();
     let mut u = Session::default();
     u.replace_project(saved, None);
     u.open_comp(show);
@@ -280,15 +280,15 @@ fn media_replacement_swaps_footage_per_instance() {
     // Two "footage" items rendered by a fake source: item → solid colour.
     struct Colors;
     impl crate::render::FootageSource for Colors {
-        fn frame(&self, _: ItemId, f: &effectcraft_project::Footage, _: Tick) -> Option<Arc<effectcraft_raster::Image>> {
+        fn frame(&self, _: ItemId, f: &redrob_effects_project::Footage, _: Tick) -> Option<Arc<redrob_effects_raster::Image>> {
             let c = if f.path.contains("red") { [1.0, 0.0, 0.0, 1.0] } else { [0.0, 0.0, 1.0, 1.0] };
-            Some(Arc::new(effectcraft_raster::Image::filled(16, 16, c)))
+            Some(Arc::new(redrob_effects_raster::Image::filled(16, 16, c)))
         }
     }
     let mut s = Session { footage: Arc::new(Colors), ..Default::default() };
-    let foot = |p: &str| effectcraft_project::Footage {
+    let foot = |p: &str| redrob_effects_project::Footage {
         path: p.into(),
-        kind: effectcraft_project::FootageKind::Still,
+        kind: redrob_effects_project::FootageKind::Still,
         width: 16,
         height: 16,
         has_video: true,
@@ -296,8 +296,8 @@ fn media_replacement_swaps_footage_per_instance() {
     };
     let (red, blue) = s
         .edit("x", None, |proj, _| {
-            let r = proj.add_item("red.png", Default::default(), None, effectcraft_project::ItemKind::Footage(foot("red.png")));
-            let b = proj.add_item("blue.png", Default::default(), None, effectcraft_project::ItemKind::Footage(foot("blue.png")));
+            let r = proj.add_item("red.png", Default::default(), None, redrob_effects_project::ItemKind::Footage(foot("red.png")));
+            let b = proj.add_item("blue.png", Default::default(), None, redrob_effects_project::ItemKind::Footage(foot("blue.png")));
             Ok((r, b))
         })
         .unwrap();

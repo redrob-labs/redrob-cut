@@ -39,10 +39,10 @@ English: [README.md](./README.md)
 ## 시작하기
 
 ```sh
-cargo run --release -p filmcraft                     # 데스크톱 앱(redrob-film, 데모 프로젝트)
-cargo run --release -p filmcraft -- --control 9876   # JSON-lines 제어 서버 포함
-cargo run --release -p filmcraft-cli -- commands     # 엔진 명령 전체 목록(redrob-film-cli)
-cargo run --release -p filmcraft-cli -- mcp          # MCP 서버(헤드리스)
+cargo run --release -p redrob-film-app                     # 데스크톱 앱(redrob-film, 데모 프로젝트)
+cargo run --release -p redrob-film-app -- --control 9876   # JSON-lines 제어 서버 포함
+cargo run --release -p redrob-film-cli -- commands     # 엔진 명령 전체 목록(redrob-film-cli)
+cargo run --release -p redrob-film-cli -- mcp          # MCP 서버(헤드리스)
 ```
 
 Cargo 패키지 이름은 상류 동기화가 깔끔하도록 상류의 `filmcraft*`를 유지합니다. 실행 파일, 앱 ID(`ai.redrob.film`), 설치 프로그램과 사람이 보는 모든 것은 레드롭 필름의 것입니다.

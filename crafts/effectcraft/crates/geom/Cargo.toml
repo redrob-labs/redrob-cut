@@ -1,5 +1,5 @@
 [package]
-name = "effectcraft-geom"
+name = "redrob-effects-geom"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

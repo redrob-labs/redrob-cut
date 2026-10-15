@@ -15,7 +15,7 @@ use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::mpsc::{Receiver, channel};
 use std::sync::{Arc, Mutex};
 
-use filmcraft_ui_egui::agent::{AgentEvent, AgentHost, PermissionOption};
+use redrob_film_ui_egui::agent::{AgentEvent, AgentHost, PermissionOption};
 use serde_json::{Value, json};
 
 /// Overrides where Redrob Code is looked up.
@@ -114,7 +114,7 @@ impl Shared {
     }
     fn mcp_servers(&self) -> Value {
         let Ok(exe) = std::env::current_exe() else { return json!([]) };
-        let env: Vec<Value> = self.mcp.token.iter().map(|t| json!({"name": filmcraft_automation::bridge::CONTROL_TOKEN_ENV, "value": t})).collect();
+        let env: Vec<Value> = self.mcp.token.iter().map(|t| json!({"name": redrob_film_automation::bridge::CONTROL_TOKEN_ENV, "value": t})).collect();
         json!([{
             "name": "redrob-film",
             "command": exe.to_string_lossy(),
@@ -464,7 +464,7 @@ read l
         assert_eq!(new["method"], "session/new");
         assert_eq!(server["name"], "redrob-film");
         assert_eq!(server["args"], json!(["mcp", "--connect", "127.0.0.1:4242"]));
-        assert_eq!(server["env"], json!([{"name": filmcraft_automation::bridge::CONTROL_TOKEN_ENV, "value": "t0k"}]));
+        assert_eq!(server["env"], json!([{"name": redrob_film_automation::bridge::CONTROL_TOKEN_ENV, "value": "t0k"}]));
         let ans: Value = serde_json::from_str(&std::fs::read_to_string(&ans_log).unwrap_or_default()).unwrap_or_default();
         assert_eq!(ans, json!({"jsonrpc": "2.0", "id": "p1", "result": {"outcome": {"outcome": "selected", "optionId": "a"}}}));
         drop(host);

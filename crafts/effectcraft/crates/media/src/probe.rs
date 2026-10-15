@@ -1,10 +1,10 @@
-//! Probing: describe a file as an [`effectcraft_project::Footage`].
+//! Probing: describe a file as an [`redrob_effects_project::Footage`].
 
 use std::path::Path;
 use std::sync::Arc;
 
-use effectcraft_project::{AlphaMode, Footage, FootageKind};
-use effectcraft_time::{FrameRate, Tick};
+use redrob_effects_project::{AlphaMode, Footage, FootageKind};
+use redrob_effects_time::{FrameRate, Tick};
 use image::metadata::Orientation;
 
 use crate::{MediaError, Result, ext_of, rate_from_fc};
@@ -13,7 +13,7 @@ use crate::{MediaError, Result, ext_of, rate_from_fc};
 pub const DEFAULT_SEQUENCE_RATE: FrameRate = FrameRate::FPS_30;
 
 /// Probe one file. Image sequences are made by the engine, which groups numbered stills
-/// (`effectcraft_engine::sequence`) and probes their first frame here.
+/// (`redrob_effects_engine::sequence`) and probes their first frame here.
 pub fn probe(path: impl AsRef<Path>) -> Result<Footage> {
     let path = path.as_ref();
     // A movie is read in place (its index), not loaded whole.
@@ -34,10 +34,10 @@ pub fn probe(path: impl AsRef<Path>) -> Result<Footage> {
 /// Probe a 3D model (glTF 2.0 / OBJ / STL / FBX): a [`FootageKind::Model`] item whose duration is its
 /// longest animation. `resolve` reads sibling resources.
 pub fn probe_model(path: &str, bytes: &[u8], resolve: &dyn Fn(&str) -> Option<Vec<u8>>) -> Result<Footage> {
-    let m = effectcraft_model::load(path, bytes, resolve).map_err(|e| MediaError::Decode(format!("{path}: {e}")))?;
+    let m = redrob_effects_model::load(path, bytes, resolve).map_err(|e| MediaError::Decode(format!("{path}: {e}")))?;
     let s = m.summary();
     let dur = s.animations.iter().map(|a| a.1).fold(0.0f64, f64::max);
-    let codec = match effectcraft_model::format_of(path) {
+    let codec = match redrob_effects_model::format_of(path) {
         Some("obj") => "OBJ",
         Some("stl") => "STL",
         Some("fbx") => "FBX",
@@ -95,7 +95,7 @@ pub fn probe_bytes(path: &str, bytes: Arc<[u8]>) -> Result<Footage> {
     }
     let name = Path::new(path).file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_else(|| path.to_string());
     let turn = video_turn(&bytes);
-    let src = filmcraft_codecs::open_bytes(&name, bytes)?;
+    let src = redrob_film_codecs::open_bytes(&name, bytes)?;
     let mut f = footage_from_info(path, src.info());
     turn_footage(&mut f, turn);
     Ok(f)
@@ -111,10 +111,10 @@ fn turn_footage(f: &mut Footage, turn: Orientation) {
     }
 }
 
-pub(crate) fn footage_from_info(path: &str, info: &filmcraft_media::MediaInfo) -> Footage {
+pub(crate) fn footage_from_info(path: &str, info: &redrob_film_media::MediaInfo) -> Footage {
     let v = info.video.as_ref();
     let kind = match (info.kind, v) {
-        (filmcraft_media::MediaKind::Still, _) => FootageKind::Still,
+        (redrob_film_media::MediaKind::Still, _) => FootageKind::Still,
         (_, Some(_)) => FootageKind::Video,
         (_, None) => FootageKind::Audio,
     };
@@ -148,9 +148,9 @@ pub(crate) fn footage_from_info(path: &str, info: &filmcraft_media::MediaInfo) -
 
 /// The colour profile a video stream declares (H.273 primaries / transfer from the bitstream or
 /// container). `None` (interpreted as sRGB) for Rec. 709 primaries with an sRGB curve.
-fn profile_of(c: &filmcraft_color::ColorInfo) -> Option<effectcraft_project::ColorSpace> {
-    use effectcraft_project::ColorSpace;
-    use filmcraft_color::{Primaries, Transfer};
+fn profile_of(c: &redrob_film_color::ColorInfo) -> Option<redrob_effects_project::ColorSpace> {
+    use redrob_effects_project::ColorSpace;
+    use redrob_film_color::{Primaries, Transfer};
     match (c.primaries, c.transfer) {
         (Primaries::Bt2020, _) => Some(ColorSpace::Rec2020),
         (Primaries::P3D65, _) => Some(ColorSpace::DisplayP3),
@@ -241,8 +241,8 @@ pub(crate) fn load_oriented(bytes: &[u8], fmt: Option<image::ImageFormat>) -> im
 /// rotation counts; any mirroring, scaling or offset in the header is ignored, and other
 /// containers have none.
 pub(crate) fn video_turn(bytes: &[u8]) -> Orientation {
-    let Ok(file) = filmcraft_isobmff::open(bytes) else { return Orientation::NoTransforms };
-    let Some(m) = file.tracks.iter().find(|t| t.kind == filmcraft_isobmff::TrackKind::Video).map(|t| t.matrix) else {
+    let Ok(file) = redrob_film_isobmff::open(bytes) else { return Orientation::NoTransforms };
+    let Some(m) = file.tracks.iter().find(|t| t.kind == redrob_film_isobmff::TrackKind::Video).map(|t| t.matrix) else {
         return Orientation::NoTransforms;
     };
     // [a b u; c d v; x y w]: (a, b) is where the picture's x axis points.

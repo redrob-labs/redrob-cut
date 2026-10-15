@@ -2,8 +2,8 @@
 
 use std::path::{Path, PathBuf};
 
-use effectcraft_engine::config::{FileOps, StdFiles};
-use effectcraft_engine::{Session, autosave, prefs::Prefs};
+use redrob_effects_engine::config::{FileOps, StdFiles};
+use redrob_effects_engine::{Session, autosave, prefs::Prefs};
 use serde_json::{Value, json};
 
 pub(crate) struct AutoSave {

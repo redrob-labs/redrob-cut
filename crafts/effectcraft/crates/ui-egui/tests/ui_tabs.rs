@@ -2,10 +2,10 @@
 //! as its own Timeline tab (not a rename, and not in place of the comp shown), the tabs switch and
 //! close comps, and a dragged tab lands where its insertion mark shows.
 
-use effectcraft_engine::Session;
-use effectcraft_engine::project::ItemId;
-use effectcraft_ui_egui::EffectcraftApp;
-use effectcraft_ui_egui::dock::{DockNode, PanelKind};
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::ItemId;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::dock::{DockNode, PanelKind};
 use egui::{Event, Pos2, pos2};
 use egui_kittest::Harness;
 use serde_json::json;
@@ -123,7 +123,7 @@ fn dragged_tabs_land_where_the_insertion_mark_is() {
     assert_eq!(group_of(&dock(&h), PanelKind::Timeline), Some(vec![PanelKind::RenderQueue, PanelKind::Timeline, PanelKind::EffectControls]));
 }
 
-/// `cargo test -p effectcraft-ui-egui --test ui_tabs -- --ignored`: the insertion mark mid-drag
+/// `cargo test -p redrob-effects-ui-egui --test ui_tabs -- --ignored`: the insertion mark mid-drag
 /// (`target/test-out/tab-drag.png`).
 #[test]
 #[ignore]

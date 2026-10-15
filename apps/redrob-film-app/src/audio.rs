@@ -6,8 +6,8 @@ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use filmcraft_engine::settings::AudioHardwarePrefs;
-use filmcraft_ui_egui::{AudioDevices, AudioOut};
+use redrob_film_engine::settings::AudioHardwarePrefs;
+use redrob_film_ui_egui::{AudioDevices, AudioOut};
 
 pub struct CpalOut {
     stream: Option<cpal::Stream>,
@@ -37,7 +37,7 @@ enum Note {
 
 impl Note {
     fn text(&self) -> String {
-        use filmcraft_ui_egui::i18n::{fmt, t};
+        use redrob_film_ui_egui::i18n::{fmt, t};
         match self {
             Note::Fallback(device) => fmt(t("Audio hardware: the default output device cannot be opened; using '{device}'"), &[("device", device)]),
             Note::NoDevice => t("No audio output device found: playing without sound (check Settings ▸ Audio Hardware)").to_string(),

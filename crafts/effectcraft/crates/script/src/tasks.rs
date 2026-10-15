@@ -20,7 +20,7 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 
 use boa_engine::Context;
-use effectcraft_engine::Session;
+use redrob_effects_engine::Session;
 use serde_json::{Value as J, json};
 use web_time::{Duration, Instant};
 
@@ -47,7 +47,7 @@ struct HostTasks {
     list: Vec<Task>,
     /// The script's name (inline hosts without windows run under it).
     name: String,
-    /// [`effectcraft_engine::scriptui::ScriptUi::project_epoch`] when the host last ran (inline
+    /// [`redrob_effects_engine::scriptui::ScriptUi::project_epoch`] when the host last ran (inline
     /// hosts; the caller tracks script-host threads).
     epoch: u64,
 }
@@ -194,7 +194,7 @@ impl Report {
     }
 }
 
-/// The [`effectcraft_engine::scriptui::ScriptTaskRunner`] this crate provides: run the tasks
+/// The [`redrob_effects_engine::scriptui::ScriptTaskRunner`] this crate provides: run the tasks
 /// that are due now.
 pub fn run_tasks(session: &mut Session) -> J {
     run_tasks_at(session, Instant::now())

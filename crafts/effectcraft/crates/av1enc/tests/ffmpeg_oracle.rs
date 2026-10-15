@@ -7,7 +7,7 @@ mod common;
 use std::process::Command;
 
 use common::*;
-use effectcraft_av1enc::{Encoder, EncoderConfig, Packet, RateControl};
+use redrob_effects_av1enc::{Encoder, EncoderConfig, Packet, RateControl};
 
 fn have_libdav1d() -> bool {
     let Ok(out) = Command::new("ffmpeg").args(["-hide_banner", "-decoders"]).output() else {

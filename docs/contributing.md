@@ -26,13 +26,13 @@ macOS.
 ## 2. Build and run
 
 ```sh
-cargo run --release -p filmcraft                      # desktop app with the demo project
-cargo run --release -p filmcraft -- --empty           # start without the demo project
-cargo run --release -p filmcraft -- --control 9876    # plus the JSON-lines control server
-cargo run --release -p filmcraft -- a.mp4 b.wav       # import media (or open a .fcproj)
-cargo run --release -p filmcraft-cli -- commands      # list engine commands
-cargo run --release -p filmcraft-cli -- render --demo --seconds 3 --out frame.png
-cargo run --release -p filmcraft-cli -- mcp --demo    # headless MCP server on stdio
+cargo run --release -p redrob-film-app                      # desktop app with the demo project
+cargo run --release -p redrob-film-app -- --empty           # start without the demo project
+cargo run --release -p redrob-film-app -- --control 9876    # plus the JSON-lines control server
+cargo run --release -p redrob-film-app -- a.mp4 b.wav       # import media (or open a .fcproj)
+cargo run --release -p redrob-film-cli -- commands      # list engine commands
+cargo run --release -p redrob-film-cli -- render --demo --seconds 3 --out frame.png
+cargo run --release -p redrob-film-cli -- mcp --demo    # headless MCP server on stdio
 ```
 
 | Variable | Effect |
@@ -64,9 +64,9 @@ at 16 MiB. `--help`, `--version` and command-line errors write no file.
 
 By default FilmCraft's own crates log at `info` and everything else at `warn`. `RUST_LOG` replaces
 that with env_logger-style directives, for example `RUST_LOG=debug`,
-`RUST_LOG=warn,filmcraft_codecs=trace` or `RUST_LOG=info,wgpu_core=warn`; a directive ending in `*`
+`RUST_LOG=warn,redrob_film_codecs=trace` or `RUST_LOG=info,wgpu_core=warn`; a directive ending in `*`
 covers every target starting with it (`filmcraft*=debug`). The logger is
-`apps/filmcraft/src/logging.rs`; the realtime audio callbacks do not log. The web app logs to the
+`apps/redrob-film-app/src/logging.rs`; the realtime audio callbacks do not log. The web app logs to the
 browser console instead.
 
 ### Building with craft-fonts
@@ -77,12 +77,12 @@ dependency:
 
 ```sh
 git clone https://github.com/storytold/craft-fonts ../craft-fonts
-CRAFT_FONTS_DIR="$PWD/../craft-fonts" cargo run --release -p filmcraft
+CRAFT_FONTS_DIR="$PWD/../craft-fonts" cargo run --release -p redrob-film-app
 ```
 
 Use an absolute path: `build.rs` runs in `crates/text`, so a relative `CRAFT_FONTS_DIR` would
 resolve from there. `crates/text/build.rs` reads its `fonts/manifest.txt` and embeds the fonts as
-`filmcraft_text::fonts::CRAFT_FONTS` (native: all of them; the web build: only BIZ UDPGothic
+`redrob_film_text::fonts::CRAFT_FONTS` (native: all of them; the web build: only BIZ UDPGothic
 Regular, to keep the wasm small). The Japanese ones become the last fallback of every UI font family
 (`crates/ui-egui/src/theme.rs`, BIZ UDPGothic first) and fallback faces in the text engine (Gothic
 for sans text, Mincho for serif text). Without `CRAFT_FONTS_DIR`, `CRAFT_FONTS` is empty and
@@ -110,12 +110,12 @@ Every commit must pass all of these:
 | Tests | `cargo test --workspace` |
 | Layering | `cargo xtask layers` |
 | Assets | `cargo xtask assets` |
-| wasm | `cargo xtask wasm` (checks every L0–L4 crate and `filmcraft-ui-egui` for `wasm32-unknown-unknown`) |
+| wasm | `cargo xtask wasm` (checks every L0–L4 crate and `redrob-film-ui-egui` for `wasm32-unknown-unknown`) |
 | All of the above | `cargo xtask ci` (runs clippy and tests with `--release`) |
 
-Pull-request CI (`.github/workflows/ci.yml`) runs the first three on our crates only (`-p filmcraft -p
-filmcraft-ui-egui -p filmcraft-engine`, not the effectcraft subtree) with `--profile ci`, which compiles
-every dependency at opt-level 0: `cargo clippy -p filmcraft -p filmcraft-ui-egui -p filmcraft-engine
+Pull-request CI (`.github/workflows/ci.yml`) runs the first three on our crates only (`-p redrob-film-app -p
+redrob-film-ui-egui -p redrob-film-engine`, not the effectcraft subtree) with `--profile ci`, which compiles
+every dependency at opt-level 0: `cargo clippy -p redrob-film-app -p redrob-film-ui-egui -p redrob-film-engine
 --all-targets --locked --profile ci -- -D warnings` reproduces it locally.
 
 Run them with `CRAFT_FONTS_DIR` set too when you change font code ([craft-fonts](#building-with-craft-fonts)).
@@ -146,8 +146,8 @@ comes with a regression test; parsers, decoders and commands get fuzz / hostile-
 ## 5. Parallel work (several agents or worktrees)
 
 ```sh
-git worktree add ../filmcraft-hevc -b hevc-work
-cd ../filmcraft-hevc
+git worktree add ../redrob-film-hevc -b hevc-work
+cd ../redrob-film-hevc
 export CARGO_TARGET_DIR=target/agent-hevc     # separate build dir, no lock fights
 ```
 
@@ -155,7 +155,7 @@ export CARGO_TARGET_DIR=target/agent-hevc     # separate build dir, no lock figh
 - The workspace includes `crates/*` and `apps/*` by glob, so one broken `Cargo.toml` breaks every
   build. Keep every manifest valid at all times, including half-finished crates.
 - Test fixtures always go to `<repo>/target/fixtures/`, whatever `CARGO_TARGET_DIR` says.
-- `.mcp.json` points at `target/release/filmcraft-cli`. With a custom target dir, use your own path.
+- `.mcp.json` points at `target/release/redrob-film-cli`. With a custom target dir, use your own path.
 
 ## 6. How to add…
 
@@ -177,13 +177,13 @@ export CARGO_TARGET_DIR=target/agent-hevc     # separate build dir, no lock figh
    - Read time with `time_p` so `time`, `frame`, `seconds` and `timecode` all work.
    - Mutate only through `s.edit(…)` or `s.edit_sequence(…)`, so the change is undoable and
      validated.
-   - Put pure timeline logic in `filmcraft-edit` as a function on `&mut Sequence`, with unit or
+   - Put pure timeline logic in `redrob-film-edit` as a function on `&mut Sequence`, with unit or
      property tests there.
 2. Add tests to `crates/engine/src/tests.rs`: execute, assert, undo, redo, and check the disabled
    case.
 3. Frontend-only actions (tools, zoom, panels) go in `UI_COMMANDS` in
    `crates/ui-egui/src/menus.rs` with a branch in `menus::invoke`.
-4. The command now appears in menus (from `menu`), shortcuts, `filmcraft-cli commands`,
+4. The command now appears in menus (from `menu`), shortcuts, `redrob-film-cli commands`,
    `engine.commands` and MCP `command_list` without further work.
 
 ### A video effect
@@ -227,7 +227,7 @@ stream is cut into blocks (there are tests for this).
 1. **Spec first.** Work only from the public specification (ITU-T, ISO/IEC, IETF RFCs, SMPTE,
    published container specs). Never copy GPL/LGPL code, and follow AGENTS.md §2 on reading other
    implementations. Name the spec edition in the crate README.
-2. Create `crates/<name>` as an L0 crate that depends only on `filmcraft-bitstream` (plus
+2. Create `crates/<name>` as an L0 crate that depends only on `redrob-film-bitstream` (plus
    `thiserror` and optional `rayon` behind a `threads` feature). Add `[lints] workspace = true`, add
    it to `[workspace.dependencies]`, and add it to `LAYERS` in `xtask/src/main.rs`. It must build
    for wasm32.
@@ -273,7 +273,7 @@ In short:
 - **Fonts live in [storytold/craft-fonts](https://github.com/storytold/craft-fonts), not here.**
   Don't commit new font files to this repo (the Latin UI fonts already in `assets/fonts/` stay): add
   the font to craft-fonts (file, licence, manifest line, `ATTRIBUTION.md` row) and use it through
-  `filmcraft_text::fonts::CRAFT_FONTS`. See [Building with craft-fonts](#building-with-craft-fonts)
+  `redrob_film_text::fonts::CRAFT_FONTS`. See [Building with craft-fonts](#building-with-craft-fonts)
   and [`craftrules/standards/fonts.md`](https://github.com/storytold/craftrules/blob/main/standards/fonts.md).
 
 For each asset file `X`, commit a sidecar `X.attribution`. This is the real one for

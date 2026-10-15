@@ -6,7 +6,7 @@ use std::process::{Command, Output, Stdio};
 use serde_json::Value;
 
 fn cli(args: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_redrob-film-cli")).args(args).output().expect("spawn filmcraft-cli")
+    Command::new(env!("CARGO_BIN_EXE_redrob-film-cli")).args(args).output().expect("spawn redrob-film-cli")
 }
 
 fn json_out(o: &Output) -> Value {
@@ -242,7 +242,7 @@ fn export_with_presets() {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
-/// `filmcraft-cli commands | head -c 10` panicked with "failed printing to stdout: Broken pipe
+/// `redrob-film-cli commands | head -c 10` panicked with "failed printing to stdout: Broken pipe
 /// (os error 32)" and exit status 101 (#285).
 #[test]
 fn closed_stdout_ends_quietly() {

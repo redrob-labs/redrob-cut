@@ -12,9 +12,9 @@
 //! `timeline.track.A1.lane.kf.<n>` (the diamonds).
 
 use egui::{Align2, Color32, CursorIcon, Rect, Sense, Stroke, pos2, vec2};
-use filmcraft_project::mixer::{LANE_MUTE, LANE_PAN, LANE_VOLUME, lane_info, parse_fx_lane, send_lane};
-use filmcraft_project::{ParamKind, Sequence, Track, TrackKind};
-use filmcraft_time::Tick;
+use redrob_film_project::mixer::{LANE_MUTE, LANE_PAN, LANE_VOLUME, lane_info, parse_fx_lane, send_lane};
+use redrob_film_project::{ParamKind, Sequence, Track, TrackKind};
+use redrob_film_time::Tick;
 use serde_json::json;
 
 use super::timeline::{Layout, Row};
@@ -39,7 +39,7 @@ pub fn lane_options(tr: &Track) -> Vec<(String, String)> {
     for (slot, e) in tr.effects.iter().enumerate() {
         let Some(def) = e.def() else { continue };
         for p in def.params.iter().filter(|p| matches!(p.kind, ParamKind::Float { .. }) && p.animatable) {
-            v.push((filmcraft_project::mixer::fx_lane(slot, p.id), format!("{}: {}", crate::i18n::t(def.name), crate::i18n::t(p.label))));
+            v.push((redrob_film_project::mixer::fx_lane(slot, p.id), format!("{}: {}", crate::i18n::t(def.name), crate::i18n::t(p.label))));
         }
     }
     v

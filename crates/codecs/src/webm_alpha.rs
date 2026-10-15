@@ -14,7 +14,7 @@
 use std::collections::{HashMap, VecDeque};
 use std::sync::Arc;
 
-use filmcraft_frame::{PixelData, VideoFrame};
+use redrob_film_frame::{PixelData, VideoFrame};
 
 use crate::video::{DecodedFrame, VideoDecoder};
 
@@ -106,7 +106,7 @@ impl AlphaDecoder {
             self.alpha.reset();
             self.pending.clear();
             self.alpha_max = None;
-            let is_key = |k: usize| self.layer.read(k).is_some_and(|d| filmcraft_vp9::is_keyframe(&d));
+            let is_key = |k: usize| self.layer.read(k).is_some_and(|d| redrob_film_vp9::is_keyframe(&d));
             let start = (i.saturating_sub(MAX_RESYNC)..=i).rev().find(|&k| is_key(k));
             if let Some(start) = start {
                 for k in start..i {
@@ -239,20 +239,20 @@ pub(crate) fn set_alpha(frame: &mut VideoFrame, a: &VideoFrame) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use filmcraft_frame::Chroma;
+    use redrob_film_frame::Chroma;
 
     fn yuv8(w: u32, h: u32, luma: Vec<u8>) -> VideoFrame {
         let n = (w * h) as usize;
         let c = n / 4;
         let data = PixelData::Yuv8 { planes: [Arc::new(luma), Arc::new(vec![128; c]), Arc::new(vec![128; c])], chroma: Chroma::C420, alpha: None };
-        VideoFrame { width: w, height: h, data, color: Default::default(), par: (1, 1), pts: filmcraft_time::Tick::ZERO }
+        VideoFrame { width: w, height: h, data, color: Default::default(), par: (1, 1), pts: redrob_film_time::Tick::ZERO }
     }
 
     fn yuv16(w: u32, h: u32, bits: u32) -> VideoFrame {
         let n = (w * h) as usize;
         let data =
             PixelData::Yuv16 { planes: [Arc::new(vec![0; n]), Arc::new(vec![0; n / 4]), Arc::new(vec![0; n / 4])], chroma: Chroma::C420, bits, alpha: None };
-        VideoFrame { width: w, height: h, data, color: Default::default(), par: (1, 1), pts: filmcraft_time::Tick::ZERO }
+        VideoFrame { width: w, height: h, data, color: Default::default(), par: (1, 1), pts: redrob_film_time::Tick::ZERO }
     }
 
     #[test]

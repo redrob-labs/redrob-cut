@@ -50,10 +50,10 @@ the automatic check off).
 ## Getting started
 
 ```sh
-cargo run --release -p filmcraft                     # the desktop app (redrob-film), demo project
-cargo run --release -p filmcraft -- --control 9876   # with the JSON-lines control server
-cargo run --release -p filmcraft-cli -- commands     # every engine command (redrob-film-cli)
-cargo run --release -p filmcraft-cli -- mcp          # MCP server (headless)
+cargo run --release -p redrob-film-app                     # the desktop app (redrob-film), demo project
+cargo run --release -p redrob-film-app -- --control 9876   # with the JSON-lines control server
+cargo run --release -p redrob-film-cli -- commands     # every engine command (redrob-film-cli)
+cargo run --release -p redrob-film-cli -- mcp          # MCP server (headless)
 ```
 
 Cargo packages keep upstream's `filmcraft*` names so upstream syncs merge cleanly; the executables,

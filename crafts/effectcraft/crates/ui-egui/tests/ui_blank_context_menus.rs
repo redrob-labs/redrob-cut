@@ -1,6 +1,6 @@
 //! Right-click actions in the blank Project and Timeline areas, and on Timeline property names.
-use effectcraft_engine::Session;
-use effectcraft_ui_egui::{Dialog, EffectcraftApp, dock::PanelKind};
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::{Dialog, EffectcraftApp, dock::PanelKind};
 use egui::{Event, Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use egui_kittest::{Harness, kittest::Queryable as _};
 use serde_json::json;
@@ -158,7 +158,7 @@ fn timeline_property_names_have_the_property_menu() {
     let layer = h.state_mut().session.execute("layer.newSolid", json!({"name": "Plate", "color": "#406080"})).unwrap()["layer"].as_u64().unwrap();
     h.state_mut().session.execute("prop.set", json!({"layer": layer, "path": "transform/rotation", "value": 30})).unwrap();
     let props =
-        |h: &Harness<'_, EffectcraftApp>| h.state().session.active_comp().unwrap().layer(effectcraft_engine::project::LayerId(layer)).unwrap().props.clone();
+        |h: &Harness<'_, EffectcraftApp>| h.state().session.active_comp().unwrap().layer(redrob_effects_engine::project::LayerId(layer)).unwrap().props.clone();
     let uid = |h: &Harness<'_, EffectcraftApp>, path: &str| props(h).prop(path).unwrap().uid;
     h.state_mut().ui.timeline.open_layers.insert(layer);
     let transform = props(&h).sub("transform").unwrap().uid;
@@ -252,7 +252,7 @@ fn timeline_layer_context_menu_has_the_effects_submenu_and_applies_an_effect() {
         .session
         .active_comp()
         .unwrap()
-        .layer(effectcraft_engine::project::LayerId(layer))
+        .layer(redrob_effects_engine::project::LayerId(layer))
         .unwrap()
         .effects()
         .map(|f| f.groups().map(|g| g.name.clone()).collect())
@@ -281,7 +281,7 @@ fn layer_context_menu_adds_a_layer_marker() {
     h.run_steps(3);
     let now = h.state().session.time().seconds();
     let comp = h.state().session.active_comp().unwrap();
-    let markers = |id: u64| -> Vec<f64> { comp.layer(effectcraft_engine::project::LayerId(id)).unwrap().markers.iter().map(|m| m.time.seconds()).collect() };
+    let markers = |id: u64| -> Vec<f64> { comp.layer(redrob_effects_engine::project::LayerId(id)).unwrap().markers.iter().map(|m| m.time.seconds()).collect() };
     assert_eq!(markers(top), vec![now]);
     assert!((now - 1.5).abs() < 0.01, "at the current time: {now}");
     assert!(markers(below).is_empty(), "{:?}", markers(below));

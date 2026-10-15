@@ -9,9 +9,9 @@
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -291,7 +291,7 @@ fn appearance_labels_and_tooltips_take_effect() {
     // the header button cycles Auto, Light, Dark
     d.click("header.appearance");
     assert_eq!(d.pref("appearance.appearanceMode"), "dark");
-    assert_eq!(d.harness.state().tokens.kind, filmcraft_ui_egui::theme::ThemeKind::Medium, "the saved dark theme");
+    assert_eq!(d.harness.state().tokens.kind, redrob_film_ui_egui::theme::ThemeKind::Medium, "the saved dark theme");
     d.click("header.appearance");
     assert_eq!(d.pref("appearance.appearanceMode"), "auto");
     d.menu("view.appearanceMode.next");
@@ -321,7 +321,7 @@ fn appearance_labels_and_tooltips_take_effect() {
     assert_eq!(rose["label"], "Interview");
     let r = d.exec("file.newSequence", json!({"name": "Labelled"}));
     let seq = r["sequence"].as_u64().unwrap();
-    assert_eq!(d.harness.state().session.project.item(filmcraft_project::ItemId(seq)).unwrap().label, filmcraft_project::Label::Teal);
+    assert_eq!(d.harness.state().session.project.item(redrob_film_project::ItemId(seq)).unwrap().label, redrob_film_project::Label::Teal);
 
     // Show Tool Tips off → egui never shows them
     d.menu("app.settings.general");

@@ -87,7 +87,7 @@ fn publish(value: &std::sync::atomic::AtomicU8, code: u8, repaint: impl FnOnce()
 }
 
 /// The host hook (`HostHooks::system_theme`), or `None` where egui's own report is used.
-pub fn service() -> Option<filmcraft_ui_egui::SystemThemeFn> {
+pub fn service() -> Option<redrob_film_ui_egui::SystemThemeFn> {
     #[cfg(target_os = "linux")]
     {
         use std::sync::atomic::{AtomicU8, Ordering};

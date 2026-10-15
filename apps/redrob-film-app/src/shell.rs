@@ -22,9 +22,9 @@ use std::sync::Arc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::time::{Duration, Instant};
 
-use effectcraft_ui_egui::EffectcraftApp;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 use crate::ai::tools::{self, Capabilities};
@@ -349,7 +349,7 @@ impl ShellApp {
         self.status = Some(Status::new(text, error));
     }
 
-    /// The Effects editor, created on demand: `effectcraft_host::session()` (crafts/effectcraft/
+    /// The Effects editor, created on demand: `redrob_effects_host::session()` (crafts/effectcraft/
     /// crates/host/src/lib.rs L84: media, import, expressions, scripting, export) and
     /// `EffectcraftApp::new` (crafts/effectcraft/crates/ui-egui/src/lib.rs L367), with the file
     /// dialogs effectcraft's own main.rs gives it (crafts/effectcraft/apps/effectcraft/src/main.rs
@@ -360,7 +360,7 @@ impl ShellApp {
     }
 
     fn build_effects() -> EffectcraftApp {
-        let mut app = EffectcraftApp::new(effectcraft_host::session());
+        let mut app = EffectcraftApp::new(redrob_effects_host::session());
         app.hooks.pick_files = Some(Box::new(|exts: &[&str]| {
             rfd::FileDialog::new().add_filter("Media", exts).pick_files().unwrap_or_default().into_iter().map(|p| p.to_string_lossy().to_string()).collect()
         }));
@@ -700,7 +700,7 @@ impl ShellApp {
                     },
                     None => {
                         if !effects.session.is_dirty() {
-                            effects.session.replace_project(effectcraft_project::Project::default(), None);
+                            effects.session.replace_project(redrob_effects_project::Project::default(), None);
                         }
                     }
                 }

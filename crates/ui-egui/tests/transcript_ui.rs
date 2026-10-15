@@ -7,9 +7,9 @@
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -89,7 +89,7 @@ fn transcript_tab_selects_and_extracts_words() {
     let mut probe = Session::default();
     probe.execute("file.openDemoProject", json!({})).unwrap();
     let a = probe.active_sequence().unwrap().audio_tracks[0].items[0].clone();
-    let tk = |s: f64| a.source_in.0 + (s * filmcraft_time::TICKS_PER_SECOND as f64) as i64;
+    let tk = |s: f64| a.source_in.0 + (s * redrob_film_time::TICKS_PER_SECOND as f64) as i64;
     let words: Vec<Value> = ["Hello", "um", "there", "friend."]
         .iter()
         .enumerate()

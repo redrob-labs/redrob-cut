@@ -35,8 +35,8 @@
 //! The built-in templates ([`builtin_templates`]) are original designs made for Redrob Film in code
 //! (no image, font or template files), under the project licence.
 
-use filmcraft_geom::Vec2;
-use filmcraft_time::{TICKS_PER_SECOND, Tick};
+use redrob_film_geom::Vec2;
+use redrob_film_time::{TICKS_PER_SECOND, Tick};
 use serde::{Deserialize, Serialize};
 
 use crate::effect::EffectInstance;

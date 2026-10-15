@@ -3,10 +3,10 @@
 //! reach screen readers with names, roles and states; a row focused with Tab keeps the arrows, and
 //! keyboard focus follows the selection.
 
-use effectcraft_engine::Session;
-use effectcraft_engine::project::{ItemId, ItemKind};
-use effectcraft_ui_egui::EffectcraftApp;
-use effectcraft_ui_egui::dock::PanelKind;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::{ItemId, ItemKind};
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::dock::PanelKind;
 use egui::accesskit::Role;
 use egui::{Event, Key, Modifiers, Pos2, pos2};
 use egui_kittest::Harness;

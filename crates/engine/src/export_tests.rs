@@ -28,7 +28,7 @@ struct Scratch(PathBuf);
 
 impl Scratch {
     fn new(name: &str) -> Self {
-        let d = filmcraft_testkit::workspace_root().join("target").join("export-tests").join(format!("engine-{name}-{}", std::process::id()));
+        let d = redrob_film_testkit::workspace_root().join("target").join("export-tests").join(format!("engine-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         Scratch(d)
@@ -93,7 +93,7 @@ fn nested_camel_case_settings_are_honoured() {
 }
 
 fn probe(path: &str) -> Option<Value> {
-    let ffprobe = filmcraft_testkit::ffprobe_or_skip("export presets")?;
+    let ffprobe = redrob_film_testkit::ffprobe_or_skip("export presets")?;
     let out = std::process::Command::new(ffprobe).args(["-v", "error", "-of", "json", "-show_format", "-show_streams", path]).output().unwrap();
     assert!(out.status.success(), "{path}: {}", String::from_utf8_lossy(&out.stderr));
     Some(serde_json::from_slice(&out.stdout).unwrap())
@@ -124,7 +124,7 @@ fn every_builtin_preset_exports_and_ffprobe_confirms() {
     let dir = Scratch::new("presets");
     for pr in &presets {
         let name = pr["name"].as_str().unwrap();
-        let sub = dir.0.join(format!("p{}", filmcraft_export::presets::preset_key(name)));
+        let sub = dir.0.join(format!("p{}", redrob_film_export::presets::preset_key(name)));
         std::fs::create_dir_all(&sub).unwrap();
         let path = sub.join("Demo").to_string_lossy().to_string();
         let params = json!({"preset": name, "path": path, "range": "custom", "startSeconds": 1.0, "endSeconds": 1.25, "wait": true});
@@ -320,7 +320,7 @@ fn h264_presets_hit_their_bitrates() {
         ("YouTube 1080p Full HD", 16_000.0, 20.0 / 16.0),
         ("Vimeo 1080p Full HD", 18_000.0, 24.0 / 18.0),
     ] {
-        let path = dir.path(&format!("{}.mp4", filmcraft_export::presets::preset_key(preset)));
+        let path = dir.path(&format!("{}.mp4", redrob_film_export::presets::preset_key(preset)));
         s.execute(
             "file.exportMedia",
             json!({"preset": preset, "path": path, "range": "custom", "startSeconds": 0.0, "endSeconds": 3.0, "audio": false, "wait": true}),
@@ -518,7 +518,7 @@ fn jobs_and_queue_items_report_the_time_they_have_left() {
 
 #[test]
 fn hardware_encoding_is_off_unless_asked_for() {
-    use filmcraft_export::HardwareEncoding::{Auto, Off};
+    use redrob_film_export::HardwareEncoding::{Auto, Off};
     let s = demo();
     let setting = |p: Value| crate::export_tools::settings_from_params(&s, &p, "file.exportMedia").map(|(_, st)| st.hardware_encoding);
     assert_eq!(setting(json!({"path": "x.mp4"})).unwrap(), Off);
@@ -532,13 +532,13 @@ fn hardware_encoding_is_off_unless_asked_for() {
     assert!(e.contains("off | auto"), "{e}");
     // and it travels in the settings object, with the default filling in when it is missing
     assert_eq!(setting(json!({"path": "x.mp4", "settings": {"hardwareEncoding": "auto"}})).unwrap(), Auto);
-    let old: filmcraft_export::ExportSettings = serde_json::from_value(json!({"format": "h264"})).unwrap();
+    let old: redrob_film_export::ExportSettings = serde_json::from_value(json!({"format": "h264"})).unwrap();
     assert_eq!(old.hardware_encoding, Off);
 }
 
 #[test]
 fn crf_param_picks_constant_quality() {
-    use filmcraft_export::BitrateMode::{Cbr, Crf, Vbr1Pass};
+    use redrob_film_export::BitrateMode::{Cbr, Crf, Vbr1Pass};
     let s = demo();
     let setting = |p: Value| crate::export_tools::settings_from_params(&s, &p, "file.exportMedia").map(|(_, st)| (st.bitrate_mode, st.crf));
     assert_eq!(setting(json!({"path": "x.mp4"})).unwrap(), (Vbr1Pass, 23.0));
@@ -604,7 +604,7 @@ fn quick_export_uses_and_remembers_a_preset() {
     let mut s = demo();
     let dir = Scratch::new("quick");
     let r = s.execute("export.quick", json!({"path": dir.path("quick"), "range": "custom", "startSeconds": 0, "endSeconds": 0.25, "wait": true})).unwrap();
-    assert_eq!(r["preset"], filmcraft_export::presets::DEFAULT_PRESET);
+    assert_eq!(r["preset"], redrob_film_export::presets::DEFAULT_PRESET);
     assert_eq!(r["path"], dir.path("quick.mp4"));
     assert!(Path::new(&dir.path("quick.mp4")).exists());
     s.execute(

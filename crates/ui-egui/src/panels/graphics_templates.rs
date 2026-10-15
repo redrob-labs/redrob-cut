@@ -20,11 +20,11 @@
 use std::sync::Arc;
 
 use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
-use filmcraft_engine::graphic_templates::{LibraryEntry, library, thumbnail_cached};
-use filmcraft_project::graphic::{self, layer_display_name, layer_indices};
-use filmcraft_project::gtemplate::ControlKind;
-use filmcraft_project::{ClipId, ParamValue, RollMode, TrackItem};
-use filmcraft_time::Tick;
+use redrob_film_engine::graphic_templates::{LibraryEntry, library, thumbnail_cached};
+use redrob_film_project::graphic::{self, layer_display_name, layer_indices};
+use redrob_film_project::gtemplate::ControlKind;
+use redrob_film_project::{ClipId, ParamValue, RollMode, TrackItem};
+use redrob_film_time::Tick;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -343,7 +343,7 @@ pub fn template_controls(
     let Some(link) = it.graphic.as_ref().and_then(|m| m.template.as_ref()) else { return false };
     ui.label(egui::RichText::new(tlf!("   Template: {name}", name = link.name)).color(t.text_faint).size(11.0));
     for c in &link.controls {
-        let Some(e) = it.effects.iter().find(|e| graphic::is_layer(e) && filmcraft_project::gtemplate::layer_uid(e) == c.layer) else { continue };
+        let Some(e) = it.effects.iter().find(|e| graphic::is_layer(e) && redrob_film_project::gtemplate::layer_uid(e) == c.layer) else { continue };
         let id = format!("gfxTemplates.control.{}", c.id);
         let pv = e.params.get(&c.param).map(|p| p.value_at(mt));
         // multi-line text: the label on its own row, the field full width below it
@@ -427,7 +427,7 @@ pub fn template_controls(
                 let r = egui::ComboBox::from_id_salt(("gfx-tpl-font", clip.0, c.id.as_str())).selected_text(&fam).width(170.0).height(360.0).show_ui(
                     &mut vui,
                     |ui| {
-                        for (f, _) in filmcraft_text::families() {
+                        for (f, _) in redrob_film_text::families() {
                             if ui.selectable_label(f == fam, &f).clicked() {
                                 set(json!(f), actions);
                             }
@@ -530,9 +530,9 @@ pub fn responsive_position(
     let pin = it.effects[ei].layer.as_ref().and_then(|x| x.pin.clone());
     let target_name = match pin.as_ref().map(|p| p.to) {
         None => tl!("None").to_string(),
-        Some(filmcraft_project::PinTarget::Frame) => tl!("Video Frame").to_string(),
-        Some(filmcraft_project::PinTarget::Layer(uid)) => (0..idx.len())
-            .find(|&i| filmcraft_project::gtemplate::layer_uid(&it.effects[idx[i]]) == uid)
+        Some(redrob_film_project::PinTarget::Frame) => tl!("Video Frame").to_string(),
+        Some(redrob_film_project::PinTarget::Layer(uid)) => (0..idx.len())
+            .find(|&i| redrob_film_project::gtemplate::layer_uid(&it.effects[idx[i]]) == uid)
             .map(|i| layer_display_name(&it.effects[idx[i]], i))
             .unwrap_or_default(),
     };
@@ -541,7 +541,7 @@ pub fn responsive_position(
         if ui.selectable_label(pin.is_none(), tl!("None")).clicked() {
             actions.push(("graphics.pin".into(), json!({"clip": clip.0, "layer": layer, "to": "none"})));
         }
-        let on_frame = matches!(pin.as_ref().map(|p| p.to), Some(filmcraft_project::PinTarget::Frame));
+        let on_frame = matches!(pin.as_ref().map(|p| p.to), Some(redrob_film_project::PinTarget::Frame));
         if ui.selectable_label(on_frame, tl!("Video Frame")).clicked() {
             actions.push(("graphics.pin".into(), json!({"clip": clip.0, "layer": layer, "to": "frame"})));
         }
@@ -559,9 +559,9 @@ pub fn responsive_position(
     let mut vui = row_label(ui, tl!("Pinned Edges"), &t);
     let mut edges = [p.left, p.top, p.right, p.bottom];
     let to = match p.to {
-        filmcraft_project::PinTarget::Frame => json!("frame"),
-        filmcraft_project::PinTarget::Layer(uid) => {
-            json!((0..idx.len()).find(|&i| filmcraft_project::gtemplate::layer_uid(&it.effects[idx[i]]) == uid).unwrap_or(0))
+        redrob_film_project::PinTarget::Frame => json!("frame"),
+        redrob_film_project::PinTarget::Layer(uid) => {
+            json!((0..idx.len()).find(|&i| redrob_film_project::gtemplate::layer_uid(&it.effects[idx[i]]) == uid).unwrap_or(0))
         }
     };
     let mut changed = false;
@@ -595,7 +595,7 @@ pub fn route(app: &mut FilmcraftApp, ctx: &egui::Context, id: &str, params: &Val
             Some(r)
         }
         "graphics.template.export" | "file.exportGraphicsTemplate" if empty => {
-            let clip = filmcraft_engine::graphics::target_clip(&app.session, &Value::Null);
+            let clip = redrob_film_engine::graphics::target_clip(&app.session, &Value::Null);
             let Some(clip) = clip else { return Some(Err("select a graphic clip".into())) };
             let it = app.session.active_sequence().and_then(|q| q.find_item(clip)).map(|(_, i)| i.clone())?;
             let idx = layer_indices(&it.effects);
@@ -617,9 +617,9 @@ pub fn route(app: &mut FilmcraftApp, ctx: &egui::Context, id: &str, params: &Val
             Some(Ok(json!({"dialog": "exportTemplate"})))
         }
         "file.replaceFonts" if empty => {
-            let used = filmcraft_engine::graphic_templates::fonts_used(&app.session);
+            let used = redrob_film_engine::graphic_templates::fonts_used(&app.session);
             let from = used.first().map(|f| f.0.clone()).unwrap_or_default();
-            app.ui.gfx_templates.replace = Some(ReplaceDraft { from, to: filmcraft_text::fonts::DEFAULT_FAMILY.into(), error: String::new() });
+            app.ui.gfx_templates.replace = Some(ReplaceDraft { from, to: redrob_film_text::fonts::DEFAULT_FAMILY.into(), error: String::new() });
             Some(Ok(json!({"dialog": "replaceFonts"})))
         }
         _ => None,
@@ -712,7 +712,7 @@ fn export_dialog(app: &mut FilmcraftApp, ctx: &egui::Context) {
 
 fn replace_dialog(app: &mut FilmcraftApp, ctx: &egui::Context) {
     let Some(mut d) = app.ui.gfx_templates.replace.clone() else { return };
-    let used = filmcraft_engine::graphic_templates::fonts_used(&app.session);
+    let used = redrob_film_engine::graphic_templates::fonts_used(&app.session);
     let mut elems: Elems = Vec::new();
     let mut action: Option<bool> = None;
     egui::Window::new(tl!("Replace Fonts in Projects"))
@@ -725,7 +725,7 @@ fn replace_dialog(app: &mut FilmcraftApp, ctx: &egui::Context) {
             ui.label(tl!("Fonts used in the project:"));
             egui::Grid::new("gfx-fonts-used").striped(true).num_columns(3).show(ui, |ui| {
                 for (f, st, n) in &used {
-                    let missing = filmcraft_text::resolve(f, st).missing;
+                    let missing = redrob_film_text::resolve(f, st).missing;
                     ui.label(if missing {
                         egui::RichText::new(tlf!("{f} (missing)", f)).color(Color32::from_rgb(0xff, 0xa0, 0x60))
                     } else {
@@ -749,7 +749,7 @@ fn replace_dialog(app: &mut FilmcraftApp, ctx: &egui::Context) {
                 elems.push(("replaceFonts.from".into(), r.response.rect, "Replace".into()));
                 ui.label(tl!("with:"));
                 let r = egui::ComboBox::from_id_salt("gfx-rf-to").selected_text(&d.to).width(160.0).height(360.0).show_ui(ui, |ui| {
-                    for (f, _) in filmcraft_text::families() {
+                    for (f, _) in redrob_film_text::families() {
                         ui.selectable_value(&mut d.to, f.clone(), &f);
                     }
                 });

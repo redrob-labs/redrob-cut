@@ -1,4 +1,4 @@
-//! cpal audio input for voice-over recording ([`filmcraft_engine::voiceover::AudioInput`]).
+//! cpal audio input for voice-over recording ([`redrob_film_engine::voiceover::AudioInput`]).
 //!
 //! The stream lives on its own thread (cpal streams are not `Send` on every backend); the
 //! callback de-interleaves into a shared planar buffer that the engine drains when recording stops.
@@ -7,7 +7,7 @@ use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use filmcraft_engine::voiceover::{AudioInput, InputFormat};
+use redrob_film_engine::voiceover::{AudioInput, InputFormat};
 
 pub struct CpalIn {
     /// Host name (Settings ▸ Audio Hardware ▸ Device Class; empty = default host).

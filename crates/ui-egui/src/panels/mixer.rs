@@ -21,12 +21,12 @@
 use std::collections::HashMap;
 
 use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
-use filmcraft_engine::mixer::strip_label;
-use filmcraft_project::mixer::{
+use redrob_film_engine::mixer::strip_label;
+use redrob_film_project::mixer::{
     FADER_MAX_DB, FADER_MIN_DB, LANE_MUTE, LANE_PAN, LANE_PAN51_CENTER, LANE_PAN51_LFE, LANE_PAN51_X, LANE_PAN51_Y, LANE_VOLUME, MASTER_STRIP,
 };
-use filmcraft_project::{AutomationMode, InputMap, Sequence, Track, TrackId};
-use filmcraft_time::{TimeDisplay, format_time};
+use redrob_film_project::{AutomationMode, InputMap, Sequence, Track, TrackId};
+use redrob_film_time::{TimeDisplay, format_time};
 use serde_json::{Value, json};
 
 use crate::FilmcraftApp;
@@ -83,7 +83,7 @@ fn db_text(db: f64) -> String {
 pub const INPUT_METER: u64 = u64::MAX - 1;
 
 /// Per-strip meter state, `strip id → [level, peak]` per channel (dBFS; 2 channels, or 6 for 5.1
-/// strips), fed by the playing mix ([`filmcraft_render::mixer::LiveMix`]) with fast attack and a
+/// strips), fed by the playing mix ([`redrob_film_render::mixer::LiveMix`]) with fast attack and a
 /// 20 dB/s fall. [`INPUT_METER`] holds the voice-over input.
 pub fn poll_meters(app: &mut FilmcraftApp, ui: &egui::Ui) -> HashMap<u64, Vec<[f32; 2]>> {
     let id = egui::Id::new("mixer-meters");
@@ -152,7 +152,7 @@ fn meter_text(m: &[[f32; 2]], channels: usize) -> String {
 struct Ctx<'a> {
     t: Tokens,
     seq: &'a Sequence,
-    now: filmcraft_time::Tick,
+    now: redrob_film_time::Tick,
     recording: bool,
     acts: Vec<(String, Value)>,
 }
@@ -164,7 +164,7 @@ impl Ctx<'_> {
 }
 
 /// The value a control shows: a held override, else the automation (or static value) at the playhead.
-fn shown(app: &FilmcraftApp, tr: &Track, lane: &str, now: filmcraft_time::Tick) -> f64 {
+fn shown(app: &FilmcraftApp, tr: &Track, lane: &str, now: redrob_film_time::Tick) -> f64 {
     app.session.previews.live.get(tr.id, lane).map(|o| o.value).unwrap_or_else(|| tr.lane_value(lane, now))
 }
 
@@ -185,10 +185,10 @@ fn slot_box(ui: &mut egui::Ui, r: Rect, text: &str, filled: bool, dim: bool, t: 
 }
 
 /// The DSP-backed audio effects that can go in an insert slot.
-fn insert_effects() -> Vec<&'static filmcraft_project::EffectDef> {
-    filmcraft_project::effect_defs()
+fn insert_effects() -> Vec<&'static redrob_film_project::EffectDef> {
+    redrob_film_project::effect_defs()
         .iter()
-        .filter(|d| d.kind == filmcraft_project::EffectKind::Audio && !d.intrinsic && filmcraft_render::audio_fx::supported(d.id))
+        .filter(|d| d.kind == redrob_film_project::EffectKind::Audio && !d.intrinsic && redrob_film_render::audio_fx::supported(d.id))
         .collect()
 }
 
@@ -350,7 +350,7 @@ pub fn track_mixer(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
 
 fn run_actions(app: &mut FilmcraftApp, ctx: &egui::Context, acts: Vec<(String, Value)>) {
     for (id, p) in acts {
-        let r = if filmcraft_engine::find_command(&id).is_some() {
+        let r = if redrob_film_engine::find_command(&id).is_some() {
             app.session.execute(&id, p).map(|_| ()).map_err(|e| e.to_string())
         } else {
             crate::menus::invoke(app, ctx, &id, p).map(|_| ())
@@ -378,7 +378,7 @@ fn strip(app: &mut FilmcraftApp, ui: &mut egui::Ui, cx: &mut Ctx, id: TrackId, s
     // ---- effect and send slots
     if app.ui.mixer_fx_open {
         let mut open_editor = None;
-        for k in 0..filmcraft_project::mixer::MAX_INSERTS {
+        for k in 0..redrob_film_project::mixer::MAX_INSERTS {
             let r = Rect::from_min_size(pos2(x + 4.0, y), vec2(w - 8.0, SLOT_H - 2.0));
             let fx = tr.effects.get(k);
             let text = match fx {
@@ -465,7 +465,7 @@ fn strip(app: &mut FilmcraftApp, ui: &mut egui::Ui, cx: &mut Ctx, id: TrackId, s
             crate::panels::audio_fx_editor::open(app, target);
         }
         y += 4.0;
-        for k in 0..filmcraft_project::mixer::MAX_SENDS {
+        for k in 0..redrob_film_project::mixer::MAX_SENDS {
             let r = Rect::from_min_size(pos2(x + 4.0, y), vec2(w - 8.0, SLOT_H - 2.0));
             let snd = tr.mixer.sends.get(k);
             let text = match snd {
@@ -720,7 +720,7 @@ fn strip(app: &mut FilmcraftApp, ui: &mut egui::Ui, cx: &mut Ctx, id: TrackId, s
             cx.cmd("mixer.setValue", json!({"strip": sid, "lane": LANE_VOLUME, "value": 0.0}));
         }
         // meters with their own scale (0 … −54 dB)
-        let nch = filmcraft_render::mixer::width_of(tr.channels);
+        let nch = redrob_film_render::mixer::width_of(tr.channels);
         let mrect = Rect::from_min_max(pos2(x + 46.0, area.min.y), pos2(x + 70.0, area.max.y));
         let nshow = if meter.is_empty() { nch } else { meter.len() };
         draw_meters(ui, mrect, meter, nshow, &t);
@@ -924,8 +924,8 @@ pub fn clip_mixer(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
             }
         };
         let live = &app.session.previews.live;
-        let vol = live.get(tr.id, filmcraft_render::audio::CLIP_LANE_VOLUME).map(|o| o.value).unwrap_or(vol);
-        let pan = live.get(tr.id, filmcraft_render::audio::CLIP_LANE_PAN).map(|o| o.value).unwrap_or(pan);
+        let vol = live.get(tr.id, redrob_film_render::audio::CLIP_LANE_VOLUME).map(|o| o.value).unwrap_or(vol);
+        let pan = live.get(tr.id, redrob_film_render::audio::CLIP_LANE_PAN).map(|o| o.value).unwrap_or(pan);
         // pan knob
         let kc = pos2(sr.center().x, sr.min.y + 36.0);
         let kr = Rect::from_center_size(kc, vec2(30.0, 30.0));
@@ -948,7 +948,7 @@ pub fn clip_mixer(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
             set(&mut acts, "panner", "balance", 0.0, true);
         }
         // automation mode (Clip Mixer)
-        let mode = filmcraft_engine::mixer::clip_mode(&app.session, tr.id);
+        let mode = redrob_film_engine::mixer::clip_mode(&app.session, tr.id);
         let mdr = Rect::from_min_size(pos2(sr.min.x + 4.0, sr.min.y + 2.0), vec2(sr.width() - 8.0, 16.0));
         let mdresp = crate::widgets::dropdown_text(ui, mdr, crate::i18n::t(mode.label()), &t, egui::Id::new((&ap, "mode")));
         app.auto.add(&format!("{ap}.mode"), mdr, &format!("Clip automation mode: {}", mode.label()));
@@ -1008,7 +1008,7 @@ pub fn clip_mixer(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
             }
             let mrect = Rect::from_min_max(pos2(sr.min.x + 46.0, area.min.y), pos2(sr.max.x - 6.0, area.max.y));
             let m = meters.get(&tr.id.0).cloned().unwrap_or_default();
-            draw_meters(ui, mrect, &m, if m.is_empty() { filmcraft_render::mixer::width_of(tr.channels) } else { m.len() }, &t);
+            draw_meters(ui, mrect, &m, if m.is_empty() { redrob_film_render::mixer::width_of(tr.channels) } else { m.len() }, &t);
         }
         // dB readout: drag to scrub, click to type a value (clamped to the fader range), like the track mixer
         let vr = Rect::from_min_size(pos2(sr.min.x + 4.0, sr.max.y - 42.0), vec2(50.0, 16.0));

@@ -1,5 +1,5 @@
-use effectcraft_engine::{Session, config::MemoryConfig, prefs::Prefs};
-use effectcraft_ui_egui::{EffectcraftApp, menus};
+use redrob_effects_engine::{Session, config::MemoryConfig, prefs::Prefs};
+use redrob_effects_ui_egui::{EffectcraftApp, menus};
 use egui::{Event, Modifiers, PointerButton, Pos2, pos2, vec2};
 use egui_kittest::Harness;
 use serde_json::json;

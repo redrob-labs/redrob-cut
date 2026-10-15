@@ -1,7 +1,7 @@
 # Project files
 
 FilmCraft projects are `.fcproj` files: UTF-8 JSON with an explicit schema version. Reading and
-writing them is `crates/format` (`filmcraft-format`); the engine's `file.*` commands use it.
+writing them is `crates/format` (`redrob-film-format`); the engine's `file.*` commands use it.
 
 ## Format
 
@@ -16,13 +16,13 @@ writing them is `crates/format` (`filmcraft-format`); the engine's `file.*` comm
 ```
 
 - `schema_version` is the version of the whole document. This build writes
-  `filmcraft_format::SCHEMA_VERSION` and reads every version from 1 up to it.
-- `project` is the serialized `filmcraft_project::Project` (bins, media clips, sequences, tracks,
+  `redrob_film_format::SCHEMA_VERSION` and reads every version from 1 up to it.
+- `project` is the serialized `redrob_film_project::Project` (bins, media clips, sequences, tracks,
   clips, effects, keyframes, markers). Media is referenced by path, never embedded.
 - Files are written compact (no indentation). A 2,000-clip project is about 1.4 MB.
 - `view` (optional) is what was open when the project was saved: the Timeline's sequence tabs in
   order, the active one, each sequence's zoom, scroll and track heights, and each sequence's
-  playhead (`filmcraft_project::ProjectView`). It is beside the project, not in it: it is not part of the
+  playhead (`redrob_film_project::ProjectView`). It is beside the project, not in it: it is not part of the
   edit, never an undo step, and changing it does not mark the project as changed. Opening a
   project restores it when the Timeline preference "Restore open sequences when opening projects"
   is on. It is outside the schema version: older builds ignore it, ids that are not sequences and
@@ -57,7 +57,7 @@ writing them is `crates/format` (`filmcraft-format`); the engine's `file.*` comm
 ### Migrations
 
 Older files are upgraded on load, in memory, by a chain of single-step functions
-(`filmcraft_format::MIGRATIONS`, where entry *i* upgrades v*i+1* to v*i+2*). Each step rewrites the JSON
+(`redrob_film_format::MIGRATIONS`, where entry *i* upgrades v*i+1* to v*i+2*). Each step rewrites the JSON
 document; after the last one the result is deserialized into the current model. To change the schema:
 
 1. add a function `vN_to_vN1(doc: Value) -> Result<Value, String>` and append it to `MIGRATIONS`
@@ -88,7 +88,7 @@ Reading it partially and saving it back would silently drop whatever the newer v
 ## Saving is atomic
 
 Every write of a project file, auto-save, recovery snapshot or preferences file goes through
-`filmcraft_format::atomic_write`:
+`redrob_film_format::atomic_write`:
 
 1. write the bytes to a hidden temp file in the **same directory** (`.<name>.<pid>-<n>.tmp`);
 2. `fsync` the temp file;
@@ -170,7 +170,7 @@ portable zip ships one) makes it `data` next to the executable instead.
 The UI thread only gives the worker thread an `Arc<Project>`: the immutable snapshot the engine
 already keeps for undo, passed through a channel. JSON encoding and all file I/O run on the
 `filmcraft-autosave` thread. Measured on the development Mac (release build) with a 2,000-clip project
-(`cargo test --release -p filmcraft-format --test fixtures -- --nocapture`):
+(`cargo test --release -p redrob-film-format --test fixtures -- --nocapture`):
 
 | Step | Time | Size |
 |---|---|---|
@@ -332,7 +332,7 @@ full resolution (48 dB at ½ playback resolution). **Export always uses full res
 not an edit and doesn't mark the project as modified.
 
 **Cost.** These numbers are from `proxy_playback_perf_4k`, an ignored test: `RAYON_NUM_THREADS=1
-cargo test --release -p filmcraft-engine proxy_playback_perf_4k -- --ignored --nocapture`. It plays a
+cargo test --release -p redrob-film-engine proxy_playback_perf_4k -- --ignored --nocapture`. It plays a
 2 s 3840×2160 H.264 clip (ffmpeg `testsrc2`, libx264) on one core of the development Mac and reports
 milliseconds per frame:
 
@@ -393,7 +393,7 @@ Dialog ids: `pm.seq.<id>`, `pm.mode.<collect|consolidate>`, `pm.preset.<id>`, `p
 ## Effect presets
 
 Effect presets (Effects panel ▸ Presets; Effect Controls ▸ right-click an effect ▸ Save Preset…) are
-not part of the project. Built-in presets are defined in code (`filmcraft_engine::presets`); user
+not part of the project. Built-in presets are defined in code (`redrob_film_engine::presets`); user
 presets live in `<data dir>/effect-presets.json`, and `presets.export` / `presets.import` read and
 write the same JSON format:
 

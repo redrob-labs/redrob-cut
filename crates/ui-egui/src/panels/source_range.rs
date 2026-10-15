@@ -2,12 +2,12 @@
 use super::monitor::Which;
 use crate::{FilmcraftApp, dock::PanelKind};
 use egui::{Rect, Sense, Stroke, pos2, vec2};
-use filmcraft_engine::{
+use redrob_film_engine::{
     clip_ops::source_view,
     source_monitor::{RangeEdge, adjust_range},
 };
-use filmcraft_project::ItemId;
-use filmcraft_time::{FrameRate, Tick, TimeRange};
+use redrob_film_project::ItemId;
+use redrob_film_time::{FrameRate, Tick, TimeRange};
 use serde_json::json;
 
 #[derive(Clone, Copy, Debug)]

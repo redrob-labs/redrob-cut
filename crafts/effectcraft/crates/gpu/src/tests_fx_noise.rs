@@ -1,12 +1,12 @@
 //! GPU noise, blur and time family effects vs the CPU effects (the oracle): direct on a buffer at full and half
 //! resolution, as adjustment, and composited at 8 and 32 bpc.
 
-use effectcraft_color::Label;
-use effectcraft_keyframe::{Keyframe, Value};
-use effectcraft_project::build;
-use effectcraft_project::{BitDepth, Comp, ItemKind, LayerSource};
-use effectcraft_render::RenderOpts;
-use effectcraft_time::{FrameRate, Tick};
+use redrob_effects_color::Label;
+use redrob_effects_keyframe::{Keyframe, Value};
+use redrob_effects_project::build;
+use redrob_effects_project::{BitDepth, Comp, ItemKind, LayerSource};
+use redrob_effects_render::RenderOpts;
+use redrob_effects_time::{FrameRate, Tick};
 
 use crate::tests::{Scene, c, check, compare_at, effect_case, n, opts, set};
 
@@ -206,7 +206,7 @@ fn echo_and_posterize_time() {
 #[test]
 fn median_levels_match_cpu_division() {
     let Some(g) = crate::tests::gpu() else { return };
-    let mut image = effectcraft_raster::Image::new(512, 1);
+    let mut image = redrob_effects_raster::Image::new(512, 1);
     for (i, pixel) in image.data.iter_mut().enumerate() {
         *pixel = [i as f32 / 511.0; 4];
     }
@@ -226,10 +226,10 @@ fn median_levels_match_cpu_division() {
 #[test]
 fn dust_strict_threshold_boundaries() {
     let Some(g) = crate::tests::gpu() else { return };
-    let spec = effectcraft_effects::find("ec.noise.dustscratches").unwrap();
+    let spec = redrob_effects_effects::find("ec.noise.dustscratches").unwrap();
     let size = [7.0, 7.0];
     let mut params =
-        effectcraft_effects::Params { values: spec.params.iter().map(|p| (p.id.to_string(), effectcraft_effects::default_value(p, size))).collect() };
+        redrob_effects_effects::Params { values: spec.params.iter().map(|p| (p.id.to_string(), redrob_effects_effects::default_value(p, size))).collect() };
     let exact = 63.75_f32;
     let half_colour = [128.0 / 511.0, 128.0 / 511.0, 128.0 / 511.0, 256.0 / 511.0];
     let cases = [
@@ -245,13 +245,13 @@ fn dust_strict_threshold_boundaries() {
         params.values.insert("radius".into(), n(radius));
         for (median, original, threshold, replaced) in cases {
             params.values.insert("threshold".into(), n(threshold as f64));
-            let ctx = || effectcraft_effects::EffectCtx { params: &params, time: 0.0, layer_size: size, seed: 0, adjustment: false, env: Default::default() };
-            let mut img = effectcraft_raster::Image::filled(7, 7, median);
+            let ctx = || redrob_effects_effects::EffectCtx { params: &params, time: 0.0, layer_size: size, seed: 0, adjustment: false, env: Default::default() };
+            let mut img = redrob_effects_raster::Image::filled(7, 7, median);
             img.set(3, 3, original);
-            let buf = effectcraft_effects::Buf { img, offset: [0.0; 2], scale: 1.0 };
+            let buf = redrob_effects_effects::Buf { img, offset: [0.0; 2], scale: 1.0 };
             let cpu = (spec.render)(&ctx(), buf.clone());
             assert_eq!(cpu.img.data[24] != original, replaced, "CPU radius {radius}, threshold {threshold}");
-            let gpu = effectcraft_render::Accelerator::effects(g, &[effectcraft_render::FxStep { spec, ctx: ctx() }], &buf, None).unwrap();
+            let gpu = redrob_effects_render::Accelerator::effects(g, &[redrob_effects_render::FxStep { spec, ctx: ctx() }], &buf, None).unwrap();
             assert_eq!(gpu.img.data[24], cpu.img.data[24], "radius {radius}, threshold {threshold}");
         }
     }
@@ -260,19 +260,19 @@ fn dust_strict_threshold_boundaries() {
 #[test]
 fn dust_threshold_on_quantized_input() {
     let Some(g) = crate::tests::gpu() else { return };
-    let spec = effectcraft_effects::find("ec.noise.dustscratches").unwrap();
+    let spec = redrob_effects_effects::find("ec.noise.dustscratches").unwrap();
     let size = [70.0, 44.0];
     let mut params =
-        effectcraft_effects::Params { values: spec.params.iter().map(|p| (p.id.to_string(), effectcraft_effects::default_value(p, size))).collect() };
+        redrob_effects_effects::Params { values: spec.params.iter().map(|p| (p.id.to_string(), redrob_effects_effects::default_value(p, size))).collect() };
     params.values.insert("radius".into(), n(3.0));
     params.values.insert("threshold".into(), n(10.0));
-    let ctx = || effectcraft_effects::EffectCtx { params: &params, time: 0.25, layer_size: size, seed: 11, adjustment: false, env: Default::default() };
+    let ctx = || redrob_effects_effects::EffectCtx { params: &params, time: 0.25, layer_size: size, seed: 11, adjustment: false, env: Default::default() };
     for seed in 1..32 {
         let mut img = crate::tests::pattern(seed, 70, 44);
-        effectcraft_render::color::quantize(&mut img, 255.0);
-        let buf = effectcraft_effects::Buf { img, offset: [0.0; 2], scale: 1.0 };
+        redrob_effects_render::color::quantize(&mut img, 255.0);
+        let buf = redrob_effects_effects::Buf { img, offset: [0.0; 2], scale: 1.0 };
         let cpu = (spec.render)(&ctx(), buf.clone());
-        let gpu = effectcraft_render::Accelerator::effects(g, &[effectcraft_render::FxStep { spec, ctx: ctx() }], &buf, None).unwrap();
+        let gpu = redrob_effects_render::Accelerator::effects(g, &[redrob_effects_render::FxStep { spec, ctx: ctx() }], &buf, None).unwrap();
         for (i, (a, b)) in cpu.img.data.iter().zip(&gpu.img.data).enumerate() {
             let d = a.iter().zip(b).map(|(x, y)| (x - y).abs()).fold(0.0_f32, f32::max);
             assert!(d < 1e-6, "seed {seed} pixel {i} input {:?} CPU {a:?} GPU {b:?}", buf.img.data[i]);

@@ -54,7 +54,7 @@ and write wherever the user can.
 `filmcraft-headless` = demo). Both point at `target/release/redrob-film-cli`, so build it first:
 
 ```sh
-cargo build --release -p filmcraft-cli -p filmcraft
+cargo build --release -p redrob-film-cli -p redrob-film-app
 ./target/release/redrob-film --control 9876 &      # only for the bridge server
 claude                                           # approve the project MCP servers when asked
 ```
@@ -266,7 +266,7 @@ failed write reports an error. The menu opens the normal save dialog; cancelling
 
 For any UI change, look at the result:
 
-1. `cargo run --release -p filmcraft -- --control 9876`
+1. `cargo run --release -p redrob-film-app -- --control 9876`
 2. Drive the feature through the control channel or the MCP bridge: commands, then clicks and drags
    by automation id.
 3. Assert on `ui.inspect`, `ui.elements` and `sequence.inspect`.

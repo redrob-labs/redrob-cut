@@ -8,9 +8,9 @@
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -154,11 +154,11 @@ fn type_tool_edit_style_and_move() {
 }
 
 /// The value of `param` on the text layer of graphic clip `clip`, at its first frame.
-fn text_param(d: &mut Driver, clip: u64, param: &str) -> Option<filmcraft_project::ParamValue> {
+fn text_param(d: &mut Driver, clip: u64, param: &str) -> Option<redrob_film_project::ParamValue> {
     let s = &d.harness.state().session;
-    let (_, it) = s.active_sequence()?.find_item(filmcraft_project::ClipId(clip))?;
+    let (_, it) = s.active_sequence()?.find_item(redrob_film_project::ClipId(clip))?;
     let e = it.effects.iter().find(|e| e.effect == "graphic_text")?;
-    Some(e.param(param)?.value_at(filmcraft_time::Tick::ZERO))
+    Some(e.param(param)?.value_at(redrob_film_time::Tick::ZERO))
 }
 
 /// A drag of a property in the Properties panel is one undo step, so one Cmd+Z restores the

@@ -5,8 +5,8 @@
 use std::path::{Path, PathBuf};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
 use serde_json::json;
 
 fn step(h: &mut Harness<'static, FilmcraftApp>) {

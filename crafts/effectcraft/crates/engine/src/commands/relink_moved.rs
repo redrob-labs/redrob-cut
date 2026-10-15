@@ -12,7 +12,7 @@
 //! Paths are compared by their parts, split on `/` and `\`, so a project made on Windows relinks on
 //! macOS and the other way round.
 
-use effectcraft_project::{Footage, FootageKind, ItemId, ItemKind, Project};
+use redrob_effects_project::{Footage, FootageKind, ItemId, ItemKind, Project};
 use serde_json::{Value, json};
 
 use super::{CommandSpec, bad, str_p};

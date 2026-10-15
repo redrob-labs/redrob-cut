@@ -4,11 +4,11 @@
 
 use std::sync::{Arc, Mutex};
 
-use effectcraft_engine::Session;
-use effectcraft_engine::project::ItemId;
-use effectcraft_engine::time::Tick;
-use effectcraft_ui_egui::EffectcraftApp;
-use effectcraft_ui_egui::audio::{AudioDevice, AudioFeed};
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::ItemId;
+use redrob_effects_engine::time::Tick;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::audio::{AudioDevice, AudioFeed};
 use egui::{Event, Modifiers, pos2};
 use egui_kittest::Harness;
 use serde_json::json;

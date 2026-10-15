@@ -20,8 +20,8 @@ pub use camera::{CameraState, Dof, Rig, View3D, ViewCam, Views3D, active_camera,
 pub use compose::{Geo as PlaneGeo, Plane3d, PlaneDof, Run3d, SkyDraw};
 pub use light::{LightState, Material, lights_at};
 
-use effectcraft_geom::Mat3;
-use effectcraft_project::Layer;
+use redrob_effects_geom::Mat3;
+use redrob_effects_project::Layer;
 
 use crate::EvalCtx;
 

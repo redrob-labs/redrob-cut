@@ -70,7 +70,7 @@ echo "==> Redrob Film $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize:
 if [ "$SKIP_BUILD" = 0 ]; then
   args=()
   for t in "${TARGETS[@]}"; do args+=(--target "$t"); done
-  (cd "$ROOT" && cargo build --release --locked -p filmcraft -p filmcraft-cli "${args[@]}")
+  (cd "$ROOT" && cargo build --release --locked -p redrob-film-app -p redrob-film-cli "${args[@]}")
 fi
 
 rm -rf "$WORK"

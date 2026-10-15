@@ -1,9 +1,9 @@
 //! Trimming layers in the Timeline as in After Effects: the pointer over either end of a layer
 //! bar (a few points inside it or just outside) shows the trim cursor, and dragging that end
 //! moves the layer's In or Out point.
-use effectcraft_engine::Session;
-use effectcraft_engine::project::LayerId;
-use effectcraft_ui_egui::EffectcraftApp;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::LayerId;
+use redrob_effects_ui_egui::EffectcraftApp;
 use egui::{CursorIcon, Event, Modifiers, Pos2, pos2, vec2};
 use egui_kittest::Harness;
 use serde_json::json;

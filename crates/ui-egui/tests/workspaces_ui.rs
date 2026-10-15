@@ -10,10 +10,10 @@ use std::path::{Path, PathBuf};
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
-use filmcraft_ui_egui::dock::PanelKind;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
+use redrob_film_ui_egui::dock::PanelKind;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -255,7 +255,7 @@ fn save_rename_and_delete_through_the_dialogs() {
     let names = d.app().workspaces.saved.iter().map(|s| s.name.clone()).collect::<Vec<_>>();
     assert_eq!(names, ["Mountain"]);
     let row = |n: &str| {
-        let all = filmcraft_ui_egui::dock::names(&Default::default());
+        let all = redrob_film_ui_egui::dock::names(&Default::default());
         let mut all = all;
         all.push("Mountain".into());
         all.sort_by_key(|x| x.to_lowercase());

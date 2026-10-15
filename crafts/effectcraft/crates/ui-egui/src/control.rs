@@ -179,7 +179,7 @@ pub fn handle(app: &mut EffectcraftApp, ctx: &egui::Context, req: &ControlReques
             // `engine.execute` runs engine commands exactly as headless (never opens a dialog, e.g.
             // `comp.new {}` creates a default comp); UI-only ids (`tool.*`, `view.*`, `window.*`,
             // `playback.*` …) and `ui.menu.invoke` go through the menu dispatcher like a click.
-            let r = if req.method == "engine.execute" && effectcraft_engine::find_command(id).is_some() {
+            let r = if req.method == "engine.execute" && redrob_effects_engine::find_command(id).is_some() {
                 execute_engine(app, id, params)
             } else {
                 crate::menus::invoke(app, ctx, id, params).map(ok)
@@ -476,7 +476,7 @@ fn render_frame(app: &EffectcraftApp, p: &Value) -> Outcome {
         Ok(c) => c,
         Err(e) => return err(e),
     };
-    let t = p.get("time").or(p.get("seconds")).and_then(Value::as_f64).map(effectcraft_time::Tick::from_seconds_f64).unwrap_or_else(|| s.time());
+    let t = p.get("time").or(p.get("seconds")).and_then(Value::as_f64).map(redrob_effects_time::Tick::from_seconds_f64).unwrap_or_else(|| s.time());
     let max_side = p.get("max_side").or(p.get("maxSide")).and_then(Value::as_u64).unwrap_or(0) as u32;
     let transparent = p.get("transparent").and_then(Value::as_bool).unwrap_or(false);
     let (w, h, rgba) = match s.render_rgba8_alpha(cid, t, max_side, transparent) {

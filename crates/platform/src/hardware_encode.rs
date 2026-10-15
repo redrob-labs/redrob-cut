@@ -1,4 +1,4 @@
-//! The VideoToolbox H.264 and HEVC encoders behind `filmcraft_export::VideoEncoder` (macOS; safe code
+//! The VideoToolbox H.264 and HEVC encoders behind `redrob_film_export::VideoEncoder` (macOS; safe code
 //! around [`crate::videotoolbox_encode`]).
 //!
 //! H.264 hardware encoding is opt-in per export (`ExportSettings::hardware_encoding`, `Auto`): its output
@@ -15,9 +15,9 @@
 
 use std::sync::{Once, OnceLock};
 
-use filmcraft_export::{BitrateMode, EncodedPacket, EncoderFrame, ExportError, ExportSettings, Format, H264Pass, H264Profile, HardwareEncoding, VideoEncoder};
-use filmcraft_isobmff::{AvcConfig, HevcConfig, SampleEntry};
-use filmcraft_time::FrameRate;
+use redrob_film_export::{BitrateMode, EncodedPacket, EncoderFrame, ExportError, ExportSettings, Format, H264Pass, H264Profile, HardwareEncoding, VideoEncoder};
+use redrob_film_isobmff::{AvcConfig, HevcConfig, SampleEntry};
+use redrob_film_time::FrameRate;
 
 use crate::videotoolbox_encode::{ParamSets, VtCodec, VtConfig, VtEncoder, VtPacket, VtProfile, VtRate};
 
@@ -123,7 +123,7 @@ pub fn videotoolbox_encoder_factory(
     h: u32,
     rate: FrameRate,
     s: &ExportSettings,
-) -> Option<filmcraft_export::Result<Box<dyn VideoEncoder>>> {
+) -> Option<redrob_film_export::Result<Box<dyn VideoEncoder>>> {
     let name = match format {
         Format::H264 if s.hardware_encoding == HardwareEncoding::Auto => "H.264",
         Format::Hevc => "HEVC",
@@ -169,7 +169,7 @@ impl HardwareEncoder {
     /// MP4 samples from compressed frames. Without frame reordering every frame is presented at
     /// its decode time, so composition offsets are 0; a frame whose time is not `n × duration`
     /// after the first (a dropped or reordered frame) is an error, never a file with wrong times.
-    fn samples(&mut self, packets: Vec<VtPacket>) -> filmcraft_export::Result<Vec<EncodedPacket>> {
+    fn samples(&mut self, packets: Vec<VtPacket>) -> redrob_film_export::Result<Vec<EncodedPacket>> {
         let duration = self.vt.config().frame_duration;
         let mut out = Vec::with_capacity(packets.len());
         for p in packets {
@@ -207,7 +207,7 @@ impl VideoEncoder for HardwareEncoder {
         self.vt.config().timescale
     }
 
-    fn encode(&mut self, f: &EncoderFrame) -> filmcraft_export::Result<Vec<EncodedPacket>> {
+    fn encode(&mut self, f: &EncoderFrame) -> redrob_film_export::Result<Vec<EncodedPacket>> {
         let c = self.vt.config();
         let codec = c.profile.codec();
         if f.hdr.is_some() {
@@ -220,7 +220,7 @@ impl VideoEncoder for HardwareEncoder {
         if f.rgba.len() < w.saturating_mul(h).saturating_mul(4) {
             return Err(ExportError::Encode("the RGBA picture is smaller than its size".into()));
         }
-        filmcraft_export::timed(filmcraft_export::Stage::Convert, || filmcraft_export::rgba_to_yuv420_8(f.rgba, w, h, &mut self.y, &mut self.u, &mut self.v));
+        redrob_film_export::timed(redrob_film_export::Stage::Convert, || redrob_film_export::rgba_to_yuv420_8(f.rgba, w, h, &mut self.y, &mut self.u, &mut self.v));
         let packets = self.vt.encode(f.index, &self.y, &self.u, &self.v).map_err(ExportError::Encode)?;
         // the muxer needs the parameter sets after the first group of pictures
         if f.index == 0 {
@@ -232,7 +232,7 @@ impl VideoEncoder for HardwareEncoder {
         self.samples(packets)
     }
 
-    fn flush(&mut self) -> filmcraft_export::Result<Vec<EncodedPacket>> {
+    fn flush(&mut self) -> redrob_film_export::Result<Vec<EncodedPacket>> {
         let packets = self.vt.flush().map_err(ExportError::Encode)?;
         self.samples(packets)
     }

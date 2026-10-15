@@ -1,13 +1,13 @@
 [package]
-name = "filmcraft"
-description = "FilmCraft desktop app"
+name = "redrob-film-app"
+description = "Redrob Film desktop app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 default-run = "redrob-film"
 build = "build.rs"
 
-# The executable is Redrob Film's; the package keeps upstream's name so syncs merge cleanly.
+# The package is `redrob-film-app`; the executable is `redrob-film`.
 [[bin]]
 name = "redrob-film"
 path = "src/main.rs"
@@ -18,33 +18,33 @@ workspace = true
 [features]
 default = []
 # Speech-to-text (Text panel ▸ Transcribe) with Whisper on the CPU, and model downloads.
-whisper = ["filmcraft-engine/whisper", "filmcraft-engine/speech-download"]
+whisper = ["redrob-film-engine/whisper", "redrob-film-engine/speech-download"]
 # Natural Text to Speech voices (Kokoro-82M on the CPU, downloaded on first use).
-neural-voices = ["filmcraft-engine/neural-voices"]
+neural-voices = ["redrob-film-engine/neural-voices"]
 
 [dependencies]
-filmcraft-engine = { workspace = true }
-filmcraft-export = { workspace = true }
-filmcraft-project = { workspace = true }
-filmcraft-render = { workspace = true }
-filmcraft-time = { workspace = true }
-filmcraft-gpu = { workspace = true }
-filmcraft-ui-egui = { workspace = true }
-filmcraft-platform = { workspace = true }
+redrob-film-engine = { workspace = true }
+redrob-film-export = { workspace = true }
+redrob-film-project = { workspace = true }
+redrob-film-render = { workspace = true }
+redrob-film-time = { workspace = true }
+redrob-film-gpu = { workspace = true }
+redrob-film-ui-egui = { workspace = true }
+redrob-film-platform = { workspace = true }
 # The shell's hand-offs: a composition as a timeline source (`MediaSource` over the effects renderer).
-filmcraft-media = { workspace = true }
-filmcraft-frame = { workspace = true }
-filmcraft-color = { workspace = true }
+redrob-film-media = { workspace = true }
+redrob-film-frame = { workspace = true }
+redrob-film-color = { workspace = true }
 # Effects mode: effectcraft hosted as the second editor of the one window (`shell.rs`).
-effectcraft-ui-egui = { workspace = true }
-effectcraft-host = { workspace = true }
-effectcraft-engine = { workspace = true }
-effectcraft-project = { workspace = true }
-effectcraft-render = { workspace = true }
-effectcraft-time = { workspace = true }
-effectcraft-color = { workspace = true }
+redrob-effects-ui-egui = { workspace = true }
+redrob-effects-host = { workspace = true }
+redrob-effects-engine = { workspace = true }
+redrob-effects-project = { workspace = true }
+redrob-effects-render = { workspace = true }
+redrob-effects-time = { workspace = true }
+redrob-effects-color = { workspace = true }
 # `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
-filmcraft-automation = { workspace = true }
+redrob-film-automation = { workspace = true }
 tokio = { version = "1", features = ["rt-multi-thread"] }
 egui = { workspace = true }
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11"] }

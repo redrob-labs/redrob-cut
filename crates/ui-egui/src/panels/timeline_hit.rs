@@ -6,9 +6,9 @@
 use std::cmp::Ordering;
 
 use egui::{Modifiers, Pos2, Rect, pos2, vec2};
-use filmcraft_edit::Edge;
-use filmcraft_project::{ClipId, Sequence, Track, TrackId, TransitionId};
-use filmcraft_time::Tick;
+use redrob_film_edit::Edge;
+use redrob_film_project::{ClipId, Sequence, Track, TrackId, TransitionId};
+use redrob_film_time::Tick;
 
 use super::timeline::Layout;
 use crate::state::Tool;
@@ -279,8 +279,8 @@ fn roll(seq: &Sequence, track: TrackId, clip: ClipId, edge: Edge) -> EdgeKind {
 mod tests {
     use super::*;
     use egui::{Rect, pos2};
-    use filmcraft_project::{ItemId, Label, Project, SequenceSettings, TrackItem, TrackKind};
-    use filmcraft_time::{FrameRate, Tick};
+    use redrob_film_project::{ItemId, Label, Project, SequenceSettings, TrackItem, TrackKind};
+    use redrob_film_time::{FrameRate, Tick};
 
     use crate::panels::timeline::Row;
 
@@ -421,13 +421,13 @@ mod tests {
     fn a_press_on_a_marker_lands_on_its_start() {
         let (mut seq, l, _) = fixture(clips());
         let off = Tick::from_seconds_f64(3.017);
-        seq.markers.push(filmcraft_project::Marker {
-            id: filmcraft_project::MarkerId(9),
+        seq.markers.push(redrob_film_project::Marker {
+            id: redrob_film_project::MarkerId(9),
             start: off,
             duration: Tick::ZERO,
             name: String::new(),
             comment: String::new(),
-            kind: filmcraft_project::MarkerKind::Comment,
+            kind: redrob_film_project::MarkerKind::Comment,
             color: Label::Green,
         });
         // 3 px beside the pentagon's tip, where the nearest frame is not the marker's time

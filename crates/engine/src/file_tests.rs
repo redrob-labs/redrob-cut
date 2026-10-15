@@ -24,7 +24,7 @@ fn saved_file_is_versioned_and_save_copy_keeps_state() {
     let mut s = demo();
     s.execute("file.saveAs", json!({"path": path})).unwrap();
     let v: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(v["schema_version"], filmcraft_format::SCHEMA_VERSION);
+    assert_eq!(v["schema_version"], redrob_film_format::SCHEMA_VERSION);
     assert_eq!(v["format"], "filmcraft.project");
     s.execute("sequence.addEdit", json!({"seconds": 1.0})).unwrap();
     assert!(s.is_dirty());
@@ -64,12 +64,12 @@ fn legacy_project_opens_and_first_save_keeps_a_backup() {
     assert!(backup.ends_with("old (schema v1 backup).fcproj"), "{backup}");
     assert_eq!(std::fs::read(&backup).unwrap(), std::fs::read(&fixture).unwrap());
     let v: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(v["schema_version"], filmcraft_format::SCHEMA_VERSION);
+    assert_eq!(v["schema_version"], redrob_film_format::SCHEMA_VERSION);
     // Second save: no new backup.
     assert!(s.execute("file.save", json!({})).unwrap()["backup"].is_null());
     // A file from the future is refused clearly.
     let mut v = v;
-    v["schema_version"] = json!(filmcraft_format::SCHEMA_VERSION + 1);
+    v["schema_version"] = json!(redrob_film_format::SCHEMA_VERSION + 1);
     std::fs::write(&path, serde_json::to_vec(&v).unwrap()).unwrap();
     let e = Session::default().execute("file.open", json!({"path": p})).unwrap_err().to_string();
     assert!(e.contains("newer version of Redrob Film"), "{e}");

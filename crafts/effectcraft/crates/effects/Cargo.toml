@@ -1,5 +1,5 @@
 [package]
-name = "effectcraft-effects"
+name = "redrob-effects-effects"
 description = "Effect registry (specs, parameters, categories) and CPU implementations of the effects library"
 version.workspace = true
 edition.workspace = true
@@ -10,13 +10,13 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-effectcraft-geom = { workspace = true }
-effectcraft-color = { workspace = true }
-effectcraft-keyframe = { workspace = true }
-effectcraft-project = { workspace = true }
-effectcraft-raster = { workspace = true }
-effectcraft-segment = { workspace = true }
-effectcraft-track = { workspace = true }
+redrob-effects-geom = { workspace = true }
+redrob-effects-color = { workspace = true }
+redrob-effects-keyframe = { workspace = true }
+redrob-effects-project = { workspace = true }
+redrob-effects-raster = { workspace = true }
+redrob-effects-segment = { workspace = true }
+redrob-effects-track = { workspace = true }
 rayon = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

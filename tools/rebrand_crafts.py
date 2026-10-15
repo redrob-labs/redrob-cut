@@ -3,7 +3,7 @@
 
 Runs over the UI crate (including the i18n catalogs), the desktop app, the engine and the
 automation crate. Only STRING LITERAL contents in Rust and the message columns of the
-translation catalogs are touched: identifiers such as `FilmcraftApp` or `filmcraft_engine`,
+translation catalogs are touched: identifiers such as `FilmcraftApp` or `redrob_film_engine`,
 crate names, `FILMCRAFT_*` environment variables, the `.fcproj` format and the MIME type keep
 their spelling and are never matched. Values that are written into project files and read back
 (the renderer names, the XMP CreatorTool) are kept on purpose; they are listed in KEEP here and
@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCAN = ["crates/ui-egui/src", "apps/filmcraft/src", "crates/engine", "crates/automation", "crafts/effectcraft/crates"]
+SCAN = ["crates/ui-egui/src", "apps/redrob-film-app/src", "crates/engine", "crates/automation", "crafts/effectcraft/crates"]
 
 HOME = "https://redrob.ai"
 REPO = "https://github.com/redrob-labs/redrob-film"

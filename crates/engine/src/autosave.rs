@@ -24,8 +24,8 @@ use std::sync::mpsc::{Receiver, RecvTimeoutError, Sender, channel};
 use std::thread::JoinHandle;
 use std::time::Duration;
 
-use filmcraft_format::autosave as names;
-use filmcraft_project::Project;
+use redrob_film_format::autosave as names;
+use redrob_film_project::Project;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use web_time::{Instant, SystemTime, UNIX_EPOCH};
@@ -281,7 +281,7 @@ impl Default for MediaPrefs {
 }
 
 /// Essential Sound: user presets saved from the panel (built-in presets live in
-/// `filmcraft_project::essential`).
+/// `redrob_film_project::essential`).
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct EssentialSoundPrefs {
@@ -291,7 +291,7 @@ pub struct EssentialSoundPrefs {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UserSoundPreset {
     pub name: String,
-    pub settings: filmcraft_project::EssentialSound,
+    pub settings: redrob_film_project::EssentialSound,
 }
 
 /// Preferences ▸ Audio (the mixer-automation part) and the Track Mixer panel-menu toggle.
@@ -360,12 +360,12 @@ impl Default for AudioPrefs {
 
 impl AudioPrefs {
     /// Auto-Match target for an audio type.
-    pub fn loudness_target(&self, t: filmcraft_project::AudioType) -> f64 {
+    pub fn loudness_target(&self, t: redrob_film_project::AudioType) -> f64 {
         match t {
-            filmcraft_project::AudioType::Dialogue => self.dialogue_target_lufs,
-            filmcraft_project::AudioType::Music => self.music_target_lufs,
-            filmcraft_project::AudioType::Sfx => self.sfx_target_lufs,
-            filmcraft_project::AudioType::Ambience => self.ambience_target_lufs,
+            redrob_film_project::AudioType::Dialogue => self.dialogue_target_lufs,
+            redrob_film_project::AudioType::Music => self.music_target_lufs,
+            redrob_film_project::AudioType::Sfx => self.sfx_target_lufs,
+            redrob_film_project::AudioType::Ambience => self.ambience_target_lufs,
         }
     }
     fn clamp(&mut self) {
@@ -474,7 +474,7 @@ impl Preferences {
         if let Some(d) = path.parent() {
             fs::create_dir_all(d)?;
         }
-        filmcraft_format::atomic_write(path, &serde_json::to_vec_pretty(self).unwrap_or_default())
+        redrob_film_format::atomic_write(path, &serde_json::to_vec_pretty(self).unwrap_or_default())
     }
 }
 
@@ -588,9 +588,9 @@ pub fn scan_candidates(data_dir: &Path, skip: Option<&Path>) -> Vec<RecoveryCand
 }
 
 /// Load a candidate's snapshot.
-pub fn load_candidate(c: &RecoveryCandidate) -> Result<filmcraft_format::Loaded, String> {
+pub fn load_candidate(c: &RecoveryCandidate) -> Result<redrob_film_format::Loaded, String> {
     let b = fs::read(c.dir.join(SNAPSHOT)).map_err(|e| format!("{}: {e}", c.dir.display()))?;
-    filmcraft_format::decode(&b).map_err(|e| e.to_string())
+    redrob_film_format::decode(&b).map_err(|e| e.to_string())
 }
 
 pub fn discard_candidate(c: &RecoveryCandidate) -> io::Result<()> {
@@ -729,7 +729,7 @@ impl Persistence {
             first_pending: None,
             last_change: Instant::now(),
             next_autosave: Instant::now(),
-            meta: JournalMeta { pid, started_unix: started, generator: filmcraft_format::generator(), ..Default::default() },
+            meta: JournalMeta { pid, started_unix: started, generator: redrob_film_format::generator(), ..Default::default() },
         };
         w.next_autosave = Instant::now() + w.autosave_interval();
         let thread = std::thread::Builder::new().name("filmcraft-autosave".into()).spawn(move || w.run(rx))?;
@@ -813,7 +813,7 @@ impl Persistence {
         if snap.is_file() {
             if let Some(mut m) = fs::read(self.session_dir.join(META)).ok().and_then(|b| serde_json::from_slice::<JournalMeta>(&b).ok()) {
                 m.clean_exit = true;
-                let _ = filmcraft_format::atomic_write(&self.session_dir.join(META), &serde_json::to_vec_pretty(&m).unwrap_or_default());
+                let _ = redrob_film_format::atomic_write(&self.session_dir.join(META), &serde_json::to_vec_pretty(&m).unwrap_or_default());
             }
         } else {
             let _ = fs::remove_dir_all(&self.session_dir);
@@ -963,7 +963,7 @@ impl Worker {
     fn write_journal(&mut self) {
         let Some(s) = &self.latest else { return };
         let t0 = Instant::now();
-        let bytes = filmcraft_format::encode(&s.project, false);
+        let bytes = redrob_film_format::encode(&s.project, false);
         let serialize_ms = t0.elapsed().as_secs_f64() * 1000.0;
         let t1 = Instant::now();
         let unix = unix_now();
@@ -974,8 +974,8 @@ impl Worker {
         meta.project_path = s.path.clone();
         meta.bytes = bytes.len();
         // Snapshot first, then the meta that makes it a candidate.
-        let r = filmcraft_format::atomic_write(&self.session_dir.join(SNAPSHOT), &bytes)
-            .and_then(|_| filmcraft_format::atomic_write(&self.session_dir.join(META), &serde_json::to_vec_pretty(&meta).unwrap_or_default()));
+        let r = redrob_film_format::atomic_write(&self.session_dir.join(SNAPSHOT), &bytes)
+            .and_then(|_| redrob_film_format::atomic_write(&self.session_dir.join(META), &serde_json::to_vec_pretty(&meta).unwrap_or_default()));
         let write_ms = t1.elapsed().as_secs_f64() * 1000.0;
         match r {
             Ok(()) => {
@@ -1017,7 +1017,7 @@ impl Worker {
             None => (self.data_dir.join(names::AUTO_SAVE_DIR), s.project.name.clone()),
         };
         let t0 = Instant::now();
-        let bytes = filmcraft_format::encode(&s.project, false);
+        let bytes = redrob_film_format::encode(&s.project, false);
         let serialize_ms = t0.elapsed().as_secs_f64() * 1000.0;
         let t1 = Instant::now();
         let unix = unix_now();
@@ -1030,7 +1030,7 @@ impl Worker {
                 if self.prefs.save_current_project
                     && let Some(p) = &s.path
                 {
-                    match filmcraft_format::atomic_write(Path::new(p), &bytes) {
+                    match redrob_film_format::atomic_write(Path::new(p), &bytes) {
                         Ok(()) => {
                             let _ = self.events.send(WorkerEvent::SavedProject { path: p.clone(), revision: s.revision });
                         }

@@ -4,14 +4,14 @@
 //! audio output problems, a panicked frame job or audio mixer, container warnings) vanished. A
 //! launch from a desktop menu has no terminal, so the file is what a bug report can attach:
 //! `<data dir>/Logs/redrob-film.log`, next to the crash logs (`--data-dir`, `FILMCRAFT_DATA_DIR` or
-//! `filmcraft_engine::autosave::default_data_dir`; Help ▸ Reveal Log Files opens the folder). Each
-//! start moves the previous log to `filmcraft.1.log` (and that one to `.2`), so the log of a run
+//! `redrob_film_engine::autosave::default_data_dir`; Help ▸ Reveal Log Files opens the folder). Each
+//! start moves the previous log to `redrob-film.1.log` (and that one to `.2`), so the log of a run
 //! that crashed survives the next launch.
 //!
 //! Levels: `info` for Redrob Film's own crates, `warn` for everything else (wgpu and naga are
 //! chatty). `RUST_LOG` replaces that with env_logger-style directives: `debug`,
-//! `warn,filmcraft_codecs=trace`, `wgpu_core=info`. A directive ending in `*` matches every target
-//! that starts with it (`filmcraft*=debug`).
+//! `warn,redrob_film_codecs=trace`, `wgpu_core=info`. A directive ending in `*` matches every target
+//! that starts with it (`redrob_film*=debug`).
 //!
 //! Records logged before the data directory is known are kept (up to [`MAX_PENDING`]) and written
 //! once the file is attached. Writing never panics: a file that can't be created or written leaves
@@ -34,14 +34,14 @@ use log::LevelFilter;
 pub const LOG_FILE: &str = "redrob-film.log";
 /// The log directory inside the data directory (shared with the crash logs and Reveal Log Files).
 pub const LOG_DIR: &str = "Logs";
-/// How many previous logs are kept (`filmcraft.1.log` … `filmcraft.<KEEP>.log`).
+/// How many previous logs are kept (`redrob-film.1.log` … `redrob-film.<KEEP>.log`).
 pub const KEEP: usize = 2;
 /// The log file stops growing past this size (a runaway warning can't fill the disk).
 pub const MAX_FILE_BYTES: u64 = 16 * 1024 * 1024;
 /// Records kept in memory until the log file is attached.
 pub const MAX_PENDING: usize = 512;
 /// The built-in filter when `RUST_LOG` is unset or empty.
-pub const DEFAULT_FILTER: &str = "warn,filmcraft*=info";
+pub const DEFAULT_FILTER: &str = "warn,redrob_film*=info,redrob_effects*=info";
 
 /// Per-target level filter parsed from env_logger-style directives.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -297,7 +297,7 @@ mod tests {
 
     fn temp_dir(tag: &str) -> PathBuf {
         static N: AtomicUsize = AtomicUsize::new(0);
-        let d = std::env::temp_dir().join(format!("filmcraft-logging-{tag}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
+        let d = std::env::temp_dir().join(format!("redrob-film-logging-{tag}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
         let _ = std::fs::remove_dir_all(&d);
         d
     }
@@ -311,12 +311,13 @@ mod tests {
     }
 
     #[test]
-    fn the_default_filter_shows_filmcraft_info_and_other_crates_warnings() {
+    fn the_default_filter_shows_our_crates_info_and_other_crates_warnings() {
         let f = Filter::parse(DEFAULT_FILTER);
-        assert_eq!(f.level_for("filmcraft"), LevelFilter::Info);
-        assert_eq!(f.level_for("filmcraft::audio"), LevelFilter::Info);
-        assert_eq!(f.level_for("filmcraft_ui_egui::play_ahead"), LevelFilter::Info);
-        assert_eq!(f.level_for("filmcraft_codecs::mxf"), LevelFilter::Info);
+        assert_eq!(f.level_for("redrob_film_app"), LevelFilter::Info);
+        assert_eq!(f.level_for("redrob_film_app::audio"), LevelFilter::Info);
+        assert_eq!(f.level_for("redrob_effects_engine::render"), LevelFilter::Info);
+        assert_eq!(f.level_for("redrob_film_ui_egui::play_ahead"), LevelFilter::Info);
+        assert_eq!(f.level_for("redrob_film_codecs::mxf"), LevelFilter::Info);
         assert_eq!(f.level_for("wgpu_core::device"), LevelFilter::Warn);
         assert_eq!(f.level_for("naga"), LevelFilter::Warn);
         assert_eq!(f.max(), LevelFilter::Info);
@@ -324,17 +325,17 @@ mod tests {
 
     #[test]
     fn directives_follow_env_logger_and_the_most_specific_one_wins() {
-        let f = Filter::parse("info,wgpu_core=error,filmcraft_codecs=trace,filmcraft_codecs::mxf=off");
+        let f = Filter::parse("info,wgpu_core=error,redrob_film_codecs=trace,redrob_film_codecs::mxf=off");
         assert_eq!(f.level_for("eframe"), LevelFilter::Info);
         assert_eq!(f.level_for("wgpu_core::instance"), LevelFilter::Error);
-        assert_eq!(f.level_for("filmcraft_codecs::ogg"), LevelFilter::Trace);
-        assert_eq!(f.level_for("filmcraft_codecs::mxf"), LevelFilter::Off);
+        assert_eq!(f.level_for("redrob_film_codecs::ogg"), LevelFilter::Trace);
+        assert_eq!(f.level_for("redrob_film_codecs::mxf"), LevelFilter::Off);
         assert_eq!(f.max(), LevelFilter::Trace);
         // A module name is matched at `::` boundaries, not as a bare prefix.
         assert_eq!(f.level_for("wgpu_core_extra"), LevelFilter::Info);
         // A trailing `*` is a prefix.
-        assert_eq!(Filter::parse("warn,filmcraft_ui*=debug").level_for("filmcraft_ui_egui::frames"), LevelFilter::Debug);
-        assert_eq!(Filter::parse("warn,filmcraft_ui*=debug").level_for("filmcraft_engine"), LevelFilter::Warn);
+        assert_eq!(Filter::parse("warn,redrob_film_ui*=debug").level_for("redrob_film_ui_egui::frames"), LevelFilter::Debug);
+        assert_eq!(Filter::parse("warn,redrob_film_ui*=debug").level_for("redrob_film_engine"), LevelFilter::Warn);
         // A bare target name sets that target to the most verbose level, as env_logger does.
         assert_eq!(Filter::parse("naga").level_for("naga::front"), LevelFilter::Trace);
         assert_eq!(Filter::parse("naga").level_for("eframe"), LevelFilter::Error);
@@ -351,13 +352,13 @@ mod tests {
             "=",
             "==",
             "=debug",
-            "filmcraft=",
+            "redrob_film_app=",
             "nonsense=loud",
             "🦀=info",
             "*",
             "*=debug",
             "a=b=c",
-            "warn,,filmcraft=DEBUG",
+            "warn,,redrob_film_app=DEBUG",
             " \t ",
             "\u{0}",
             "é*=trace",
@@ -365,12 +366,12 @@ mod tests {
         ];
         for spec in specs {
             let f = Filter::parse(spec);
-            for target in ["filmcraft", "", "🦀", "é", "a::b"] {
+            for target in ["redrob_film_app", "", "🦀", "é", "a::b"] {
                 let _ = f.level_for(target);
             }
             let _ = f.max();
         }
-        assert_eq!(Filter::parse("warn,,filmcraft=DEBUG").level_for("filmcraft"), LevelFilter::Debug);
+        assert_eq!(Filter::parse("warn,,redrob_film_app=DEBUG").level_for("redrob_film_app"), LevelFilter::Debug);
         assert_eq!(Filter::parse("nonsense=loud").level_for("nonsense"), LevelFilter::Error);
         assert_eq!(Filter::parse("=debug").max(), LevelFilter::Error, "a directive without a name is skipped");
         assert_eq!(Filter::parse("*=debug").level_for("anything"), LevelFilter::Debug, "a lone `*` matches every target");
@@ -421,8 +422,8 @@ mod tests {
     #[test]
     fn a_line_carries_time_level_thread_target_and_message() {
         assert_eq!(
-            format_line("2026-10-08T07:59:17.728Z", log::Level::Warn, "main", "filmcraft_ui_egui", "audio output unavailable: no output device"),
-            "2026-10-08T07:59:17.728Z WARN  [main] filmcraft_ui_egui: audio output unavailable: no output device\n"
+            format_line("2026-10-08T07:59:17.728Z", log::Level::Warn, "main", "redrob_film_ui_egui", "audio output unavailable: no output device"),
+            "2026-10-08T07:59:17.728Z WARN  [main] redrob_film_ui_egui: audio output unavailable: no output device\n"
         );
         // A multi-line message keeps its lines; the record still ends in exactly one newline.
         assert!(format_line("t", log::Level::Error, "w", "x", "a\nb\n").ends_with("x: a\nb\n"));
@@ -491,18 +492,18 @@ mod tests {
     fn the_logger_filters_records_and_writes_them_to_the_attached_file() {
         let dir = temp_dir("logger");
         let logger = AppLogger::new(Filter::parse(DEFAULT_FILTER), false);
-        record(&logger, log::Level::Info, "filmcraft", "Redrob Film starting");
+        record(&logger, log::Level::Info, "redrob_film_app", "Redrob Film starting");
         record(&logger, log::Level::Info, "wgpu_core::device", "too chatty");
         let path = logger.attach_dir(&dir).expect("attach");
         assert_eq!(path, dir.join(LOG_FILE));
         record(&logger, log::Level::Warn, "wgpu_hal::vulkan", "a real warning");
-        record(&logger, log::Level::Debug, "filmcraft", "below info");
+        record(&logger, log::Level::Debug, "redrob_film_app", "below info");
         let text = read(&path);
         let lines: Vec<&str> = text.lines().collect();
         assert_eq!(lines.len(), 2, "{text}");
-        assert!(lines.first().is_some_and(|l| l.contains(" INFO  [") && l.ends_with("filmcraft: Redrob Film starting")), "{text}");
+        assert!(lines.first().is_some_and(|l| l.contains(" INFO  [") && l.ends_with("redrob_film_app: Redrob Film starting")), "{text}");
         assert!(lines.get(1).is_some_and(|l| l.ends_with("wgpu_hal::vulkan: a real warning")), "{text}");
-        assert!(logger.enabled(&log::Metadata::builder().level(log::Level::Info).target("filmcraft_engine::autosave").build()));
+        assert!(logger.enabled(&log::Metadata::builder().level(log::Level::Info).target("redrob_film_engine::autosave").build()));
         assert!(!logger.enabled(&log::Metadata::builder().level(log::Level::Info).target("naga").build()));
         // A second launch rotates: the first log becomes `.1`.
         let second = AppLogger::new(Filter::parse(DEFAULT_FILTER), false);
@@ -520,14 +521,14 @@ mod tests {
             for _ in 0..4 {
                 s.spawn(|| {
                     for _ in 0..100 {
-                        record(&logger, log::Level::Info, "filmcraft", "from a worker");
+                        record(&logger, log::Level::Info, "redrob_film_app", "from a worker");
                     }
                 });
             }
         });
         let text = read(&path);
         assert_eq!(text.lines().count(), 400);
-        assert!(text.lines().all(|l| l.ends_with("filmcraft: from a worker")), "{text}");
+        assert!(text.lines().all(|l| l.ends_with("redrob_film_app: from a worker")), "{text}");
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -555,7 +556,7 @@ mod tests {
             panic!("poison the sink");
         }));
         assert!(logger.sink.is_poisoned());
-        record(&logger, log::Level::Info, "filmcraft", "after the panic");
+        record(&logger, log::Level::Info, "redrob_film_app", "after the panic");
         assert!(read(&path).contains("after the panic"));
         let _ = std::fs::remove_dir_all(&dir);
     }

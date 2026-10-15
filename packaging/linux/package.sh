@@ -9,7 +9,7 @@
 # Needs: cargo; nfpm for the deb (https://nfpm.goreleaser.com). Build on an old distro (CI: Ubuntu
 # 22.04, glibc 2.35) so the binaries run on newer ones. Optional: desktop-file-validate,
 # appstreamcli. The tar.gz is what Redrob Launcher and the in-app updater
-# (apps/filmcraft/src/update.rs) install; both look for exactly these file names.
+# (apps/redrob-film-app/src/update.rs) install; both look for exactly these file names.
 set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
@@ -44,7 +44,7 @@ BASENAME="redrob-film-$VERSION-linux-$ARCH"
 echo "==> Redrob Film $VERSION for Linux $ARCH ($FORMATS)"
 
 if [ "$SKIP_BUILD" = 0 ]; then
-  (cd "$ROOT" && cargo build --release --locked -p filmcraft -p filmcraft-cli)
+  (cd "$ROOT" && cargo build --release --locked -p redrob-film-app -p redrob-film-cli)
 fi
 BIN="$CARGO_TARGET_DIR/release"
 WORK="$CARGO_TARGET_DIR/linux-package"

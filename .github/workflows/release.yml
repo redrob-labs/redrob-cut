@@ -265,7 +265,7 @@ jobs:
           dpkg-deb --info dist/release/*.deb
           dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-film$|metainfo|applications'
           ldd target/release/redrob-film
-          # Exactly the two Linux assets the launcher and the in-app updater (apps/filmcraft/src/update.rs) expect.
+          # Exactly the two Linux assets the launcher and the in-app updater (apps/redrob-film-app/src/update.rs) expect.
           test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.tar.gz"
           test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.deb"
           extra="$(find dist/release -mindepth 1 -maxdepth 1 -printf '%f\n' | grep -vE '^redrob-film-.*-linux-x86_64\.(tar\.gz|deb)$' || true)"

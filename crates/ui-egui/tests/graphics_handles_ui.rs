@@ -7,9 +7,9 @@
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -435,9 +435,9 @@ fn polygon_handles_keep_the_opposite_corner() {
 /// The Corner Radius of the shape layer of graphic clip `clip`.
 fn corner_radius(d: &mut Driver, clip: u64) -> f64 {
     let s = &d.harness.state().session;
-    let (_, it) = s.active_sequence().unwrap().find_item(filmcraft_project::ClipId(clip)).unwrap();
+    let (_, it) = s.active_sequence().unwrap().find_item(redrob_film_project::ClipId(clip)).unwrap();
     let e = it.effects.iter().find(|e| e.effect == "graphic_shape").unwrap();
-    e.param("corner_radius").unwrap().value_at(filmcraft_time::Tick::ZERO).as_f64().unwrap()
+    e.param("corner_radius").unwrap().value_at(redrob_film_time::Tick::ZERO).as_f64().unwrap()
 }
 
 #[test]

@@ -1,6 +1,6 @@
 //! M13.4: HEVC / AV1 output modules and the WebM codec / Opus options over the command API.
 
-use effectcraft_project::render_queue::{Channels, CodecProfile, OpusApplication, OutputFormat, RateControlMode, VideoCodecOptions, WebmVideoCodec};
+use redrob_effects_project::render_queue::{Channels, CodecProfile, OpusApplication, OutputFormat, RateControlMode, VideoCodecOptions, WebmVideoCodec};
 use serde_json::json;
 
 use crate::Session;

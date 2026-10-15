@@ -6,11 +6,11 @@
 //! keyframe navigator, scrubbable values). Right: time navigator, ruler with work area and cache
 //! bar, layer duration bars, keyframes, the CTI, and the value graph editor.
 
-use effectcraft_engine::color::BlendMode;
-use effectcraft_engine::keyframe::{Interp, Value};
-use effectcraft_engine::project::{Comp, GroupKind, ItemId, Layer, LayerId, LayerSource, MatteKind, Node, ParamUi, PropGroup, Property};
-use effectcraft_engine::render::EvalCtx;
-use effectcraft_engine::time::Tick;
+use redrob_effects_engine::color::BlendMode;
+use redrob_effects_engine::keyframe::{Interp, Value};
+use redrob_effects_engine::project::{Comp, GroupKind, ItemId, Layer, LayerId, LayerSource, MatteKind, Node, ParamUi, PropGroup, Property};
+use redrob_effects_engine::render::EvalCtx;
+use redrob_effects_engine::time::Tick;
 use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
@@ -55,7 +55,7 @@ const GEOM_BIT: u64 = 1 << 59;
 /// Classic 3D comps don't extrude: a 3D text or shape layer's Geometry Options row offers to
 /// change the renderer instead, as in After Effects.
 fn classic_geometry_row(comp: &Comp, l: &Layer) -> bool {
-    comp.renderer == effectcraft_engine::project::Renderer::Classic3D && l.is_3d() && matches!(l.source, LayerSource::Text | LayerSource::Shape)
+    comp.renderer == redrob_effects_engine::project::Renderer::Classic3D && l.is_3d() && matches!(l.source, LayerSource::Text | LayerSource::Shape)
 }
 
 /// Background of the selected layer's name cell.
@@ -518,8 +518,8 @@ impl TMap {
 /// A Timeline ruler tick label for comp frame `fno`: seconds:frames (`00:15f`, AE) or, when
 /// the project's Time Display Style is Frames, the frame number the current-time display shows
 /// (`00015`, counted from Start Numbering Frames At) (#710).
-fn ruler_label(fno: i64, fps_i: i64, settings: &effectcraft_engine::project::ProjectSettings) -> String {
-    if settings.time_display == effectcraft_engine::project::TimeDisplayStyle::Frames {
+fn ruler_label(fno: i64, fps_i: i64, settings: &redrob_effects_engine::project::ProjectSettings) -> String {
+    if settings.time_display == redrob_effects_engine::project::TimeDisplayStyle::Frames {
         return format!("{:05}", fno.saturating_add(settings.frame_start));
     }
     let fps_i = fps_i.max(1);
@@ -715,7 +715,7 @@ fn prop_visible(p: &Property, layer: &Layer) -> bool {
         return false;
     }
     // One-node cameras (and lights with auto-orient off) have no Point of Interest.
-    if p.match_id == "poi" && (layer.is_camera() || layer.is_light()) && layer.auto_orient != effectcraft_engine::project::AutoOrient::TowardsPointOfInterest {
+    if p.match_id == "poi" && (layer.is_camera() || layer.is_light()) && layer.auto_orient != redrob_effects_engine::project::AutoOrient::TowardsPointOfInterest {
         return false;
     }
     // Separate Dimensions: X/Y/Z Position replace Position.
@@ -750,7 +750,7 @@ fn search_rows(l: &Layer, q: &str) -> Vec<Row> {
     fn group_row(l: &Layer, g: &PropGroup, depth: usize, parent: &PropGroup) -> Row {
         let fx = matches!(g.kind, GroupKind::Effect { .. }).then_some(g.enabled);
         let eye =
-            (parent.match_id == effectcraft_engine::project::styles::GROUP && g.match_id != effectcraft_engine::project::styles::BLENDING).then_some(g.enabled);
+            (parent.match_id == redrob_effects_engine::project::styles::GROUP && g.match_id != redrob_effects_engine::project::styles::BLENDING).then_some(g.enabled);
         Row { layer: l.id, depth, kind: RowKind::Group { uid: g.uid, name: g.name.clone(), open: true, has_children: !g.children.is_empty(), fx, eye } }
     }
     fn all(l: &Layer, g: &PropGroup, depth: usize, out: &mut Vec<Row>) {
@@ -851,11 +851,11 @@ fn build_rows(app: &EffectcraftApp, comp: &Comp) -> Vec<Row> {
         if app.session.state.essential_solo {
             let mut v = vec![];
             for (i, c) in l.props.children.iter().enumerate() {
-                if c.match_id() == effectcraft_engine::project::essential::GROUP {
+                if c.match_id() == redrob_effects_engine::project::essential::GROUP {
                     continue;
                 }
                 let g = PropGroup { children: vec![l.props.children[i].clone()], ..PropGroup::new(0, "", "") };
-                collect_props(&g, &mut v, &|p| prop_visible(p, l) && effectcraft_engine::project::essential::control_type(p).is_some());
+                collect_props(&g, &mut v, &|p| prop_visible(p, l) && redrob_effects_engine::project::essential::control_type(p).is_some());
             }
             rows.extend(v.into_iter().map(|uid| Row { layer: l.id, depth: 1, kind: RowKind::Prop { uid } }));
             continue;
@@ -883,7 +883,7 @@ fn build_rows(app: &EffectcraftApp, comp: &Comp) -> Vec<Row> {
                             open,
                             has_children: !g.children.is_empty(),
                             fx: None,
-                            eye: (g.match_id == effectcraft_engine::project::styles::GROUP).then_some(g.enabled),
+                            eye: (g.match_id == redrob_effects_engine::project::styles::GROUP).then_some(g.enabled),
                         },
                     });
                     if open {
@@ -968,7 +968,7 @@ fn reveal_rows(app: &EffectcraftApp, l: &Layer, kinds: &[String], rows: &mut Vec
     // PP: paint, Roto Brush and Puppet effects; FF: effects whose plug-in is missing.
     for (k, keep) in [
         ("paint", &(|id: &str| matches!(id, "ec.paint.paint" | "ec.matte.rotobrush" | "ec.distort.puppet")) as &dyn Fn(&str) -> bool),
-        ("missingEffects", &|id: &str| effectcraft_engine::effects::find(id).is_none()),
+        ("missingEffects", &|id: &str| redrob_effects_engine::effects::find(id).is_none()),
     ] {
         if has(k)
             && let Some(fx) = l.effects()
@@ -1182,7 +1182,7 @@ fn push_group(rows: &mut Vec<Row>, l: &Layer, g: &PropGroup, depth: usize, open:
                 let o = open.contains(&sg.uid);
                 let fx = matches!(sg.kind, GroupKind::Effect { .. }).then_some(sg.enabled);
                 // Layer style groups have eye switches (not Blending Options).
-                let eye = (g.match_id == effectcraft_engine::project::styles::GROUP && sg.match_id != effectcraft_engine::project::styles::BLENDING)
+                let eye = (g.match_id == redrob_effects_engine::project::styles::GROUP && sg.match_id != redrob_effects_engine::project::styles::BLENDING)
                     .then_some(sg.enabled);
                 rows.push(Row {
                     layer: l.id,
@@ -1199,7 +1199,7 @@ fn push_group(rows: &mut Vec<Row>, l: &Layer, g: &PropGroup, depth: usize, open:
     }
 }
 
-fn layer_icon(l: &Layer, project: &effectcraft_engine::project::Project) -> Icon {
+fn layer_icon(l: &Layer, project: &redrob_effects_engine::project::Project) -> Icon {
     match &l.source {
         LayerSource::Text => Icon::TextLayer,
         LayerSource::Shape => Icon::ShapeLayer,
@@ -1397,8 +1397,8 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                 .map(ItemId)
                 .filter(|id| {
                     app.session.project.item(*id).is_some_and(|item| match &item.kind {
-                        effectcraft_engine::project::ItemKind::Footage(footage) => footage.kind != effectcraft_engine::project::FootageKind::Data,
-                        effectcraft_engine::project::ItemKind::Solid(_) | effectcraft_engine::project::ItemKind::Comp(_) => true,
+                        redrob_effects_engine::project::ItemKind::Footage(footage) => footage.kind != redrob_effects_engine::project::FootageKind::Data,
+                        redrob_effects_engine::project::ItemKind::Solid(_) | redrob_effects_engine::project::ItemKind::Comp(_) => true,
                         _ => false,
                     })
                 })
@@ -1478,15 +1478,15 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
     p.text(tc_rect.left_center(), Align2::LEFT_CENTER, &tc, Tokens::semibold(16.0), t.timecode);
     // Under it the other style (frames under timecode, timecode under frames) and the rate.
     let settings = &app.session.project.settings;
-    let other = if settings.time_display == effectcraft_engine::project::TimeDisplayStyle::Timecode {
+    let other = if settings.time_display == redrob_effects_engine::project::TimeDisplayStyle::Timecode {
         format!("{:05}", fr.frame_at(time) + settings.frame_start)
     } else {
-        effectcraft_engine::time::format_timecode_ae(fr.frame_at(time + comp.display_start), fr, false)
+        redrob_effects_engine::time::format_timecode_ae(fr.frame_at(time + comp.display_start), fr, false)
     };
     // Audio-only preview (Video off in the Preview panel): the current time stays put, so that
     // line says why and where the sound is instead (#1118).
     if let Some(af) = app.video_preview_off() {
-        let at = af.map(|f| format!(" · {}", effectcraft_engine::time::format_timecode_ae(f + fr.frame_at(comp.display_start), fr, false))).unwrap_or_default();
+        let at = af.map(|f| format!(" · {}", redrob_effects_engine::time::format_timecode_ae(f + fr.frame_at(comp.display_start), fr, false))).unwrap_or_default();
         let msg = format!("{}{at}", crate::i18n::tr("Video preview off: audio only"));
         p.text(pos2(tc_rect.min.x, tc_rect.max.y + 8.0), Align2::LEFT_CENTER, msg, Tokens::ui(10.5), t.cache_green);
     } else {
@@ -2108,11 +2108,11 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                 let sws: [(Icon, bool, &str, bool); 8] = [
                     (Icon::Shy, sw.shy, "shy", true),
                     (Icon::Collapse, sw.collapse, "collapse", collapse_applies(layer, &app.session.project)),
-                    (Icon::Quality, sw.quality == effectcraft_engine::project::Quality::Best, "quality", layer.source.is_av()),
+                    (Icon::Quality, sw.quality == redrob_effects_engine::project::Quality::Best, "quality", layer.source.is_av()),
                     (Icon::Fx, sw.effects, "fx", layer.effects().is_some_and(|f| !f.children.is_empty())),
                     (
                         Icon::FrameBlend,
-                        sw.frame_blend != effectcraft_engine::project::FrameBlend::Off,
+                        sw.frame_blend != redrob_effects_engine::project::FrameBlend::Off,
                         "frameBlend",
                         matches!(layer.source, LayerSource::Footage { .. } | LayerSource::Comp { .. }),
                     ),
@@ -2471,7 +2471,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                     if widgets::dropdown(ui, mr, mode.label(), &t, egui::Id::new(("mm", uid))).clicked() {
                         widgets::open_popup(ui, pop);
                     }
-                    let opts: Vec<String> = effectcraft_engine::project::MaskMode::ALL.iter().map(|m| m.label().to_string()).collect();
+                    let opts: Vec<String> = redrob_effects_engine::project::MaskMode::ALL.iter().map(|m| m.label().to_string()).collect();
                     if let Some(i) = widgets::popup_menu(ui, pop, mr.left_bottom(), &opts, None) {
                         actions.push(("layer.setMask".into(), json!({"layer": layer.id.0, "mask": uid, "mode": opts[i]})));
                     }
@@ -2599,7 +2599,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                 app.auto.add(&format!("timeline.prop.{uid}.exprLanguage"), lang_r, "Expression Language Menu");
                 let mut picked: Option<&'static str> = None;
                 egui::Popup::menu(&lang).style(crate::widgets::menu_style).show(|ui| {
-                    for (cat, items) in effectcraft_engine::commands::expr_tools::language_menu() {
+                    for (cat, items) in redrob_effects_engine::commands::expr_tools::language_menu() {
                         ui.menu_button(cat, |ui| {
                             widgets::menu_scroll(ui, |ui| {
                                 for (label, text) in items {
@@ -2688,7 +2688,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                 // (in the Keys column when it is shown).
                 if prop.is_animated() && (vis.keys || vis.av) {
                     let lt = layer.layer_time(time);
-                    let at_key = effectcraft_engine::keyframe::key_at(&prop.keys, lt).is_some();
+                    let at_key = redrob_effects_engine::keyframe::key_at(&prop.keys, lt).is_some();
                     let nav_x = if vis.keys { cw.keys + 12.0 } else { cw.av + 18.0 };
                     let prev = Rect::from_center_size(pos2(nav_x, cy), vec2(12.0, 14.0));
                     let mid = Rect::from_center_size(pos2(nav_x + 16.0, cy), vec2(14.0, 14.0));
@@ -2802,12 +2802,12 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                         if x < graph_x0 - 8.0 || x > rect.max.x + 8.0 {
                             continue;
                         }
-                        let kref = effectcraft_engine::KeyRef { layer: layer.id, prop: *uid, time: k.time };
+                        let kref = redrob_effects_engine::KeyRef { layer: layer.id, prop: *uid, time: k.time };
                         let ks = sel_keys.contains(&kref);
                         let icon = k.icon();
                         let c = pos2(x, cy);
                         // Labelled keys take their label colour (brighter when selected).
-                        let kcol = match effectcraft_engine::color::Label::ALL.get(k.label as usize).filter(|_| k.label > 0) {
+                        let kcol = match redrob_effects_engine::color::Label::ALL.get(k.label as usize).filter(|_| k.label > 0) {
                             Some(l) => {
                                 let c = t.label(*l);
                                 if ks { c } else { c.gamma_multiply(0.75) }
@@ -2885,7 +2885,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                                 if lbl == "Select All Keyframes" {
                                     // Keyframe colour labels.
                                     ui.menu_button(crate::i18n::tr("Label"), |ui| {
-                                        for (i, l) in effectcraft_engine::color::Label::ALL.into_iter().enumerate() {
+                                        for (i, l) in redrob_effects_engine::color::Label::ALL.into_iter().enumerate() {
                                             if widgets::label_entry(ui, l, &app.session.prefs.label_name(l), k.label as usize == i, &t).clicked() {
                                                 if !ks {
                                                     actions.push((
@@ -3684,7 +3684,7 @@ fn text_anim_popups(
     cy: f32,
     actions: &mut Vec<(String, serde_json::Value)>,
 ) {
-    use effectcraft_engine::project::build::TEXT_ANIMATOR_KINDS;
+    use redrob_effects_engine::project::build::TEXT_ANIMATOR_KINDS;
     if !matches!(layer.source, LayerSource::Text) {
         return;
     }
@@ -3721,9 +3721,9 @@ fn text_anim_popups(
             acts.push(if *k == "-" { (String::new(), json!(null)) } else { ("layer.addTextAnimator".into(), json!({"layer": layer.id.0, "property": k})) });
         }
         // Variable Font Axes of the layer's font.
-        if let Some(effectcraft_engine::keyframe::Value::Text(doc)) = layer.props.prop("text/sourceText").map(|p| p.value.clone()) {
-            let face = effectcraft_engine::text::resolve(&doc.font, &doc.style).face;
-            let axes = effectcraft_engine::text::variable::font_axes(face);
+        if let Some(redrob_effects_engine::keyframe::Value::Text(doc)) = layer.props.prop("text/sourceText").map(|p| p.value.clone()) {
+            let face = redrob_effects_engine::text::resolve(&doc.font, &doc.style).face;
+            let axes = redrob_effects_engine::text::variable::font_axes(face);
             if !axes.is_empty() {
                 opts.push("-".into());
                 acts.push((String::new(), json!(null)));
@@ -3818,22 +3818,22 @@ fn prop_menu(
 }
 
 /// Whether `layer` shows vector footage (SVG, PDF, AI, EPS).
-pub(crate) fn vector_footage_layer(project: &effectcraft_engine::project::Project, layer: &Layer) -> bool {
+pub(crate) fn vector_footage_layer(project: &redrob_effects_engine::project::Project, layer: &Layer) -> bool {
     layer
         .source
         .item()
         .and_then(|item| project.item(item))
-        .is_some_and(|item| matches!(&item.kind, effectcraft_engine::project::ItemKind::Footage(footage) if effectcraft_engine::vector::is_vector(footage)))
+        .is_some_and(|item| matches!(&item.kind, redrob_effects_engine::project::ItemKind::Footage(footage) if redrob_effects_engine::vector::is_vector(footage)))
 }
 
 /// Whether the Collapse Transformations / Continuously Rasterize switch applies: precomps, shape and text
 /// layers, and vector footage (SVG, PDF, AI, EPS), which the renderer re-rasterizes at the layer's scale.
-fn collapse_applies(layer: &Layer, project: &effectcraft_engine::project::Project) -> bool {
+fn collapse_applies(layer: &Layer, project: &redrob_effects_engine::project::Project) -> bool {
     match &layer.source {
         LayerSource::Comp { .. } | LayerSource::Shape | LayerSource::Text => true,
         LayerSource::Footage { item } => {
             let kind = project.item(*item).map(|i| &i.kind);
-            matches!(kind, Some(effectcraft_engine::project::ItemKind::Footage(f)) if effectcraft_engine::render::is_vector_footage(f))
+            matches!(kind, Some(redrob_effects_engine::project::ItemKind::Footage(f)) if redrob_effects_engine::render::is_vector_footage(f))
         }
         _ => false,
     }
@@ -3849,7 +3849,7 @@ pub(crate) struct LayerMenuCaps {
 }
 
 impl LayerMenuCaps {
-    pub(crate) fn of(project: &effectcraft_engine::project::Project, layer: &Layer) -> Self {
+    pub(crate) fn of(project: &redrob_effects_engine::project::Project, layer: &Layer) -> Self {
         Self { vector: vector_footage_layer(project, layer), text: matches!(layer.source, LayerSource::Text) }
     }
 }
@@ -3948,8 +3948,8 @@ pub(crate) fn layer_menu(ui: &mut egui::Ui, layers: &[u64], caps: LayerMenuCaps,
 /// The layer context menu's Effects submenu: every effect from the registry grouped by category,
 /// in the same order as the Effect menu's palette, so the two stay in sync automatically.
 fn effects_submenu(ui: &mut egui::Ui, layers: &[u64], item: &mut dyn FnMut(&mut egui::Ui, &str, &str, serde_json::Value)) {
-    let mut cats: Vec<(&str, Vec<&'static effectcraft_engine::effects::EffectSpec>)> = Vec::new();
-    for e in effectcraft_engine::effects::all() {
+    let mut cats: Vec<(&str, Vec<&'static redrob_effects_engine::effects::EffectSpec>)> = Vec::new();
+    for e in redrob_effects_engine::effects::all() {
         match cats.iter_mut().find(|(c, _)| *c == e.category) {
             Some((_, v)) => v.push(e),
             None => cats.push((e.category, vec![e])),
@@ -4181,7 +4181,7 @@ mod tests {
     /// CTI, from Start Numbering Frames At); otherwise seconds:frames.
     #[test]
     fn ruler_labels_follow_the_time_display_style() {
-        use effectcraft_engine::project::{ProjectSettings, TimeDisplayStyle};
+        use redrob_effects_engine::project::{ProjectSettings, TimeDisplayStyle};
         let mut st = ProjectSettings { time_display: TimeDisplayStyle::Timecode, frame_start: 0, ..ProjectSettings::default() };
         assert_eq!(ruler_label(15, 30, &st), "00:15f");
         assert_eq!(ruler_label(45, 30, &st), "01:15f");
@@ -4212,15 +4212,15 @@ mod tests {
     /// it used to close the menu and change nothing.
     #[test]
     fn a_track_matte_mode_without_a_matte_takes_the_layer_above() {
-        let mut s = effectcraft_engine::Session::default();
+        let mut s = redrob_effects_engine::Session::default();
         s.execute("comp.new", json!({"name": "T", "width": 64, "height": 64, "duration": 1})).unwrap();
         for name in ["Chain Bottom", "Matte", "Chain Top"] {
             s.execute("layer.newSolid", json!({"name": name, "color": "#ffffff", "width": 64, "height": 64})).unwrap();
         }
-        let find = |s: &effectcraft_engine::Session, n: &str| s.active_comp().unwrap().layers.iter().find(|l| l.name == n).unwrap().clone();
+        let find = |s: &redrob_effects_engine::Session, n: &str| s.active_comp().unwrap().layers.iter().find(|l| l.name == n).unwrap().clone();
         let (bottom, matte, top) = (find(&s, "Chain Bottom"), find(&s, "Matte"), find(&s, "Chain Top"));
         let candidates = [top.id, matte.id];
-        let pick = |s: &mut effectcraft_engine::Session, name: &str, i: usize, choice: &str| {
+        let pick = |s: &mut redrob_effects_engine::Session, name: &str, i: usize, choice: &str| {
             let (id, params) = track_matte_pick(&find(s, name), &candidates, i, choice).expect("a menu item is an action");
             s.execute(&id, params)
         };
@@ -4245,14 +4245,14 @@ mod tests {
     /// #957: vector footage gets the Continuously Rasterize switch; raster footage does not.
     #[test]
     fn collapse_switch_shows_for_vector_footage_only() {
-        use effectcraft_engine::color::Label;
-        use effectcraft_engine::project::{Footage, ItemKind, Project};
+        use redrob_effects_engine::color::Label;
+        use redrob_effects_engine::project::{Footage, ItemKind, Project};
         let mut p = Project::default();
         let mut layer_for = |name: &str, codec: &str| {
             let footage = Footage { path: name.into(), codec: codec.into(), ..Default::default() };
             let item = p.add_item(name, Label::SeaFoam, None, ItemKind::Footage(footage));
-            let comp = Comp::new(64, 36, effectcraft_engine::time::FrameRate::new(30, 1), Tick::from_seconds_f64(1.0));
-            effectcraft_engine::project::build::layer(&mut p, &comp, name, LayerSource::Footage { item }, (0, 0), None)
+            let comp = Comp::new(64, 36, redrob_effects_engine::time::FrameRate::new(30, 1), Tick::from_seconds_f64(1.0));
+            redrob_effects_engine::project::build::layer(&mut p, &comp, name, LayerSource::Footage { item }, (0, 0), None)
         };
         let svg = layer_for("logo.svg", "SVG");
         let png = layer_for("photo.png", "PNG");
@@ -4262,7 +4262,7 @@ mod tests {
 
     /// A comp with two solids; "Box" has an animated Position and a Gaussian Blur.
     fn app() -> EffectcraftApp {
-        let mut s = effectcraft_engine::Session::default();
+        let mut s = redrob_effects_engine::Session::default();
         s.execute("comp.new", json!({"name": "T", "width": 320, "height": 180, "duration": 4})).unwrap();
         s.execute("layer.newSolid", json!({"name": "Plate", "color": "#406080", "width": 320, "height": 180})).unwrap();
         s.execute("layer.newSolid", json!({"name": "Box", "color": "#e04020", "width": 40, "height": 40})).unwrap();
@@ -4452,7 +4452,7 @@ mod tests {
     /// U and UU show Time Remap on a layer with time remapping enabled.
     #[test]
     fn u_and_uu_reveal_time_remap() {
-        let mut s = effectcraft_engine::Session::default();
+        let mut s = redrob_effects_engine::Session::default();
         let inner = s.execute("comp.new", json!({"name": "Inner", "width": 32, "height": 32, "duration": 2})).unwrap()["comp"].as_u64().unwrap();
         s.execute("comp.new", json!({"name": "Main", "width": 64, "height": 64, "duration": 4})).unwrap();
         let nested = s.execute("layer.addItem", json!({"item": inner})).unwrap()["layer"].as_u64().unwrap();
@@ -4475,7 +4475,7 @@ mod tests {
     /// enabling remapping is itself the modification.
     #[test]
     fn u_reveals_keyless_time_remap() {
-        let mut s = effectcraft_engine::Session::default();
+        let mut s = redrob_effects_engine::Session::default();
         let inner = s.execute("comp.new", json!({"name": "Inner", "width": 32, "height": 32, "duration": 2})).unwrap()["comp"].as_u64().unwrap();
         s.execute("comp.new", json!({"name": "Main", "width": 64, "height": 64, "duration": 4})).unwrap();
         let nested = s.execute("layer.addItem", json!({"item": inner})).unwrap()["layer"].as_u64().unwrap();
@@ -4501,7 +4501,7 @@ mod tests {
     /// nothing.
     #[test]
     fn enabling_time_remapping_reveals_time_remap() {
-        let mut s = effectcraft_engine::Session::default();
+        let mut s = redrob_effects_engine::Session::default();
         let inner = s.execute("comp.new", json!({"name": "Inner", "width": 32, "height": 32, "duration": 2})).unwrap()["comp"].as_u64().unwrap();
         s.execute("comp.new", json!({"name": "Main", "width": 64, "height": 64, "duration": 4})).unwrap();
         s.execute("layer.newSolid", json!({"name": "Other"})).unwrap();
@@ -4536,7 +4536,7 @@ mod tests {
     fn rows_and_bars_follow_after_effects_proportions() {
         let t = crate::theme::Tokens::for_kind(crate::theme::ThemeKind::Dark);
         assert_eq!(t.row_h, 19.0);
-        let red = t.label(effectcraft_engine::color::Label::Red);
+        let red = t.label(redrob_effects_engine::color::Label::Red);
         let bar = bar_color(red, false);
         // Muted: darker and less saturated than the label, still reddish.
         assert!(bar.r() < red.r() && bar.r() > bar.g() + 30 && bar.g() >= red.g().min(0x3a) - 1);

@@ -4,10 +4,10 @@
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
-use filmcraft_ui_egui::dock::PanelKind;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
+use redrob_film_ui_egui::dock::PanelKind;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -87,7 +87,7 @@ fn the_nest_button_toggles_how_sequences_are_edited_in() {
 
 #[test]
 fn reveal_in_project_shows_the_clips_item_in_the_project_panel() {
-    use filmcraft_engine::project_panel::ViewMode;
+    use redrob_film_engine::project_panel::ViewMode;
     for mode in [ViewMode::List, ViewMode::Icon] {
         let mut d = Driver::new();
         d.app().session.prefs.project_panel.view.mode = mode;

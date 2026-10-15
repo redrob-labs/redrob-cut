@@ -1,7 +1,7 @@
 //! Smaller panels: History, Markers, Info (the Media Browser is `panels::media_browser`).
 
 use egui::{Align2, Color32, Rect, Sense, pos2, vec2};
-use filmcraft_time::{TimeDisplay, format_time};
+use redrob_film_time::{TimeDisplay, format_time};
 
 use crate::FilmcraftApp;
 use crate::theme::Tokens;
@@ -52,8 +52,8 @@ pub fn history(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
 
 /// The marker colours of the Markers panel filter (each chip stands for the labels that share its
 /// marker colour).
-pub const MARKER_FILTER: [filmcraft_project::Label; 7] = {
-    use filmcraft_project::Label::*;
+pub const MARKER_FILTER: [redrob_film_project::Label; 7] = {
+    use redrob_film_project::Label::*;
     [Green, Rose, Purple, Mango, Yellow, Blue, Teal]
 };
 
@@ -101,11 +101,11 @@ pub fn markers(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
             let name = if m.name.is_empty() { tl!("Marker") } else { &m.name };
             ui.painter().text(pos2(r.min.x + 16.0, r.min.y + 12.0), Align2::LEFT_CENTER, name, Tokens::ui(12.0), t.text);
             let mut tc = format_time(m.start, seq.settings.frame_rate, seq.settings.drop_frame, TimeDisplay::Timecode, 48000);
-            if m.duration > filmcraft_time::Tick::ZERO {
+            if m.duration > redrob_film_time::Tick::ZERO {
                 let d = format_time(m.duration, seq.settings.frame_rate, seq.settings.drop_frame, TimeDisplay::Timecode, 48000);
                 tc = format!("{tc}  ({d})");
             }
-            if m.kind == filmcraft_project::MarkerKind::Chapter {
+            if m.kind == redrob_film_project::MarkerKind::Chapter {
                 tc = tlf!("{tc}  Chapter", tc);
             }
             ui.painter().text(pos2(r.min.x + 16.0, r.min.y + 27.0), Align2::LEFT_CENTER, tc, Tokens::mono(11.0), t.hot_text);

@@ -1,5 +1,5 @@
 [package]
-name = "filmcraft-codecs"
+name = "redrob-film-codecs"
 description = "Container + codec hub: MP4/MOV, Matroska, MXF, Ogg and MPEG TS/PS sources, image sequences, GOP-aware seeking, decoder registry, audio decoding"
 version.workspace = true
 edition.workspace = true
@@ -10,27 +10,27 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-filmcraft-time = { workspace = true }
-filmcraft-color = { workspace = true }
-filmcraft-frame = { workspace = true }
-filmcraft-media = { workspace = true }
-filmcraft-isobmff = { workspace = true }
-filmcraft-matroska = { workspace = true }
-filmcraft-mxf = { workspace = true }
-filmcraft-mpegts = { workspace = true }
-filmcraft-mpeg2v = { workspace = true }
-filmcraft-ac3 = { workspace = true }
-filmcraft-ogg = { workspace = true }
-filmcraft-bitstream = { workspace = true }
-filmcraft-h264 = { workspace = true }
-filmcraft-hevc = { workspace = true }
-filmcraft-vp9 = { workspace = true }
-filmcraft-prores = { workspace = true }
-filmcraft-dnx = { workspace = true }
-filmcraft-av1 = { workspace = true }
-filmcraft-apv = { workspace = true }
-filmcraft-aac = { workspace = true }
-filmcraft-opus = { workspace = true }
+redrob-film-time = { workspace = true }
+redrob-film-color = { workspace = true }
+redrob-film-frame = { workspace = true }
+redrob-film-media = { workspace = true }
+redrob-film-isobmff = { workspace = true }
+redrob-film-matroska = { workspace = true }
+redrob-film-mxf = { workspace = true }
+redrob-film-mpegts = { workspace = true }
+redrob-film-mpeg2v = { workspace = true }
+redrob-film-ac3 = { workspace = true }
+redrob-film-ogg = { workspace = true }
+redrob-film-bitstream = { workspace = true }
+redrob-film-h264 = { workspace = true }
+redrob-film-hevc = { workspace = true }
+redrob-film-vp9 = { workspace = true }
+redrob-film-prores = { workspace = true }
+redrob-film-dnx = { workspace = true }
+redrob-film-av1 = { workspace = true }
+redrob-film-apv = { workspace = true }
+redrob-film-aac = { workspace = true }
+redrob-film-opus = { workspace = true }
 thiserror = { workspace = true }
 log = { workspace = true }
 # Decode timing counters (`gop_stats`); std's Instant panics on wasm32.
@@ -40,5 +40,5 @@ image = { version = "0.25", default-features = false, features = ["jpeg"] }
 symphonia = { version = "0.5.5", default-features = false, features = ["aac", "mp1", "mp2", "mp3", "flac", "alac", "pcm", "wav", "aiff", "ogg", "vorbis", "isomp4"] }
 
 [dev-dependencies]
-filmcraft-testkit = { workspace = true }
+redrob-film-testkit = { workspace = true }
 serde_json = { workspace = true }

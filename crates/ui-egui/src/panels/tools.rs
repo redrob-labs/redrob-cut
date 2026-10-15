@@ -94,7 +94,7 @@ mod tests {
 
     #[test]
     fn long_press_type_selects_vertical_without_selecting_on_release() {
-        let mut app = FilmcraftApp::new(filmcraft_engine::Session::default());
+        let mut app = FilmcraftApp::new(redrob_film_engine::Session::default());
         let ctx = egui::Context::default();
         crate::theme::install(&ctx, &app.tokens);
         frame(&mut app, &ctx, 0.0, vec![]);
@@ -134,10 +134,10 @@ mod tests {
         }
         let edit = app.ui.gfx_edit.as_ref().unwrap();
         let sequence = app.session.active_sequence().unwrap();
-        let (_, item) = sequence.find_item(filmcraft_project::ClipId(edit.clip)).unwrap();
-        let effect_index = filmcraft_project::graphic::layer_indices(&item.effects)[edit.layer];
-        let layer = filmcraft_project::graphic::eval_layer(&item.effects[effect_index], filmcraft_time::Tick::ZERO, (1920, 1080)).unwrap();
-        let filmcraft_project::graphic::LayerContent::Text(text) = layer.content else { panic!("text layer expected") };
+        let (_, item) = sequence.find_item(redrob_film_project::ClipId(edit.clip)).unwrap();
+        let effect_index = redrob_film_project::graphic::layer_indices(&item.effects)[edit.layer];
+        let layer = redrob_film_project::graphic::eval_layer(&item.effects[effect_index], redrob_film_time::Tick::ZERO, (1920, 1080)).unwrap();
+        let redrob_film_project::graphic::LayerContent::Text(text) = layer.content else { panic!("text layer expected") };
         assert!(text.vertical, "the actual monitor click dispatches the existing vertical text command");
     }
 }

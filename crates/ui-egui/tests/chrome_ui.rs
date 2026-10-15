@@ -3,9 +3,9 @@
 //! to give the panels the whole window.
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::state::UiState;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::state::UiState;
 use serde_json::json;
 
 const W: f32 = 1600.0;

@@ -7,7 +7,7 @@ mod common;
 use std::process::Command;
 
 use common::*;
-use effectcraft_opusenc::{Bandwidth, Mode, OpusEncoder};
+use redrob_effects_opusenc::{Bandwidth, Mode, OpusEncoder};
 
 const FFMPEG: &str = "/opt/homebrew/bin/ffmpeg";
 

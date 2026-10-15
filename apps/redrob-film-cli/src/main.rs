@@ -34,8 +34,8 @@ mod args;
 mod probe;
 
 use args::{Args, parse_value};
-use filmcraft_automation::BridgeClient;
-use filmcraft_engine::Session;
+use redrob_film_automation::BridgeClient;
+use redrob_film_engine::Session;
 use serde_json::{Value, json};
 use std::sync::atomic::{AtomicBool, Ordering};
 
@@ -152,7 +152,7 @@ impl Backend {
         }
         let mut s = Session::default();
         // user export presets (and other per-user libraries) from the data directory
-        if let Some(dir) = a.opt("--data-dir").map(std::path::PathBuf::from).or_else(filmcraft_engine::autosave::default_data_dir) {
+        if let Some(dir) = a.opt("--data-dir").map(std::path::PathBuf::from).or_else(redrob_film_engine::autosave::default_data_dir) {
             s.export_presets.set_dir(&dir);
         }
         if let Some(p) = a.opt("--project") {
@@ -216,32 +216,32 @@ fn format_for(path: &str) -> Option<&'static str> {
 
 /// OS hardware video decoders (VideoToolbox on macOS, Media Foundation on Windows) in front of our
 /// own, as in the desktop app. Also what `mcp` and the headless commands decode with.
-/// The GPU export frame renderer (filmcraft-gpu's off-screen compositor behind filmcraft-export's
+/// The GPU export frame renderer (redrob-film-gpu's off-screen compositor behind redrob-film-export's
 /// frame-renderer hook): exports with GPU rendering Auto composite on the GPU and fall back to the
 /// CPU reference renderer wherever it cannot.
-struct GpuFrameRenderer(filmcraft_gpu::ExportRenderer);
+struct GpuFrameRenderer(redrob_film_gpu::ExportRenderer);
 
-impl filmcraft_export::FrameRenderer for GpuFrameRenderer {
+impl redrob_film_export::FrameRenderer for GpuFrameRenderer {
     fn render(
         &mut self,
-        project: &filmcraft_project::Project,
-        seq: filmcraft_project::ItemId,
-        t: filmcraft_time::Tick,
-        opts: filmcraft_render::RenderOptions,
-        sources: &dyn filmcraft_render::SourceProvider,
-    ) -> Option<filmcraft_render::Image> {
+        project: &redrob_film_project::Project,
+        seq: redrob_film_project::ItemId,
+        t: redrob_film_time::Tick,
+        opts: redrob_film_render::RenderOptions,
+        sources: &dyn redrob_film_render::SourceProvider,
+    ) -> Option<redrob_film_render::Image> {
         self.0.render(project, seq, t, opts, sources)
     }
 }
 
 fn register_gpu_frame_renderer() {
-    filmcraft_export::register_frame_renderer(|| {
-        filmcraft_gpu::ExportRenderer::new().map(|r| Box::new(GpuFrameRenderer(r)) as Box<dyn filmcraft_export::FrameRenderer>)
+    redrob_film_export::register_frame_renderer(|| {
+        redrob_film_gpu::ExportRenderer::new().map(|r| Box::new(GpuFrameRenderer(r)) as Box<dyn redrob_film_export::FrameRenderer>)
     });
 }
 
-fn register_hardware_decoders() -> filmcraft_platform::Availability {
-    filmcraft_platform::register()
+fn register_hardware_decoders() -> redrob_film_platform::Availability {
+    redrob_film_platform::register()
 }
 
 #[tokio::main]
@@ -281,16 +281,16 @@ async fn cli() {
         "bench-decode" => {
             let path = a.pos(1).unwrap_or_else(|| usage("bench-decode <media>"));
             let n: i64 = a.opt("--frames").and_then(|v| v.parse().ok()).unwrap_or(120);
-            let src = filmcraft_codecs::open_bytes(path, std::fs::read(path).unwrap_or_else(|e| fail(e)).into()).unwrap_or_else(|e| fail(e));
+            let src = redrob_film_codecs::open_bytes(path, std::fs::read(path).unwrap_or_else(|e| fail(e)).into()).unwrap_or_else(|e| fail(e));
             let rate = src.info().frame_rate();
             let t0 = std::time::Instant::now();
             for f in 0..n {
-                src.video_frame(filmcraft_media::FrameRequest::full(rate.tick_of(f))).unwrap_or_else(|e| fail(e));
+                src.video_frame(redrob_film_media::FrameRequest::full(rate.tick_of(f))).unwrap_or_else(|e| fail(e));
             }
             let dt = t0.elapsed().as_secs_f64();
             outln!("{n} frames in {dt:.2}s → {:.1} fps (sequential, via Mp4Source)", n as f64 / dt);
             let t1 = std::time::Instant::now();
-            let f = src.video_frame(filmcraft_media::FrameRequest::full(rate.tick_of(n / 2))).unwrap_or_else(|e| fail(e));
+            let f = src.video_frame(redrob_film_media::FrameRequest::full(rate.tick_of(n / 2))).unwrap_or_else(|e| fail(e));
             let (w, h, _) = f.to_linear_f32_decimated(2);
             outln!("½-res linear conversion {w}x{h}: {:.1} ms", t1.elapsed().as_secs_f64() * 1000.0);
         }
@@ -455,11 +455,11 @@ async fn cli() {
             let secs: f64 = a.opt("--seconds").and_then(|v| v.parse().ok()).unwrap_or(0.0);
             let scale: f32 = a.opt("--scale").and_then(|v| v.parse().ok()).unwrap_or(1.0);
             let out = a.opt("--out").unwrap_or("frame.png");
-            s.set_playhead(filmcraft_time::Tick::from_seconds_f64(secs));
+            s.set_playhead(redrob_film_time::Tick::from_seconds_f64(secs));
             let t0 = std::time::Instant::now();
             let img = render_at_playhead(&s, scale).unwrap_or_else(|e| fail(e));
             let dt = t0.elapsed();
-            let png = filmcraft_automation::png_rgba(img.w as u32, img.h as u32, img.over_black_rgba8(), 0).unwrap_or_else(|e| fail(e));
+            let png = redrob_film_automation::png_rgba(img.w as u32, img.h as u32, img.over_black_rgba8(), 0).unwrap_or_else(|e| fail(e));
             std::fs::write(out, png).unwrap_or_else(|e| fail(format!("{out}: {e}")));
             diag(format_args!("rendered {}x{} in {:.1} ms → {out}", img.w, img.h, dt.as_secs_f64() * 1000.0));
         }
@@ -468,9 +468,9 @@ async fn cli() {
                 usage(format!("unknown mcp option `{opt}`"));
             }
             let server = match a.opt("--bridge") {
-                Some(addr) => filmcraft_automation::FilmcraftMcp::bridge(addr).unwrap_or_else(|e| fail(e)),
+                Some(addr) => redrob_film_automation::FilmcraftMcp::bridge(addr).unwrap_or_else(|e| fail(e)),
                 None => match Backend::open(&a) {
-                    Backend::Local(s) => filmcraft_automation::FilmcraftMcp::headless(*s),
+                    Backend::Local(s) => redrob_film_automation::FilmcraftMcp::headless(*s),
                     Backend::Bridge(_) => usage("mcp: use --bridge ADDR to drive a running app"),
                 },
             };
@@ -501,7 +501,7 @@ fn written_paths(result: &Value, requested: &str) -> Vec<String> {
 }
 
 /// The active sequence at the playhead, or the reason it cannot be rendered (no sequence, bad scale).
-fn render_at_playhead(s: &Session, scale: f32) -> Result<filmcraft_engine::render::Image, String> {
+fn render_at_playhead(s: &Session, scale: f32) -> Result<redrob_film_engine::render::Image, String> {
     s.try_render_program_at(scale, s.playhead()).map_err(|e| e.to_string())
 }
 
@@ -524,7 +524,7 @@ fn set_custom_bounds(p: &mut Value, start: Option<&str>, end: Option<&str>) {
 mod format_tests {
     #[test]
     fn render_reports_the_real_reason() {
-        let mut s = filmcraft_engine::Session::default();
+        let mut s = redrob_film_engine::Session::default();
         assert!(super::render_at_playhead(&s, 0.5).unwrap_err().contains("sequence"));
         s.execute("file.newSequence", serde_json::json!({"width": 16, "height": 16})).unwrap();
         for scale in [0.0, -1.0, f32::NAN] {
@@ -541,8 +541,8 @@ mod format_tests {
         let hardware = super::register_hardware_decoders();
         // always on macOS and Windows; on Linux when a VA-API driver or NVIDIA's driver (NVDEC) is there
         let expected = cfg!(any(target_os = "macos", target_os = "windows"))
-            || (cfg!(target_os = "linux") && matches!(hardware, filmcraft_platform::Availability::Available(_)));
-        assert_eq!(filmcraft_platform::registered(), expected, "{hardware:?}");
+            || (cfg!(target_os = "linux") && matches!(hardware, redrob_film_platform::Availability::Available(_)));
+        assert_eq!(redrob_film_platform::registered(), expected, "{hardware:?}");
     }
 
     #[test]

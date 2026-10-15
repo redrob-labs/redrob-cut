@@ -218,7 +218,7 @@ pub(crate) fn exr(rgba: &[u8], w: u32, h: u32, alpha: bool) -> Result<Vec<u8>> {
     for y in 0..h as u64 {
         out.extend_from_slice(&(first + y * chunk as u64).to_le_bytes());
     }
-    let lin = filmcraft_color::srgb_u8_to_linear_table();
+    let lin = redrob_film_color::srgb_u8_to_linear_table();
     let opaque: [u16; 256] = std::array::from_fn(|i| half(lin[i]));
     let row = w as usize * 4;
     let mut px = vec![0_u16; w as usize * names.len()];
@@ -357,12 +357,12 @@ mod tests {
     /// light, premultiplied alpha, rows top to bottom.
     #[test]
     fn exr_decodes_in_ffmpeg() {
-        let Some(ffmpeg) = filmcraft_testkit::ffmpeg_or_skip("OpenEXR stills") else { return };
+        let Some(ffmpeg) = redrob_film_testkit::ffmpeg_or_skip("OpenEXR stills") else { return };
         let (w, h) = (5_u32, 3_u32);
         let px: Vec<u8> = (0..w * h).flat_map(|i| [(i * 17) as u8, (255 - i * 13) as u8, (i * 40 % 256) as u8, [255, 128, 0, 64][i as usize % 4]]).collect();
-        let dir = filmcraft_testkit::fixtures::workspace_root().join("target").join("export-tests").join(format!("exr-{}", std::process::id()));
+        let dir = redrob_film_testkit::fixtures::workspace_root().join("target").join("export-tests").join(format!("exr-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        let lin = filmcraft_color::srgb_u8_to_linear_table();
+        let lin = redrob_film_color::srgb_u8_to_linear_table();
         for alpha in [false, true] {
             let path = dir.join(format!("f{alpha}.exr"));
             std::fs::write(&path, exr(&px, w, h, alpha).unwrap()).unwrap();

@@ -20,8 +20,8 @@
 //! The result is the transform mapping frame A's pixels to frame B's; the engine applies it to
 //! the mask path to write the next Mask Path keyframe.
 
-use filmcraft_geom::{Affine, Vec2};
-use filmcraft_project::TrackMethod;
+use redrob_film_geom::{Affine, Vec2};
+use redrob_film_project::TrackMethod;
 use rayon::prelude::*;
 
 /// Most features tracked per frame.

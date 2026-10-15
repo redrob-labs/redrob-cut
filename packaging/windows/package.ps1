@@ -4,7 +4,7 @@
 
 .DESCRIPTION
   Produces, in $env:DIST (default: dist/release), for Windows x64 (the only Windows release target;
-  Redrob Launcher and the in-app updater, apps/filmcraft/src/update.rs, look for exactly these names):
+  Redrob Launcher and the in-app updater, apps/redrob-film-app/src/update.rs, look for exactly these names):
     redrob-film-<version>-windows-x64.msi            per-machine installer (WiX v5)
     redrob-film-<version>-windows-x64-portable.zip   redrob-film.exe + redrob-film-cli.exe + portable.txt
 
@@ -67,7 +67,7 @@ if (-not $SkipBuild) {
   [Environment]::SetEnvironmentVariable($flagVar, '-C target-feature=+crt-static')
   # Fail the build (rather than warn) if the icon/VERSIONINFO can't be embedded.
   $env:FILMCRAFT_REQUIRE_WINRES = '1'
-  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p filmcraft -p filmcraft-cli --target $Target }
+  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p redrob-film-app -p redrob-film-cli --target $Target }
 }
 $Bin = Join-Path $TargetDir "$Target\release"
 $Stage = Join-Path $TargetDir "windows-package\$Arch"

@@ -67,16 +67,16 @@ impl BundleTracker {
 /// Load the effects project stored beside `fcproj` into `effects`, if there is one. `Ok(true)`
 /// when a file was loaded, `Ok(false)` when there is none (the effects project is reset to an
 /// empty one, unless it has unsaved changes, which are kept so a stray Open loses nothing).
-pub fn load_effects(fcproj: &str, effects: &mut effectcraft_engine::Session) -> Result<bool, String> {
+pub fn load_effects(fcproj: &str, effects: &mut redrob_effects_engine::Session) -> Result<bool, String> {
     let path = effects_path(fcproj);
     if !Path::new(&path).is_file() {
         if !effects.is_dirty() {
-            effects.replace_project(effectcraft_project::Project::default(), None);
+            effects.replace_project(redrob_effects_project::Project::default(), None);
         }
         return Ok(false);
     }
     let text = std::fs::read_to_string(&path).map_err(|e| format!("{path}: {e}"))?;
-    let project = effectcraft_project::Project::from_json(&text).map_err(|e| format!("{path}: {e}"))?;
+    let project = redrob_effects_project::Project::from_json(&text).map_err(|e| format!("{path}: {e}"))?;
     effects.replace_project(project, Some(path));
     effects.mark_saved();
     Ok(true)
@@ -84,7 +84,7 @@ pub fn load_effects(fcproj: &str, effects: &mut effectcraft_engine::Session) -> 
 
 /// Write the effects project beside `fcproj`. Nothing is written for an effects project with no
 /// items when no effects file exists yet (an Edit-only project stays a single file).
-pub fn save_effects(fcproj: &str, effects: &mut effectcraft_engine::Session) -> Result<Option<String>, String> {
+pub fn save_effects(fcproj: &str, effects: &mut redrob_effects_engine::Session) -> Result<Option<String>, String> {
     let path = effects_path(fcproj);
     if effects.project.items.is_empty() && !Path::new(&path).is_file() {
         return Ok(None);
@@ -131,7 +131,7 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("redrob-film-bundle-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let fcproj = dir.join("cut.fcproj").to_string_lossy().to_string();
-        let mut effects = effectcraft_engine::Session::new();
+        let mut effects = redrob_effects_engine::Session::new();
         assert_eq!(save_effects(&fcproj, &mut effects).unwrap(), None);
         assert!(!Path::new(&effects_path(&fcproj)).exists());
         assert!(!load_effects(&fcproj, &mut effects).unwrap());
@@ -140,7 +140,7 @@ mod tests {
         let written = save_effects(&fcproj, &mut effects).unwrap();
         assert_eq!(written.as_deref(), Some(effects_path(&fcproj).as_str()));
         assert!(!effects.is_dirty());
-        let mut other = effectcraft_engine::Session::new();
+        let mut other = redrob_effects_engine::Session::new();
         assert!(load_effects(&fcproj, &mut other).unwrap());
         assert_eq!(other.project.items.len(), effects.project.items.len());
         assert!(other.project.items.values().any(|i| i.name == "Title"));

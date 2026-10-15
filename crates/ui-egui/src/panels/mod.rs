@@ -56,7 +56,7 @@ pub mod voiceover;
 pub mod workspaces;
 
 use egui::{Align2, Color32, Rect};
-use filmcraft_project::ItemId;
+use redrob_film_project::ItemId;
 
 use crate::FilmcraftApp;
 use crate::dock::PanelKind;
@@ -64,7 +64,7 @@ use crate::theme::Tokens;
 
 /// ` · 2:05 left`: the time a job has left, as it follows a percentage.
 pub fn left_text(d: std::time::Duration) -> String {
-    tlf!(" · {time} left", time = filmcraft_engine::export::format_eta(d))
+    tlf!(" · {time} left", time = redrob_film_engine::export::format_eta(d))
 }
 
 /// [`left_text`] for a job or queue item whose JSON has `etaSeconds`, nothing while it is null.
@@ -196,7 +196,7 @@ pub fn drag_ghost(app: &FilmcraftApp, ui: &egui::Ui) {
     if let Some(p) = ctx.pointer_hover_pos() {
         let label = match &pl {
             DragPayload::Item(i) => app.session.project.item(*i).map(|x| x.name.clone()).unwrap_or_default(),
-            DragPayload::Bin(b) => app.session.project.root.find_bin(filmcraft_project::BinId(*b)).map(|x| x.name.clone()).unwrap_or_default(),
+            DragPayload::Bin(b) => app.session.project.root.find_bin(redrob_film_project::BinId(*b)).map(|x| x.name.clone()).unwrap_or_default(),
             DragPayload::Source(s) => {
                 let name = app.session.project.item(s.item).map(|i| i.name.as_str()).unwrap_or("Source");
                 let mode = match (s.video, s.audio) {
@@ -210,7 +210,7 @@ pub fn drag_ghost(app: &FilmcraftApp, ui: &egui::Ui) {
             DragPayload::Effect(e) => match (e.strip_prefix("preset:"), e.strip_prefix(LUMETRI_PRESET_PREFIX)) {
                 (Some(name), _) => name.to_string(),
                 (_, Some(name)) => crate::i18n::t(name).to_string(),
-                _ => filmcraft_project::find_effect(e).map(|d| d.name.to_string()).unwrap_or_default(),
+                _ => redrob_film_project::find_effect(e).map(|d| d.name.to_string()).unwrap_or_default(),
             },
         };
         let painter = ctx.layer_painter(egui::LayerId::new(egui::Order::Tooltip, egui::Id::new("drag-ghost")));

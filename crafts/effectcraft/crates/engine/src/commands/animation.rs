@@ -4,10 +4,10 @@
 
 use std::collections::BTreeMap;
 
-use effectcraft_keyframe::{Interp, Keyframe, Value as KV};
-use effectcraft_project::build::{self, Ids};
-use effectcraft_project::{GroupKind, Layer, LayerId, LayerSource, Node, Project, PropGroup, Property, Uid};
-use effectcraft_time::Tick;
+use redrob_effects_keyframe::{Interp, Keyframe, Value as KV};
+use redrob_effects_project::build::{self, Ids};
+use redrob_effects_project::{GroupKind, Layer, LayerId, LayerSource, Node, Project, PropGroup, Property, Uid};
+use redrob_effects_time::Tick;
 use serde_json::{Value, json};
 
 use super::{CommandSpec, bad, frontend, has_comp, has_keys, has_layers, layer_mut, layers_p, match_path_of, selected_leaf_props, str_p};
@@ -249,7 +249,7 @@ fn exponential_scale(s: &mut Session, _: &Value) -> Result<Value> {
                 let mut k = Keyframe::new(t, KV::Vec3(v));
                 k.in_interp = Interp::Linear;
                 k.out_interp = Interp::Linear;
-                effectcraft_keyframe::set_key(&mut pr.keys, k);
+                redrob_effects_keyframe::set_key(&mut pr.keys, k);
                 st.selected_keys.push(KeyRef { layer: *lid, prop: *uid, time: t });
             }
             done += 1;
@@ -376,7 +376,7 @@ fn reveal(s: &mut Session, p: &Value) -> Result<Value> {
     let mut out = vec![];
     for lid in &layers {
         let Some(l) = comp.layer(*lid) else { continue };
-        let (w, h) = effectcraft_render::source_size(&s.project, l);
+        let (w, h) = redrob_effects_render::source_size(&s.project, l);
         let anchor = [w as f64 / 2.0, h as f64 / 2.0];
         let center = [comp.width as f64 / 2.0, comp.height as f64 / 2.0];
         // Properties at the top of the layer's tree (Time Remap): enabled time remapping is a
@@ -416,10 +416,10 @@ fn reveal(s: &mut Session, p: &Value) -> Result<Value> {
             }
             // Modified: an effect's parameters that differ from a new instance's.
             if kind == "modified" && top.match_id == "effects" {
-                let size = effectcraft_render::effect_bounds(&s.project, comp, l).0;
+                let size = redrob_effects_render::effect_bounds(&s.project, comp, l).0;
                 for g in top.groups() {
                     let spec = match &g.kind {
-                        GroupKind::Effect { effect } => effectcraft_effects::find(effect),
+                        GroupKind::Effect { effect } => redrob_effects_effects::find(effect),
                         _ => None,
                     };
                     // A missing plug-in's defaults aren't known: the effect shows in full.
@@ -428,7 +428,7 @@ fn reveal(s: &mut Session, p: &Value) -> Result<Value> {
                         continue;
                     };
                     let mut next = 0;
-                    let new = effectcraft_effects::instantiate(spec, &mut Ids(&mut next), "", size);
+                    let new = redrob_effects_effects::instantiate(spec, &mut Ids(&mut next), "", size);
                     effect_changes(g, &new, &mut found);
                 }
             }
@@ -443,8 +443,8 @@ fn reveal(s: &mut Session, p: &Value) -> Result<Value> {
                 }
                 // Every layer style counts in full, like an effect; so does each overridden
                 // Essential Property.
-                if top.match_id == effectcraft_project::styles::GROUP {
-                    found.extend(top.groups().filter(|g| g.match_id != effectcraft_project::styles::BLENDING).map(|g| g.uid));
+                if top.match_id == redrob_effects_project::styles::GROUP {
+                    found.extend(top.groups().filter(|g| g.match_id != redrob_effects_project::styles::BLENDING).map(|g| g.uid));
                 }
                 if let GroupKind::Essential { overridden } = &top.kind {
                     for u in overridden {

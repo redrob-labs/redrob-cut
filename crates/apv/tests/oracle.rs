@@ -3,16 +3,16 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use filmcraft_apv::{
+use redrob_film_apv::{
     ChromaFormat, ContentLightLevel, DecodeOptions, Encoder, EncoderConfig, Frame, MasteringDisplay, Profile, decode_frame, decode_frame_with, probe,
 };
 
 fn ffmpeg() -> Option<PathBuf> {
-    filmcraft_testkit::ffmpeg_or_skip("apv oracle")
+    redrob_film_testkit::ffmpeg_or_skip("apv oracle")
 }
 
 fn fixture_dir() -> PathBuf {
-    filmcraft_testkit::fixtures_dir("apv")
+    redrob_film_testkit::fixtures_dir("apv")
 }
 
 fn native_pix_fmt(profile: Profile) -> &'static str {

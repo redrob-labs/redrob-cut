@@ -235,7 +235,7 @@ fn add_effect(b: &mut Backend, a: &Value) -> Result<Reply> {
         }
     }
     // The undo step is named like effect.apply's own ("Apply Gaussian Blur").
-    let name = effect.as_str().map(|e| effectcraft_engine::effects::lookup(e).map_or(e, |s| s.name));
+    let name = effect.as_str().map(|e| redrob_effects_engine::effects::lookup(e).map_or(e, |s| s.name));
     let label = name.map(|n| json!(format!("Apply {n}")));
     b.exec("engine.batch", obj(&[("steps", Some(&json!(steps))), ("label", label.as_ref())]))?;
     let tree = b.exec("layer.tree", obj(&[("layer", Some(layer)), ("comp", comp)]))?;

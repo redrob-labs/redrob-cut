@@ -12,7 +12,7 @@
 //! (the demo project), Open Most Recent, or an empty project.
 //!
 //! `--control <port>` (or `FILMCRAFT_CONTROL_PORT`) starts a localhost JSON-lines control server;
-//! see `filmcraft_ui_egui::control` for the methods. A port that is not a number is an error from
+//! see `redrob_film_ui_egui::control` for the methods. A port that is not a number is an error from
 //! either source. Without it the app still opens one, on a free port and gated by a per-launch
 //! token, for the built-in agent (Redrob Code) alone; see [`agent_setup`].
 //!
@@ -57,9 +57,9 @@ mod window_raise;
 
 use args::{Cli, Launch};
 use chrono::TimeZone;
-use filmcraft_engine::Session;
-use filmcraft_engine::autosave::{AutosaveConfig, default_data_dir};
-use filmcraft_ui_egui::FilmcraftApp;
+use redrob_film_engine::Session;
+use redrob_film_engine::autosave::{AutosaveConfig, default_data_dir};
+use redrob_film_ui_egui::FilmcraftApp;
 use serde_json::json;
 
 /// Reverse-DNS app id: Linux `.desktop` file, hicolor icon name and Wayland app id.
@@ -135,8 +135,8 @@ fn main() -> eframe::Result {
     #[cfg(target_os = "linux")]
     dev_icon::ensure_dev_desktop_entry();
     // Panics anywhere go to <data dir>/Logs/crash-<day>.log with a backtrace; the UI pass and
-    // frame workers catch them and keep running (see filmcraft_ui_egui::crash).
-    filmcraft_ui_egui::crash::install(log_dir);
+    // frame workers catch them and keep running (see redrob_film_ui_egui::crash).
+    redrob_film_ui_egui::crash::install(log_dir);
     // OS hardware video decoders (VideoToolbox on macOS) in front of our own; Settings ▸ Playback ▸
     // Hardware decoding switches them off. Unsupported streams and failures use our decoders.
     register_hardware_decoders();
@@ -227,7 +227,7 @@ fn main() -> eframe::Result {
             app.audio = Some(Box::new(audio::CpalOut::new()));
             app.hooks.pick_files = Some(Box::new(|exts: &[&str]| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t("Media"), &file_filters::extensions(exts))
+                    .add_filter(redrob_film_ui_egui::i18n::t("Media"), &file_filters::extensions(exts))
                     .pick_files()
                     .unwrap_or_default()
                     .into_iter()
@@ -237,20 +237,20 @@ fn main() -> eframe::Result {
             // Link Media ▸ Locate…, Attach Proxies, Reconnect Full Resolution: one path, not imported.
             app.hooks.pick_file_for_relink = Some(Box::new(|exts: &[&str], _hint| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t("Media"), &file_filters::extensions(exts))
+                    .add_filter(redrob_film_ui_egui::i18n::t("Media"), &file_filters::extensions(exts))
                     .pick_file()
                     .map(|p| p.to_string_lossy().to_string())
             }));
             app.hooks.pick_save = Some(Box::new(|name: &str| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
+                    .add_filter(redrob_film_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
                     .set_file_name(name)
                     .save_file()
                     .map(|p| p.to_string_lossy().to_string())
             }));
             app.hooks.pick_save_as = Some(Box::new(|filter: &str, exts: &[&str], name: &str| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t(filter), &file_filters::extensions(exts))
+                    .add_filter(redrob_film_ui_egui::i18n::t(filter), &file_filters::extensions(exts))
                     .set_file_name(name)
                     .save_file()
                     .map(|p| p.to_string_lossy().to_string())
@@ -283,7 +283,7 @@ fn main() -> eframe::Result {
             }));
             app.hooks.clipboard_media = Some(Box::new(clipboard_media));
             // Settings ▸ General ▸ Interface Language ▸ System Language (#218).
-            app.hooks.cursor_screen_position = Some(Box::new(filmcraft_platform::cursor::cursor_screen_position));
+            app.hooks.cursor_screen_position = Some(Box::new(redrob_film_platform::cursor::cursor_screen_position));
             app.hooks.system_languages = Some(Box::new(|| sys_locale::get_locales().collect()));
             // Settings ▸ Appearance ▸ Appearance Mode ▸ Sync with system on Linux desktops whose
             // compositor reports no theme to winit (no polling: see appearance.rs).
@@ -293,13 +293,13 @@ fn main() -> eframe::Result {
             }));
             app.hooks.pick_open_file = Some(Box::new(|filter: &str, exts: &[&str]| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t(filter), &file_filters::extensions(exts))
+                    .add_filter(redrob_film_ui_egui::i18n::t(filter), &file_filters::extensions(exts))
                     .pick_file()
                     .map(|p| p.to_string_lossy().to_string())
             }));
             app.hooks.pick_open_project = Some(Box::new(|| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
+                    .add_filter(redrob_film_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
                     .pick_file()
                     .map(|p| p.to_string_lossy().to_string())
             }));
@@ -328,7 +328,7 @@ fn main() -> eframe::Result {
                     // The connected workspace's key, as the variable Redrob Code reads for Redrob.
                     let env: Vec<(&str, String)> = keys.current().map(|(k, _)| vec![("REDROB_API_KEY", k.api_key)]).unwrap_or_default();
                     let host = acp::AcpHost::start(&bin, &agent_setup::agent_cwd(), link.clone(), &env, ctx.clone())?;
-                    Ok(Box::new(host) as Box<dyn filmcraft_ui_egui::agent::AgentHost>)
+                    Ok(Box::new(host) as Box<dyn redrob_film_ui_egui::agent::AgentHost>)
                 }));
             }
             // One window, two modes: the Edit editor built above, Effects on its first switch.
@@ -340,22 +340,22 @@ fn main() -> eframe::Result {
     if let Err(e) = &started {
         let msg = format!("Redrob Film could not start its window: {e}\n\nUpdating the graphics driver usually fixes this.");
         log::error!("{msg}");
-        filmcraft_ui_egui::crash::record(&msg);
+        redrob_film_ui_egui::crash::record(&msg);
         let _ = rfd::MessageDialog::new().set_title("Redrob Film").set_description(&msg).set_level(rfd::MessageLevel::Error).show();
     }
     started
 }
 
 /// Files copied in the file manager, else an image, on the system clipboard (Paste, #611).
-fn clipboard_media() -> Option<filmcraft_ui_egui::ClipboardMedia> {
+fn clipboard_media() -> Option<redrob_film_ui_egui::ClipboardMedia> {
     let mut clipboard = arboard::Clipboard::new().ok()?;
     if let Ok(files) = clipboard.get().file_list()
         && !files.is_empty()
     {
-        return Some(filmcraft_ui_egui::ClipboardMedia::Files(files.iter().map(|p| p.to_string_lossy().into_owned()).collect()));
+        return Some(redrob_film_ui_egui::ClipboardMedia::Files(files.iter().map(|p| p.to_string_lossy().into_owned()).collect()));
     }
     let image = clipboard.get_image().ok()?;
-    Some(filmcraft_ui_egui::ClipboardMedia::Image { width: image.width, height: image.height, rgba: image.bytes.into_owned() })
+    Some(redrob_film_ui_egui::ClipboardMedia::Image { width: image.width, height: image.height, rgba: image.bytes.into_owned() })
 }
 
 /// Open a file in its default application, or reveal it in the file manager (Edit Original,
@@ -385,35 +385,35 @@ fn open_path(path: &str, reveal: bool) -> Result<(), String> {
     cmd.spawn().map(|_| ()).map_err(|e| format!("can't open {path}: {e}"))
 }
 
-/// The GPU export frame renderer (filmcraft-gpu's off-screen compositor behind filmcraft-export's
+/// The GPU export frame renderer (redrob-film-gpu's off-screen compositor behind redrob-film-export's
 /// frame-renderer hook): exports with GPU rendering Auto composite on the GPU and fall back to the
 /// CPU reference renderer wherever it cannot.
-struct GpuFrameRenderer(filmcraft_gpu::ExportRenderer);
+struct GpuFrameRenderer(redrob_film_gpu::ExportRenderer);
 
-impl filmcraft_export::FrameRenderer for GpuFrameRenderer {
+impl redrob_film_export::FrameRenderer for GpuFrameRenderer {
     fn render(
         &mut self,
-        project: &filmcraft_project::Project,
-        seq: filmcraft_project::ItemId,
-        t: filmcraft_time::Tick,
-        opts: filmcraft_render::RenderOptions,
-        sources: &dyn filmcraft_render::SourceProvider,
-    ) -> Option<filmcraft_render::Image> {
+        project: &redrob_film_project::Project,
+        seq: redrob_film_project::ItemId,
+        t: redrob_film_time::Tick,
+        opts: redrob_film_render::RenderOptions,
+        sources: &dyn redrob_film_render::SourceProvider,
+    ) -> Option<redrob_film_render::Image> {
         self.0.render(project, seq, t, opts, sources)
     }
 }
 
 fn register_gpu_frame_renderer() {
-    filmcraft_export::register_frame_renderer(|| {
-        filmcraft_gpu::ExportRenderer::new().map(|r| Box::new(GpuFrameRenderer(r)) as Box<dyn filmcraft_export::FrameRenderer>)
+    redrob_film_export::register_frame_renderer(|| {
+        redrob_film_gpu::ExportRenderer::new().map(|r| Box::new(GpuFrameRenderer(r)) as Box<dyn redrob_film_export::FrameRenderer>)
     });
 }
 
 /// Put the OS hardware video decoders in front of our own. Registered in a statement of its own:
 /// a log macro does not evaluate its arguments while no logger takes its level, which left the
 /// hardware decoders out of every run.
-fn register_hardware_decoders() -> filmcraft_platform::Availability {
-    let hardware = filmcraft_platform::register();
+fn register_hardware_decoders() -> redrob_film_platform::Availability {
+    let hardware = redrob_film_platform::register();
     log::info!("hardware decoding: {hardware:?}");
     hardware
 }
@@ -447,7 +447,7 @@ mod tests {
         let hardware = super::register_hardware_decoders();
         // always on macOS and Windows; on Linux when a VA-API driver or NVIDIA's driver (NVDEC) is there
         let expected = cfg!(any(target_os = "macos", target_os = "windows"))
-            || (cfg!(target_os = "linux") && matches!(hardware, filmcraft_platform::Availability::Available(_)));
-        assert_eq!(filmcraft_platform::registered(), expected, "{hardware:?}");
+            || (cfg!(target_os = "linux") && matches!(hardware, redrob_film_platform::Availability::Available(_)));
+        assert_eq!(redrob_film_platform::registered(), expected, "{hardware:?}");
     }
 }

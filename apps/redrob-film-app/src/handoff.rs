@@ -3,7 +3,7 @@
 //!
 //! Both editors count time in the same unit (254 016 000 000 ticks a second: crates/time/src/
 //! lib.rs L20 and crafts/effectcraft/crates/time/src/lib.rs L17), so a tick value crosses over
-//! unchanged; only the newtype differs (`filmcraft_time::Tick(i64)` / `effectcraft_time::Tick(i64)`).
+//! unchanged; only the newtype differs (`redrob_film_time::Tick(i64)` / `redrob_effects_time::Tick(i64)`).
 //!
 //! Timeline → composition ([`timeline_to_composition`]): every selected video clip (else every
 //! video clip in the in/out range, else the whole sequence) whose media is a file becomes a
@@ -13,7 +13,7 @@
 //! `start_time/in_point/out_point/stretch`, crafts/effectcraft/crates/project/src/lib.rs L976-981).
 //!
 //! Composition → timeline ([`composition_to_timeline`]): the active composition is wrapped in a
-//! [`CompSource`], a `filmcraft_media::MediaSource` (crates/media/src/lib.rs L158) that renders
+//! [`CompSource`], a `redrob_film_media::MediaSource` (crates/media/src/lib.rs L158) that renders
 //! frames with the effects renderer (`Renderer::comp_frame`, crafts/effectcraft/crates/render/src/
 //! lib.rs L944) on demand, registered in the Edit engine's media pool for a placeholder media item
 //! (`MediaPool::insert`, crates/engine/src/media_pool.rs L133: a source inserted without a key
@@ -35,11 +35,11 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use filmcraft_color::ColorInfo;
-use filmcraft_frame::{AudioBuffer, VideoFrame};
-use filmcraft_media::{FrameRequest, MediaError, MediaInfo, MediaKind, MediaSource, VideoStreamInfo};
-use filmcraft_project::{ItemKind, Label, MediaClip, MediaRef};
-use filmcraft_time::Tick;
+use redrob_film_color::ColorInfo;
+use redrob_film_frame::{AudioBuffer, VideoFrame};
+use redrob_film_media::{FrameRequest, MediaError, MediaInfo, MediaKind, MediaSource, VideoStreamInfo};
+use redrob_film_project::{ItemKind, Label, MediaClip, MediaRef};
+use redrob_film_time::Tick;
 use serde_json::{Value, json};
 
 use crate::shell::{Mode, ShellApp};
@@ -49,13 +49,13 @@ use crate::shell::{Mode, ShellApp};
 pub const COMP_SCHEME: &str = "effects://comp/";
 
 /// The path of the placeholder item for composition `id`.
-pub fn comp_path(id: effectcraft_project::ItemId) -> String {
+pub fn comp_path(id: redrob_effects_project::ItemId) -> String {
     format!("{COMP_SCHEME}{}", id.0)
 }
 
 /// The composition id a placeholder path names, if it is one.
-pub fn parse_comp_path(path: &str) -> Option<effectcraft_project::ItemId> {
-    path.strip_prefix(COMP_SCHEME)?.parse::<u64>().ok().map(effectcraft_project::ItemId)
+pub fn parse_comp_path(path: &str) -> Option<redrob_effects_project::ItemId> {
+    path.strip_prefix(COMP_SCHEME)?.parse::<u64>().ok().map(redrob_effects_project::ItemId)
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ pub fn layer_geometry(clip: &ClipGeom, comp_start: i64) -> Result<LayerGeom, Str
 // ----------------------------------------------------------------------------------------------
 
 /// The media description of a composition as the timeline sees it (see the module docs).
-pub fn comp_media_info(name: &str, comp: &effectcraft_project::Comp) -> Result<MediaInfo, String> {
+pub fn comp_media_info(name: &str, comp: &redrob_effects_project::Comp) -> Result<MediaInfo, String> {
     if comp.width == 0 || comp.height == 0 {
         return Err(format!("composition \"{name}\" has no size"));
     }
@@ -144,7 +144,7 @@ pub fn comp_media_info(name: &str, comp: &effectcraft_project::Comp) -> Result<M
         video: Some(VideoStreamInfo {
             width: comp.width,
             height: comp.height,
-            frame_rate: filmcraft_time::FrameRate::new(comp.frame_rate.num, comp.frame_rate.den),
+            frame_rate: redrob_film_time::FrameRate::new(comp.frame_rate.num, comp.frame_rate.den),
             par: (1, 1),
             codec: "Composition".into(),
             pixel_format: "rgba8".into(),
@@ -163,17 +163,17 @@ pub fn comp_media_info(name: &str, comp: &effectcraft_project::Comp) -> Result<M
 /// A `MediaSource` that renders an effects composition on demand.
 pub struct CompSource {
     info: MediaInfo,
-    project: Arc<effectcraft_project::Project>,
-    comp: effectcraft_project::ItemId,
-    footage: Arc<dyn effectcraft_render::FootageSource>,
+    project: Arc<redrob_effects_project::Project>,
+    comp: redrob_effects_project::ItemId,
+    footage: Arc<dyn redrob_effects_render::FootageSource>,
 }
 
 impl CompSource {
     pub fn new(
         name: &str,
-        project: Arc<effectcraft_project::Project>,
-        comp: effectcraft_project::ItemId,
-        footage: Arc<dyn effectcraft_render::FootageSource>,
+        project: Arc<redrob_effects_project::Project>,
+        comp: redrob_effects_project::ItemId,
+        footage: Arc<dyn redrob_effects_render::FootageSource>,
     ) -> Result<Self, String> {
         let c = project.comp(comp).ok_or_else(|| format!("no composition #{}", comp.0))?;
         let info = comp_media_info(name, c)?;
@@ -186,14 +186,14 @@ impl MediaSource for CompSource {
         &self.info
     }
 
-    fn video_frame(&self, req: FrameRequest) -> filmcraft_media::Result<Arc<VideoFrame>> {
+    fn video_frame(&self, req: FrameRequest) -> redrob_film_media::Result<Arc<VideoFrame>> {
         let v = self.info.video.as_ref().ok_or(MediaError::NoStream("video"))?;
         // Past the end the last frame holds (a clip trimmed past its media shows the last frame).
         let last = self.info.duration.0.saturating_sub(v.frame_rate.frame_duration().0).max(0);
         let t = req.time.0.clamp(0, last);
         let scale = if req.scale.is_finite() { f64::from(req.scale.clamp(0.1, 1.0)) } else { 1.0 };
-        let opts = effectcraft_render::RenderOpts { scale, ..Default::default() };
-        let image = effectcraft_render::Renderer::new(&self.project, self.footage.as_ref(), opts).comp_frame(self.comp, effectcraft_time::Tick(t));
+        let opts = redrob_effects_render::RenderOpts { scale, ..Default::default() };
+        let image = redrob_effects_render::Renderer::new(&self.project, self.footage.as_ref(), opts).comp_frame(self.comp, redrob_effects_time::Tick(t));
         let (w, h) = (image.width, image.height);
         let data = image.to_rgba8();
         let expected = (w as usize).checked_mul(h as usize).and_then(|n| n.checked_mul(4));
@@ -203,7 +203,7 @@ impl MediaSource for CompSource {
         Ok(Arc::new(VideoFrame::rgba8(w, h, data).with_pts(req.time)))
     }
 
-    fn audio(&self, _start: i64, _frames: usize, _sample_rate: u32) -> filmcraft_media::Result<AudioBuffer> {
+    fn audio(&self, _start: i64, _frames: usize, _sample_rate: u32) -> redrob_film_media::Result<AudioBuffer> {
         Err(MediaError::NoStream("audio"))
     }
 }
@@ -222,10 +222,10 @@ struct Outgoing {
 /// The video clips to send from the Edit editor's active sequence: the selection, else the in/out
 /// range, else the whole sequence. `skipped` counts clips without a media file behind them
 /// (generators, graphics, nested sequences, offline media).
-fn outgoing_clips(session: &filmcraft_engine::Session) -> Result<(Vec<Outgoing>, usize), String> {
+fn outgoing_clips(session: &redrob_film_engine::Session) -> Result<(Vec<Outgoing>, usize), String> {
     let seq = session.active_sequence().ok_or("open a sequence first")?;
     let project = &session.project;
-    let selected: Vec<filmcraft_project::ClipId> = session.state.selection.clone();
+    let selected: Vec<redrob_film_project::ClipId> = session.state.selection.clone();
     let range = match (seq.mark_in, seq.mark_out) {
         (Some(i), Some(o)) if o > i => Some((i, o)),
         _ => None,
@@ -267,7 +267,7 @@ fn outgoing_clips(session: &filmcraft_engine::Session) -> Result<(Vec<Outgoing>,
 }
 
 /// What `timeline_to_composition` would send right now (for the Mode menu's enablement).
-pub fn can_send_selection(session: &filmcraft_engine::Session) -> bool {
+pub fn can_send_selection(session: &redrob_film_engine::Session) -> bool {
     outgoing_clips(session).is_ok_and(|(clips, _)| !clips.is_empty())
 }
 
@@ -297,7 +297,7 @@ pub fn timeline_to_composition(shell: &mut ShellApp, params: &Value) -> Result<S
     }
     let wanted_name = params.get("name").and_then(Value::as_str).filter(|n| !n.trim().is_empty());
     let name = wanted_name.map(str::to_string).unwrap_or_else(|| format!("{seq_name} (Effects)"));
-    let rate = effectcraft_time::FrameRate::new(settings.frame_rate.num, settings.frame_rate.den);
+    let rate = redrob_effects_time::FrameRate::new(settings.frame_rate.num, settings.frame_rate.den);
 
     let effects = shell.ensure_effects();
     let session = &mut effects.session;
@@ -310,24 +310,24 @@ pub fn timeline_to_composition(shell: &mut ShellApp, params: &Value) -> Result<S
                 "width": settings.width,
                 "height": settings.height,
                 "frameRate": rate.as_f64(),
-                "duration": effectcraft_time::Tick(duration).seconds(),
+                "duration": redrob_effects_time::Tick(duration).seconds(),
                 "open": false,
             }),
         )
         .map_err(|e| e.to_string())?;
-    let cid = created.get("comp").and_then(Value::as_u64).map(effectcraft_project::ItemId).ok_or("comp.new returned no composition id")?;
+    let cid = created.get("comp").and_then(Value::as_u64).map(redrob_effects_project::ItemId).ok_or("comp.new returned no composition id")?;
     // The exact rate and length (the command takes seconds and an fps float).
     session
         .edit("Composition from Timeline", None, |proj, _| {
-            let c = proj.comp_mut(cid).ok_or(effectcraft_engine::EngineError::NoComp)?;
+            let c = proj.comp_mut(cid).ok_or(redrob_effects_engine::EngineError::NoComp)?;
             c.frame_rate = rate;
-            c.duration = effectcraft_time::Tick(duration);
-            c.work_area = (effectcraft_time::Tick(0), effectcraft_time::Tick(duration));
+            c.duration = redrob_effects_time::Tick(duration);
+            c.work_area = (redrob_effects_time::Tick(0), redrob_effects_time::Tick(duration));
             Ok(())
         })
         .map_err(|e| e.to_string())?;
 
-    let mut imported: HashMap<String, effectcraft_project::ItemId> = HashMap::new();
+    let mut imported: HashMap<String, redrob_effects_project::ItemId> = HashMap::new();
     let mut placed = 0usize;
     let mut problems: Vec<String> = Vec::new();
     for clip in &clips {
@@ -343,7 +343,7 @@ pub fn timeline_to_composition(shell: &mut ShellApp, params: &Value) -> Result<S
             None => {
                 // crafts/effectcraft/crates/engine/src/commands/file.rs L234 / L500: {"items": [ids], "errors": [..]}
                 let r = session.execute("file.import", json!({"paths": [clip.path.as_str()], "addToComp": false})).map_err(|e| e.to_string())?;
-                let Some(id) = r.get("items").and_then(Value::as_array).and_then(|a| a.first()).and_then(Value::as_u64).map(effectcraft_project::ItemId) else {
+                let Some(id) = r.get("items").and_then(Value::as_array).and_then(|a| a.first()).and_then(Value::as_u64).map(redrob_effects_project::ItemId) else {
                     let why = r.get("errors").and_then(Value::as_array).and_then(|a| a.first()).and_then(Value::as_str).unwrap_or("not importable");
                     problems.push(format!("{}: {why}", clip.name));
                     continue;
@@ -354,19 +354,19 @@ pub fn timeline_to_composition(shell: &mut ShellApp, params: &Value) -> Result<S
         };
         // crafts/effectcraft/crates/engine/src/commands/layer.rs L253: `layer.addItem` -> {"layer": id}
         let r = session.execute("layer.addItem", json!({"comp": cid.0, "item": fid.0, "time": 0.0})).map_err(|e| e.to_string())?;
-        let Some(lid) = r.get("layer").and_then(Value::as_u64).map(effectcraft_project::LayerId) else {
+        let Some(lid) = r.get("layer").and_then(Value::as_u64).map(redrob_effects_project::LayerId) else {
             problems.push(format!("{}: no layer was added", clip.name));
             continue;
         };
         let layer_name = clip.name.clone();
         session
             .edit("Place Clip", None, |proj, _| {
-                let c = proj.comp_mut(cid).ok_or(effectcraft_engine::EngineError::NoComp)?;
-                let l = c.layers.iter_mut().find(|l| l.id == lid).ok_or_else(|| effectcraft_engine::EngineError::Other("the new layer is gone".into()))?;
+                let c = proj.comp_mut(cid).ok_or(redrob_effects_engine::EngineError::NoComp)?;
+                let l = c.layers.iter_mut().find(|l| l.id == lid).ok_or_else(|| redrob_effects_engine::EngineError::Other("the new layer is gone".into()))?;
                 l.name = layer_name;
-                l.start_time = effectcraft_time::Tick(geom.start_time);
-                l.in_point = effectcraft_time::Tick(geom.in_point);
-                l.out_point = effectcraft_time::Tick(geom.out_point);
+                l.start_time = redrob_effects_time::Tick(geom.start_time);
+                l.in_point = redrob_effects_time::Tick(geom.in_point);
+                l.out_point = redrob_effects_time::Tick(geom.out_point);
                 l.stretch = geom.stretch;
                 Ok(())
             })
@@ -395,7 +395,7 @@ pub fn can_place_composition(shell: &ShellApp) -> bool {
 }
 
 /// The placeholder media clip for a composition.
-fn placeholder_clip(info: MediaInfo, comp: effectcraft_project::ItemId) -> MediaClip {
+fn placeholder_clip(info: MediaInfo, comp: redrob_effects_project::ItemId) -> MediaClip {
     MediaClip {
         media: MediaRef::File { path: comp_path(comp) },
         info,
@@ -462,7 +462,7 @@ pub fn composition_to_timeline(shell: &mut ShellApp, params: &Value) -> Result<S
 /// After a project opens: give every placeholder item (`effects://comp/<id>`) its live source
 /// again, from the effects project of the same bundle. Items whose composition is gone stay as
 /// they are (the engine shows them offline). Returns how many were bound.
-pub fn rebind_composition_sources(edit: &filmcraft_engine::Session, effects: &effectcraft_engine::Session) -> usize {
+pub fn rebind_composition_sources(edit: &redrob_film_engine::Session, effects: &redrob_effects_engine::Session) -> usize {
     let mut bound = 0usize;
     for it in edit.project.items.values() {
         let ItemKind::Media(m) = &it.kind else { continue };
@@ -484,7 +484,7 @@ pub fn rebind_composition_sources(edit: &filmcraft_engine::Session, effects: &ef
 mod tests {
     use super::*;
 
-    const SEC: i64 = filmcraft_time::TICKS_PER_SECOND;
+    const SEC: i64 = redrob_film_time::TICKS_PER_SECOND;
 
     /// A 3-clip sequence: A at 0 s for 2 s (from media 1 s), B at 2 s for 1 s at 200 %, C at 4 s
     /// for 2 s after a 1 s gap. The composition starts with A and ends with C.
@@ -560,8 +560,8 @@ mod tests {
 
     #[test]
     fn a_composition_describes_itself_as_square_pixel_rgba_movie_without_audio() {
-        let rate = effectcraft_time::FrameRate::FPS_23_976;
-        let comp = effectcraft_project::Comp::new(1920, 1080, rate, effectcraft_time::Tick(10 * SEC));
+        let rate = redrob_effects_time::FrameRate::FPS_23_976;
+        let comp = redrob_effects_project::Comp::new(1920, 1080, rate, redrob_effects_time::Tick(10 * SEC));
         let info = comp_media_info("Title", &comp).unwrap();
         assert_eq!(info.name, "Title");
         assert_eq!(info.kind, MediaKind::Movie);
@@ -575,23 +575,23 @@ mod tests {
         assert!(info.audio_streams.is_empty());
         assert!(!info.has_audio());
         // degenerate compositions are refused, not panicked on
-        let empty = effectcraft_project::Comp::new(0, 1080, rate, effectcraft_time::Tick(SEC));
+        let empty = redrob_effects_project::Comp::new(0, 1080, rate, redrob_effects_time::Tick(SEC));
         assert!(comp_media_info("x", &empty).is_err());
-        let zero_len = effectcraft_project::Comp::new(16, 16, rate, effectcraft_time::Tick(0));
+        let zero_len = redrob_effects_project::Comp::new(16, 16, rate, redrob_effects_time::Tick(0));
         assert!(comp_media_info("x", &zero_len).is_err());
     }
 
     #[test]
     fn a_composition_source_renders_frames_of_its_size_and_clamps_time() {
-        let rate = effectcraft_time::FrameRate::FPS_30;
-        let mut project = effectcraft_project::Project::default();
-        let comp = effectcraft_project::Comp::new(64, 32, rate, effectcraft_time::Tick(2 * SEC));
-        let cid = project.add_item("C", effectcraft_color::Label::Sandstone, None, effectcraft_project::ItemKind::Comp(comp.into()));
-        let src = CompSource::new("C", Arc::new(project), cid, Arc::new(effectcraft_render::NoFootage)).unwrap();
+        let rate = redrob_effects_time::FrameRate::FPS_30;
+        let mut project = redrob_effects_project::Project::default();
+        let comp = redrob_effects_project::Comp::new(64, 32, rate, redrob_effects_time::Tick(2 * SEC));
+        let cid = project.add_item("C", redrob_effects_color::Label::Sandstone, None, redrob_effects_project::ItemKind::Comp(comp.into()));
+        let src = CompSource::new("C", Arc::new(project), cid, Arc::new(redrob_effects_render::NoFootage)).unwrap();
         let f = src.video_frame(FrameRequest::full(Tick(SEC))).unwrap();
         assert_eq!((f.width, f.height), (64, 32));
         assert_eq!(f.pts, Tick(SEC));
-        assert!(matches!(f.data, filmcraft_frame::PixelData::Rgba8(_)));
+        assert!(matches!(f.data, redrob_film_frame::PixelData::Rgba8(_)));
         // half scale renders half size; a time past the end and a negative one are clamped
         let half = src.video_frame(FrameRequest { time: Tick(99 * SEC), scale: 0.5 }).unwrap();
         assert_eq!((half.width, half.height), (32, 16));
@@ -602,11 +602,11 @@ mod tests {
 
     #[test]
     fn placeholder_paths_round_trip_and_reject_files() {
-        let id = effectcraft_project::ItemId(42);
+        let id = redrob_effects_project::ItemId(42);
         assert_eq!(parse_comp_path(&comp_path(id)), Some(id));
         assert_eq!(parse_comp_path("/media/a.mov"), None);
         assert_eq!(parse_comp_path("effects://comp/x"), None);
-        let comp = effectcraft_project::Comp::new(8, 8, effectcraft_time::FrameRate::FPS_25, effectcraft_time::Tick(SEC));
+        let comp = redrob_effects_project::Comp::new(8, 8, redrob_effects_time::FrameRate::FPS_25, redrob_effects_time::Tick(SEC));
         let clip = placeholder_clip(comp_media_info("C", &comp).unwrap(), id);
         assert!(!clip.offline);
         assert_eq!(clip.media, MediaRef::File { path: "effects://comp/42".into() });

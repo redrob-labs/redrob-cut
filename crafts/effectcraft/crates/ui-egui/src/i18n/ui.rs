@@ -4470,7 +4470,7 @@ mod tests {
     /// everywhere.
     #[test]
     fn settings_pages_are_translated() {
-        use effectcraft_engine::prefs::{Item, Kind, LANGUAGES, pages};
+        use redrob_effects_engine::prefs::{Item, Kind, LANGUAGES, pages};
         const VERBATIM: &[&str] = &["", "3D", "1/2", "1/4", "1/8", "sRGB", "Display P3", "px", "s", "%", "MB", "GB", "Hz", "pt"];
         let mut drawn = Vec::new();
         for page in pages() {

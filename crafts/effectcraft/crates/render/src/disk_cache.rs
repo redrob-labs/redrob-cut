@@ -25,8 +25,8 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 
-use effectcraft_effects::Buf;
-use effectcraft_raster::Image;
+use redrob_effects_effects::Buf;
+use redrob_effects_raster::Image;
 
 /// File format version (part of the folder layout).
 const VERSION: &str = "v1";
@@ -562,14 +562,14 @@ impl DiskCache {
     }
 
     /// A segmentation (chain key, scale) written by [`DiskCache::put_seg`].
-    pub fn get_seg(&self, key: u64, scale: f64) -> Option<effectcraft_effects::roto::FrameSeg> {
+    pub fn get_seg(&self, key: u64, scale: f64) -> Option<redrob_effects_effects::roto::FrameSeg> {
         let p = self.read(Kind::Matte, seg_key(key, scale))?;
         let raw = lz4_flex::decompress_size_prepended(&p).ok()?;
-        effectcraft_effects::roto::FrameSeg::from_bytes(&raw)
+        redrob_effects_effects::roto::FrameSeg::from_bytes(&raw)
     }
 
     /// Queue a segmentation for writing.
-    pub fn put_seg(&self, key: u64, scale: f64, seg: &effectcraft_effects::roto::FrameSeg) {
+    pub fn put_seg(&self, key: u64, scale: f64, seg: &redrob_effects_effects::roto::FrameSeg) {
         let k = seg_key(key, scale);
         if self.contains(Kind::Matte, k) {
             return;
@@ -658,11 +658,11 @@ fn seg_key(key: u64, scale: f64) -> u128 {
     h.finish()
 }
 
-impl effectcraft_effects::roto::SegStore for DiskCache {
-    fn get_seg(&self, key: u64, scale: f64) -> Option<effectcraft_effects::roto::FrameSeg> {
+impl redrob_effects_effects::roto::SegStore for DiskCache {
+    fn get_seg(&self, key: u64, scale: f64) -> Option<redrob_effects_effects::roto::FrameSeg> {
         DiskCache::get_seg(self, key, scale)
     }
-    fn put_seg(&self, key: u64, scale: f64, seg: &effectcraft_effects::roto::FrameSeg) {
+    fn put_seg(&self, key: u64, scale: f64, seg: &redrob_effects_effects::roto::FrameSeg) {
         DiskCache::put_seg(self, key, scale, seg);
     }
 }
@@ -794,7 +794,7 @@ fn file_stamp(h: &mut Hash128, path: &str) {
     }
 }
 
-fn footage_stamp(h: &mut Hash128, f: &effectcraft_project::Footage) {
+fn footage_stamp(h: &mut Hash128, f: &redrob_effects_project::Footage) {
     file_stamp(h, &f.path);
     for p in &f.sequence {
         file_stamp(h, p);
@@ -803,11 +803,11 @@ fn footage_stamp(h: &mut Hash128, f: &effectcraft_project::Footage) {
 
 /// Salt for layer cache keys on disk: the renderer version and every footage file's identity
 /// (layer keys name footage items, not file contents).
-pub fn footage_salt(project: &effectcraft_project::Project) -> u64 {
+pub fn footage_salt(project: &redrob_effects_project::Project) -> u64 {
     let mut h = Hash128::default();
     h.write(RENDER_VERSION.as_bytes());
     for (id, it) in &project.items {
-        if let effectcraft_project::ItemKind::Footage(f) = &it.kind {
+        if let redrob_effects_project::ItemKind::Footage(f) = &it.kind {
             h.write_u64(id.0);
             hash_debug(&mut h, f);
             footage_stamp(&mut h, f);
@@ -821,8 +821,8 @@ pub fn footage_salt(project: &effectcraft_project::Project) -> u64 {
 /// uses (nested comps, footage, solids, their proxies and Use Proxy switches, footage and proxy
 /// files' size and time). With expressions in play (which can read any comp) the whole project
 /// counts. Switches that don't change pixels (Audio, Lock, Shy, Hide Shy Layers) don't count.
-pub fn comp_content_key(project: &effectcraft_project::Project, comp: effectcraft_project::ItemId) -> u128 {
-    use effectcraft_project::{ItemKind, LayerSource};
+pub fn comp_content_key(project: &redrob_effects_project::Project, comp: redrob_effects_project::ItemId) -> u128 {
+    use redrob_effects_project::{ItemKind, LayerSource};
     let mut h = Hash128::default();
     h.write(RENDER_VERSION.as_bytes());
     hash_debug(&mut h, &project.settings);
@@ -845,7 +845,7 @@ pub fn comp_content_key(project: &effectcraft_project::Project, comp: effectcraf
             }
         }
     }
-    let ids: Vec<effectcraft_project::ItemId> = if expressions { project.items.keys().copied().collect() } else { seen.into_iter().collect() };
+    let ids: Vec<redrob_effects_project::ItemId> = if expressions { project.items.keys().copied().collect() } else { seen.into_iter().collect() };
     for id in ids {
         let Some(it) = project.item(id) else { continue };
         h.write_u64(id.0);
@@ -933,7 +933,7 @@ mod tests {
     /// the size limit like every entry, and a damaged file is a miss.
     #[test]
     fn segmentations_round_trip_and_reopen() {
-        use effectcraft_effects::roto::FrameSeg;
+        use redrob_effects_effects::roto::FrameSeg;
         let dir = tmpdir("seg");
         let dc = DiskCache::open(&dir, 1 << 30).unwrap();
         let seg = FrameSeg { w: 7, h: 5, matte: (0..35).map(|i| (i % 3 == 0) as u8).collect(), refine: vec![0; 35], ..Default::default() };

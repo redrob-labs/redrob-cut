@@ -1,9 +1,9 @@
 //! Headless checks for the Tracker panel and the viewer's track point widgets (egui_kittest, UI
 //! logic only: no GPU needed).
 
-use effectcraft_engine::Session;
-use effectcraft_ui_egui::EffectcraftApp;
-use effectcraft_ui_egui::dock::PanelKind;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::dock::PanelKind;
 use egui_kittest::Harness;
 use serde_json::json;
 
@@ -107,13 +107,13 @@ fn tracker_panel_and_track_point_widgets() {
     assert_eq!(undo, 2, "one undo step per drag");
     // Options and Edit Target dialogs.
     let ctx = h.ctx.clone();
-    effectcraft_ui_egui::menus::invoke(h.state_mut(), &ctx, "track.optionsDialog", json!({})).unwrap();
-    assert_eq!(h.state().dialog, Some(effectcraft_ui_egui::Dialog::TrackOptions));
+    redrob_effects_ui_egui::menus::invoke(h.state_mut(), &ctx, "track.optionsDialog", json!({})).unwrap();
+    assert_eq!(h.state().dialog, Some(redrob_effects_ui_egui::Dialog::TrackOptions));
     h.step();
     assert!(ids(&h).iter().any(|i| i == "dialog.trackOptions.ok"));
     h.state_mut().dialog = None;
-    effectcraft_ui_egui::menus::invoke(h.state_mut(), &ctx, "track.editTargetDialog", json!({})).unwrap();
-    assert_eq!(h.state().dialog, Some(effectcraft_ui_egui::Dialog::TrackTarget));
+    redrob_effects_ui_egui::menus::invoke(h.state_mut(), &ctx, "track.editTargetDialog", json!({})).unwrap();
+    assert_eq!(h.state().dialog, Some(redrob_effects_ui_egui::Dialog::TrackTarget));
 }
 
 fn drag(h: &mut Harness<'_, EffectcraftApp>, from: egui::Pos2, to: egui::Pos2) {

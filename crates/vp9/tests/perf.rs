@@ -1,9 +1,9 @@
 //! Decode speed (ignored by default; run with
-//! `cargo test --release -p filmcraft-vp9 --test perf -- --ignored --nocapture`).
+//! `cargo test --release -p redrob-film-vp9 --test perf -- --ignored --nocapture`).
 
 mod common;
 
-use filmcraft_vp9::Decoder;
+use redrob_film_vp9::Decoder;
 use std::time::Instant;
 
 fn bench(frames: &[&[u8]], threads: usize, iters: usize) -> (usize, f64) {

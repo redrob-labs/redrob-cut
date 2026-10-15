@@ -21,8 +21,8 @@
 
 use std::collections::BTreeMap;
 
-use filmcraft_media::MediaInfo;
-use filmcraft_project::ItemId;
+use redrob_film_media::MediaInfo;
+use redrob_film_project::ItemId;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -148,11 +148,11 @@ fn ext_of(name: &str) -> String {
 /// The kind of file a name is, or None when the browser doesn't show it.
 pub fn kind_of(name: &str) -> Option<&'static str> {
     let e = ext_of(name);
-    if filmcraft_media::VIDEO_EXTENSIONS.contains(&e.as_str()) {
+    if redrob_film_media::VIDEO_EXTENSIONS.contains(&e.as_str()) {
         Some("video")
-    } else if filmcraft_media::AUDIO_EXTENSIONS.contains(&e.as_str()) {
+    } else if redrob_film_media::AUDIO_EXTENSIONS.contains(&e.as_str()) {
         Some("audio")
-    } else if filmcraft_media::STILL_EXTENSIONS.contains(&e.as_str()) {
+    } else if redrob_film_media::STILL_EXTENSIONS.contains(&e.as_str()) {
         Some("image")
     } else if PROJECT_EXTENSIONS.contains(&e.as_str()) {
         Some("project")
@@ -174,10 +174,10 @@ pub fn passes(filter: &str, kind: &str, name: &str) -> bool {
 
 /// Every extension the browser lists (for the file-type menu).
 pub fn extensions() -> Vec<&'static str> {
-    filmcraft_media::VIDEO_EXTENSIONS
+    redrob_film_media::VIDEO_EXTENSIONS
         .iter()
-        .chain(filmcraft_media::AUDIO_EXTENSIONS)
-        .chain(filmcraft_media::STILL_EXTENSIONS)
+        .chain(redrob_film_media::AUDIO_EXTENSIONS)
+        .chain(redrob_film_media::STILL_EXTENSIONS)
         .chain(&PROJECT_EXTENSIONS)
         .chain(&CAPTION_EXTENSIONS)
         .copied()
@@ -241,7 +241,7 @@ pub fn list(services: &dyn Services, dir: &str, filter: &str) -> std::io::Result
             if !passes(filter, kind, &e.name) {
                 return None;
             }
-            let numbered = kind == "image" && filmcraft_media::sequence::Numbered::parse(&path).is_some();
+            let numbered = kind == "image" && redrob_film_media::sequence::Numbered::parse(&path).is_some();
             Some(Entry { numbered, name: e.name, path, is_dir: false, kind, size: e.size, modified: e.modified })
         })
         .collect();
@@ -482,7 +482,7 @@ fn import_into(s: &mut Session, files: &[String], bin: Option<u64>, out: &mut se
 /// sub-folder becomes a bin inside it (Premiere's Media Browser keeps the folder structure).
 fn import_folder(s: &mut Session, folder: &Folder, parent: Option<u64>, out: &mut serde_json::Map<String, Value>) -> Result<()> {
     let name = folder.name.clone();
-    let bin = s.edit("New Bin", |pr, _| Ok(pr.add_bin(&name, parent.map(filmcraft_project::BinId))))?;
+    let bin = s.edit("New Bin", |pr, _| Ok(pr.add_bin(&name, parent.map(redrob_film_project::BinId))))?;
     merge_import(out, json!({"bins": [bin.0]}));
     if !folder.files.is_empty() {
         import_into(s, &folder.files, Some(bin.0), out);
@@ -556,7 +556,7 @@ pub fn item_for_path(s: &Session, path: &str) -> Option<ItemId> {
     s.project
         .items
         .values()
-        .find(|i| i.as_media().is_some_and(|m| matches!(&m.media, filmcraft_project::MediaRef::File { path: p } if p == path)))
+        .find(|i| i.as_media().is_some_and(|m| matches!(&m.media, redrob_film_project::MediaRef::File { path: p } if p == path)))
         .map(|i| i.id)
 }
 
@@ -614,7 +614,7 @@ pub fn column_text(e: &Entry, column: &str, probe: Option<&MediaInfo>) -> String
             .filter(|_| e.kind != "image")
             .map(|i| {
                 let rate = i.video.as_ref().map(|v| v.frame_rate).unwrap_or_default();
-                filmcraft_time::format_time(i.duration, rate, false, filmcraft_time::TimeDisplay::Timecode, 48000)
+                redrob_film_time::format_time(i.duration, rate, false, redrob_film_time::TimeDisplay::Timecode, 48000)
             })
             .unwrap_or_default(),
         "Video Info" => probe.and_then(|i| i.video.as_ref()).map(|v| format!("{} x {}", v.width, v.height)).unwrap_or_default(),

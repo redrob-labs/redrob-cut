@@ -1,7 +1,7 @@
 //! Inspect the actual viewer's painted colors and pointer-driven control geometry.
 
-use effectcraft_engine::Session;
-use effectcraft_ui_egui::{
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::{
     EffectcraftApp,
     panels::viewer,
     theme::{self, ThemeKind},

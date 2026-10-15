@@ -33,7 +33,7 @@ fn export_and_import_lottie_commands() {
     // Import as a new comp (undoable).
     let before = s.project.items.len();
     let r = s.execute_checked("file.importLottie", json!({"path": path})).unwrap();
-    let cid = effectcraft_project::ItemId(r["comp"].as_u64().unwrap());
+    let cid = redrob_effects_project::ItemId(r["comp"].as_u64().unwrap());
     assert_eq!(s.state.active_comp, Some(cid));
     let c = s.project.comp(cid).unwrap();
     assert_eq!(c.layers.len(), n_layers);

@@ -3,8 +3,8 @@
 
 use std::sync::mpsc::{Receiver, channel};
 
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::menus::{MENUS, MenuItem as Item, menu_items};
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::menus::{MENUS, MenuItem as Item, menu_items};
 use muda::accelerator::Accelerator;
 use muda::{Menu, MenuEvent, MenuItem, PredefinedMenuItem, Submenu};
 
@@ -93,23 +93,23 @@ pub fn install(app: &FilmcraftApp, ctx: egui::Context) -> (Receiver<String>, Sho
     let update: ShortcutUpdater = Box::new(move |items: &[Item]| {
         let checked = |id: &str| items.iter().any(|it| it.id == id && it.checked == Some(true));
         let language = if checked("app.language.japanese") {
-            filmcraft_ui_egui::i18n::Language::Ja
+            redrob_film_ui_egui::i18n::Language::Ja
         } else if checked("app.language.spanish") {
-            filmcraft_ui_egui::i18n::Language::Es
+            redrob_film_ui_egui::i18n::Language::Es
         } else if checked("app.language.portuguese") {
-            filmcraft_ui_egui::i18n::Language::PtBr
+            redrob_film_ui_egui::i18n::Language::PtBr
         } else if checked("app.language.ukrainian") {
-            filmcraft_ui_egui::i18n::Language::Uk
+            redrob_film_ui_egui::i18n::Language::Uk
         } else if checked("app.language.chinese") {
-            filmcraft_ui_egui::i18n::Language::ZhCn
+            redrob_film_ui_egui::i18n::Language::ZhCn
         } else if checked("app.language.german") {
-            filmcraft_ui_egui::i18n::Language::De
+            redrob_film_ui_egui::i18n::Language::De
         } else if checked("app.language.russian") {
-            filmcraft_ui_egui::i18n::Language::Ru
+            redrob_film_ui_egui::i18n::Language::Ru
         } else if checked("app.language.french") {
-            filmcraft_ui_egui::i18n::Language::Fr
+            redrob_film_ui_egui::i18n::Language::Fr
         } else {
-            filmcraft_ui_egui::i18n::Language::En
+            redrob_film_ui_egui::i18n::Language::En
         };
         for (title, submenu) in &titles {
             submenu.set_text(language.tr(title));

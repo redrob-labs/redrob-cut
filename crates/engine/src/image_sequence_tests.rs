@@ -3,9 +3,9 @@
 
 use std::path::Path;
 
-use filmcraft_media::{FrameRequest, MediaKind};
-use filmcraft_project::{ClipId, ItemId};
-use filmcraft_time::FrameRate;
+use redrob_film_media::{FrameRequest, MediaKind};
+use redrob_film_project::{ClipId, ItemId};
+use redrob_film_time::FrameRate;
 use serde_json::{Value, json};
 
 use crate::Session;
@@ -15,7 +15,7 @@ use crate::media_test_util::tmp_dir;
 fn import_accepts_uppercase_extensions() {
     let dir = tmp_dir("import-uppercase");
     let wav = dir.join("TONE.WAV");
-    std::fs::write(&wav, filmcraft_media::wav::write_wav16(&[0.1; 4800], 2, 48_000)).unwrap();
+    std::fs::write(&wav, redrob_film_media::wav::write_wav16(&[0.1; 4800], 2, 48_000)).unwrap();
     let mut s = Session::default();
     let r = s.execute("file.import", json!({"paths": [wav.to_string_lossy()]})).unwrap();
     assert_eq!(r["items"].as_array().unwrap().len(), 1);
@@ -26,7 +26,7 @@ fn import_accepts_uppercase_extensions() {
 fn import_replace_starts_from_an_empty_project() {
     let dir = tmp_dir("import-replace");
     let wav = dir.join("tone.wav");
-    std::fs::write(&wav, filmcraft_media::wav::write_wav16(&[0.1; 4800], 2, 48_000)).unwrap();
+    std::fs::write(&wav, redrob_film_media::wav::write_wav16(&[0.1; 4800], 2, 48_000)).unwrap();
     let mut s = demo();
     let demo_items = s.project.items.len();
     assert!(demo_items > 1);
@@ -63,7 +63,7 @@ fn red_at(s: &Session, item: ItemId, frame: i64) -> u8 {
     let rate = src.info().frame_rate();
     let f = src.video_frame(FrameRequest::full(rate.tick_of(frame))).unwrap();
     match &f.data {
-        filmcraft_frame::PixelData::Rgba8(p) => p[0],
+        redrob_film_frame::PixelData::Rgba8(p) => p[0],
         _ => panic!("rgba frames"),
     }
 }

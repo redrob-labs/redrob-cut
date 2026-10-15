@@ -1,6 +1,6 @@
 //! Character Fill and Stroke can sample a displayed Composition pixel.
-use effectcraft_engine::{Session, commands::text_edit::layer_doc, project::LayerId};
-use effectcraft_ui_egui::{
+use redrob_effects_engine::{Session, commands::text_edit::layer_doc, project::LayerId};
+use redrob_effects_ui_egui::{
     EffectcraftApp,
     dock::{DockNode, PanelKind, SplitSize},
     panels::viewer::comp_to_screen,

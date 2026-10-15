@@ -38,8 +38,8 @@ pub fn agent_cwd() -> String {
 /// [`add_to_redrob_code`].
 pub fn serve_mcp(args: &[String]) -> i32 {
     let server = match args {
-        [] => filmcraft_automation::FilmcraftMcp::headless(filmcraft_engine::Session::default()),
-        [flag, addr] if flag == "--connect" => match filmcraft_automation::FilmcraftMcp::bridge(addr) {
+        [] => redrob_film_automation::FilmcraftMcp::headless(redrob_film_engine::Session::default()),
+        [flag, addr] if flag == "--connect" => match redrob_film_automation::FilmcraftMcp::bridge(addr) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("redrob-film mcp: {e}");

@@ -9,8 +9,8 @@
 
 use std::sync::{Arc, Mutex};
 
-use effectcraft_engine::color::Label;
-use effectcraft_engine::project::{Item, ItemId, ItemKind};
+use redrob_effects_engine::color::Label;
+use redrob_effects_engine::project::{Item, ItemId, ItemKind};
 use egui::{Align2, Color32, Rect, Sense, Stroke, pos2, vec2};
 use serde_json::json;
 
@@ -28,9 +28,9 @@ fn item_icon(it: &Item) -> Icon {
         ItemKind::Comp(_) => Icon::Comp,
         ItemKind::Solid(_) => Icon::Solid,
         ItemKind::Footage(f) => match f.kind {
-            effectcraft_engine::project::FootageKind::Still | effectcraft_engine::project::FootageKind::Sequence => Icon::Image,
-            effectcraft_engine::project::FootageKind::Audio => Icon::Audio,
-            effectcraft_engine::project::FootageKind::Model => Icon::Cube,
+            redrob_effects_engine::project::FootageKind::Still | redrob_effects_engine::project::FootageKind::Sequence => Icon::Image,
+            redrob_effects_engine::project::FootageKind::Audio => Icon::Audio,
+            redrob_effects_engine::project::FootageKind::Model => Icon::Cube,
             _ => Icon::Footage,
         },
     }
@@ -102,7 +102,7 @@ pub fn sort_items(items: &mut [&Item], col: &str, desc: bool) {
 }
 
 /// Where a drop at a row lands: into a folder row, else into the row's folder; `None` row = root.
-pub fn drop_folder(project: &effectcraft_engine::project::Project, row: Option<ItemId>) -> Option<ItemId> {
+pub fn drop_folder(project: &redrob_effects_engine::project::Project, row: Option<ItemId>) -> Option<ItemId> {
     let it = project.item(row?)?;
     if it.is_folder() { Some(it.id) } else { it.parent }
 }
@@ -824,7 +824,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
                     app.ui.project_open_folders.insert(id.0);
                 }
                 // Footage (not data) and solids open in the Footage panel.
-                ItemKind::Footage(f) if f.kind != effectcraft_engine::project::FootageKind::Data => {
+                ItemKind::Footage(f) if f.kind != redrob_effects_engine::project::FootageKind::Data => {
                     actions.push(("footage.open".into(), json!({"item": id.0})))
                 }
                 ItemKind::Solid(_) => actions.push(("footage.open".into(), json!({"item": id.0}))),
@@ -1124,8 +1124,8 @@ mod tests {
 
     #[test]
     fn folders_sort_with_items_by_name() {
-        let mut p = effectcraft_engine::project::Project::default();
-        let l = effectcraft_engine::color::Label::Yellow;
+        let mut p = redrob_effects_engine::project::Project::default();
+        let l = redrob_effects_engine::color::Label::Yellow;
         p.add_item("Solids", l, None, ItemKind::Folder);
         p.add_item("Precomps", l, None, ItemKind::Folder);
         p.add_item("Redrob Film Intro", l, None, ItemKind::Folder);
@@ -1139,8 +1139,8 @@ mod tests {
 
     #[test]
     fn drop_targets_and_column_toggles() {
-        let mut p = effectcraft_engine::project::Project::default();
-        let l = effectcraft_engine::color::Label::Yellow;
+        let mut p = redrob_effects_engine::project::Project::default();
+        let l = redrob_effects_engine::color::Label::Yellow;
         let f = p.add_item("F", l, None, ItemKind::Folder);
         let inner = p.add_item("I", l, Some(f), ItemKind::Folder);
         assert_eq!(drop_folder(&p, Some(f)), Some(f));

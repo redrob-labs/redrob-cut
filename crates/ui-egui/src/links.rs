@@ -68,7 +68,7 @@ mod tests {
         use std::rc::Rc;
         let opened: Rc<RefCell<Vec<String>>> = Rc::default();
         let rec = opened.clone();
-        let mut app = crate::FilmcraftApp::new(filmcraft_engine::Session::default());
+        let mut app = crate::FilmcraftApp::new(redrob_film_engine::Session::default());
         app.hooks.open_url = Some(Box::new(move |u: &str| {
             rec.borrow_mut().push(u.to_string());
             Ok(())

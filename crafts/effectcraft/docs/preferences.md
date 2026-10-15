@@ -9,7 +9,7 @@ Expressions) with OK, Cancel, Previous and Next. Older page names still open the
 (`prefs.open {"page": "Auto-Save"}` opens Project, `Media & Disk Cache` opens Disk, `Memory &
 Performance` opens Memory & CPU).
 
-The model is `effectcraft_engine::prefs::Prefs`: serde, versioned (`version`), addressed by dotted
+The model is `redrob_effects_engine::prefs::Prefs`: serde, versioned (`version`), addressed by dotted
 keys (`general.undoLevels`, `autoSave.intervalMinutes`, `labels.3.name`). It is stored as
 `prefs.json` through the session's `ConfigStore` (the desktop app uses the platform config
 directory: `~/Library/Application Support/EffectCraft` on macOS, `%APPDATA%\EffectCraft` on
@@ -241,4 +241,4 @@ across launches).
 
 By default the log has `info` records from EffectCraft and warnings and errors from everything
 else. `RUST_LOG` replaces that with env_logger-style directives: `debug`,
-`warn,effectcraft_render=trace`, `wgpu_core=info`. The control-channel token is never logged.
+`warn,redrob_effects_render=trace`, `wgpu_core=info`. The control-channel token is never logged.

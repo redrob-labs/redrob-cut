@@ -7,7 +7,7 @@ that FilmCraft Default uses as well). `presets::premiere()` is the whole preset.
 
 Every entry names a FilmCraft command id. Engine commands run through `Session::execute`; UI
 commands (frames, panels, monitor zoom, Project and Text panel navigation) run through
-`menus::invoke`. Both are reachable by id from the CLI (`filmcraft-cli exec <id>`), the control
+`menus::invoke`. Both are reachable by id from the CLI (`redrob-film-cli exec <id>`), the control
 channel (`engine.execute` / `ui.menu.invoke`) and MCP (`command_run`).
 
 Tests: `crates/engine/src/keyboard_tests.rs` (no key used twice in one scope; behaviour of the
@@ -16,8 +16,8 @@ tables, no conflicts in FilmCraft Default or the Premiere preset, keys pressed i
 
 ## Keyboard-only commands (M3.12)
 
-Premiere has these as keys only (most are not in a menu). Modules: `filmcraft_engine::keyboard`
-(engine) and `filmcraft_ui_egui::panels::keyboard` (UI); their module docs list each id.
+Premiere has these as keys only (most are not in a menu). Modules: `redrob_film_engine::keyboard`
+(engine) and `redrob_film_ui_egui::panels::keyboard` (UI); their module docs list each id.
 
 | Group | Commands | Keys |
 |---|---|---|

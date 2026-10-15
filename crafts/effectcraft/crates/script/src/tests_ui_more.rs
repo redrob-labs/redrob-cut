@@ -2,16 +2,16 @@
 
 use std::sync::Arc;
 
-use effectcraft_engine::Session;
-use effectcraft_engine::scriptui::{DrawOp, PathSeg, WidgetKind, WindowKind};
+use redrob_effects_engine::Session;
+use redrob_effects_engine::scriptui::{DrawOp, PathSeg, WidgetKind, WindowKind};
 use serde_json::json;
 
 use crate::run_code;
 
 fn session() -> Session {
-    let mut s = Session { expr: Some(Arc::new(effectcraft_expr::Expressions)), ..Default::default() };
+    let mut s = Session { expr: Some(Arc::new(redrob_effects_expr::Expressions)), ..Default::default() };
     crate::install(&mut s);
-    s.config = Some(Arc::new(effectcraft_engine::config::MemoryConfig::default()));
+    s.config = Some(Arc::new(redrob_effects_engine::config::MemoryConfig::default()));
     s
 }
 
@@ -221,8 +221,8 @@ fn pin_at(s: &mut Session, id: u64, i: usize) -> [f64; 2] {
 fn position_now(s: &Session, layer: u64) -> [f64; 2] {
     let cid = s.active_comp_id().unwrap();
     let comp = s.project.comp(cid).unwrap();
-    let l = comp.layer(effectcraft_engine::project::LayerId(layer)).unwrap();
-    let ctx = effectcraft_engine::render::EvalCtx { project: &s.project, comp_id: cid, comp, time: s.time(), expr: s.expr.as_deref(), footage: None };
+    let l = comp.layer(redrob_effects_engine::project::LayerId(layer)).unwrap();
+    let ctx = redrob_effects_engine::render::EvalCtx { project: &s.project, comp_id: cid, comp, time: s.time(), expr: s.expr.as_deref(), footage: None };
     let v = ctx.value(l, l.props.prop("transform/position").unwrap()).components();
     [v[0], v[1]]
 }
