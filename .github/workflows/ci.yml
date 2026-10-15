@@ -61,6 +61,8 @@ jobs:
 
   rust:
     name: fmt, clippy, test (profile ci)
+    # A release PR into main carries code that already passed here on its way into develop.
+    if: github.base_ref != 'main'
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
