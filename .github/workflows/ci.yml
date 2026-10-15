@@ -30,6 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # check_upstream_boundary.py walks back to the upstream base commit
       - name: Repository scripts
         run: |
           python3 scripts/check_brand.py
