@@ -2,15 +2,15 @@
 //! through-edit marks on the timeline, the Markers panel colour filter and the Shift+; gap key.
 //! The real `FilmcraftApp` under `egui_kittest`, driven over the control channel by automation id.
 //!
-//! Set `FILMCRAFT_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write
+//! Set `REDROB_FILM_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write
 //! `sequence-settings-*.png` there; without it no GPU is needed.
 
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -25,7 +25,7 @@ impl Driver {
         session.execute("file.openDemoProject", json!({})).expect("demo project");
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(std::path::PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(std::path::PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();
@@ -89,7 +89,7 @@ impl Driver {
         e["label"].as_str().unwrap_or_default().to_string()
     }
 
-    /// With `FILMCRAFT_UI_SNAPSHOT_DIR` set, render the window offscreen and write `<name>.png`,
+    /// With `REDROB_FILM_UI_SNAPSHOT_DIR` set, render the window offscreen and write `<name>.png`,
     /// cropped to the elements whose ids start with `prefix`.
     fn snapshot(&mut self, name: &str, prefix: &str) {
         let Some(dir) = self.snapshots.clone() else { return };
@@ -174,7 +174,7 @@ fn add_tracks_dialog_offers_amount_placement_and_type() {
     let [v, a, s] = d.tracks();
     assert_eq!((v.len(), a.len(), s.len()), (4, 4, 0));
     assert_eq!((v[3].as_str(), a[3].as_str()), ("Video 4", "Audio 4"));
-    assert_eq!(d.app().session.active_sequence().unwrap().audio_tracks[3].channels, filmcraft_engine::project::AudioChannels::Stereo);
+    assert_eq!(d.app().session.active_sequence().unwrap().audio_tracks[3].channels, redrob_film_engine::project::AudioChannels::Stereo);
     // one undo step for the whole dialog
     d.exec("edit.undo", json!({}));
     assert_eq!(d.tracks(), before);
@@ -224,7 +224,7 @@ fn add_tracks_dialog_places_and_types_the_new_tracks() {
     let q = d.app().session.active_sequence().unwrap().clone();
     assert!(q.video_tracks[1].items.is_empty() && q.video_tracks[2].items.is_empty(), "the new tracks are after Video 1");
     assert_eq!(q.video_tracks[3].items[0].id, on_v2, "what was on Video 2 moved up to Video 4");
-    use filmcraft_engine::project::AudioChannels;
+    use redrob_film_engine::project::AudioChannels;
     assert_eq!((q.audio_tracks[0].channels, q.audio_tracks[0].items.len()), (AudioChannels::Mono, 0));
     assert_eq!(q.submix_tracks[0].channels, AudioChannels::Surround51);
 
@@ -554,7 +554,7 @@ fn sequence_settings_dialog_applies_in_one_undo_step() {
         let q = d.app().session.active_sequence().unwrap();
         let m = q.video_tracks.iter().flat_map(|t| &t.items).find_map(|i| i.effect("motion")).unwrap().clone();
         match (&m.param("position").unwrap().value, &m.param("scale").unwrap().value) {
-            (filmcraft_engine::project::ParamValue::Vec2(p), filmcraft_engine::project::ParamValue::Float(s)) => (p.x, p.y, *s),
+            (redrob_film_engine::project::ParamValue::Vec2(p), redrob_film_engine::project::ParamValue::Float(s)) => (p.x, p.y, *s),
             _ => panic!("Motion has a point and a number"),
         }
     };
@@ -576,7 +576,7 @@ fn sequence_settings_dialog_applies_in_one_undo_step() {
     d.click("sequenceSettings.ok");
     assert!(d.ids("sequenceSettings.").is_empty(), "dialog closed");
     let st = d.app().session.active_sequence().unwrap().settings.clone();
-    assert_eq!((st.width, st.height, st.frame_rate), (1280, 720, filmcraft_engine::time::FrameRate::FPS_29_97));
+    assert_eq!((st.width, st.height, st.frame_rate), (1280, 720, redrob_film_engine::time::FrameRate::FPS_29_97));
     assert!(st.drop_frame && st.max_render_quality);
     let (x1, y1, s1) = motion(&mut d);
     let k = 2.0 / 3.0;
@@ -653,7 +653,7 @@ fn new_sequence_opens_its_dialog() {
     let id = d.app().session.state.active_sequence.unwrap();
     assert_eq!(d.app().session.project.item(id).unwrap().name, "Shorts", "the new sequence is the open one");
     let q = d.app().session.active_sequence().unwrap().clone();
-    assert_eq!((q.settings.width, q.settings.height, q.settings.frame_rate), (1080, 1920, filmcraft_engine::time::FrameRate::FPS_30));
+    assert_eq!((q.settings.width, q.settings.height, q.settings.frame_rate), (1080, 1920, redrob_film_engine::time::FrameRate::FPS_30));
     assert_eq!((q.video_tracks.len(), q.audio_tracks.len()), (2, 4));
     d.exec("edit.undo", json!({}));
     assert_eq!(sequences(&mut d), n0, "one undo step");

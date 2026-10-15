@@ -22,7 +22,7 @@ env:
   CARGO_INCREMENTAL: 0
   RUST_BACKTRACE: 1
   # Our crates and the shell. Not `--workspace`: that would lint and test the effectcraft subtree too.
-  OUR_CRATES: -p filmcraft -p filmcraft-ui-egui -p filmcraft-engine
+  OUR_CRATES: -p redrob-film-app -p redrob-film-ui-egui -p redrob-film-engine
 
 jobs:
   checks:
@@ -50,7 +50,7 @@ jobs:
           fi
           desktop-file-validate packaging/linux/ai.redrob.film.desktop
       - name: Release asset matrix
-        # The three targets, and nothing else: the launcher manifest and apps/filmcraft/src/update.rs name these files.
+        # The three targets, and nothing else: the launcher manifest and apps/redrob-film-app/src/update.rs name these files.
         run: |
           grep -Fq -- '--arch universal' .github/workflows/release.yml
           grep -Fq -- '-Arch x64 -SkipBuild' .github/workflows/release.yml

@@ -12,38 +12,38 @@ repository = "https://github.com/storytold/effectcraft"
 
 [workspace.dependencies]
 # internal
-effectcraft-time = { path = "crates/time" }
-effectcraft-geom = { path = "crates/geom" }
-effectcraft-color = { path = "crates/color" }
-effectcraft-raster = { path = "crates/raster" }
-effectcraft-path = { path = "crates/path" }
-effectcraft-keyframe = { path = "crates/keyframe" }
-effectcraft-project = { path = "crates/project" }
-effectcraft-text = { path = "crates/text" }
-effectcraft-effects = { path = "crates/effects" }
-effectcraft-track = { path = "crates/track" }
-effectcraft-segment = { path = "crates/segment" }
-effectcraft-model = { path = "crates/model" }
-effectcraft-render = { path = "crates/render" }
-effectcraft-gpu = { path = "crates/gpu" }
-effectcraft-media = { path = "crates/media" }
-effectcraft-export = { path = "crates/export" }
-effectcraft-expr = { path = "crates/expr" }
-effectcraft-lottie = { path = "crates/lottie" }
-effectcraft-interchange = { path = "crates/interchange" }
-effectcraft-pdf = { path = "crates/pdf" }
-effectcraft-psd = { path = "crates/psd" }
-effectcraft-vp9enc = { path = "crates/vp9enc" }
-effectcraft-svg = { path = "crates/svg" }
-effectcraft-engine = { path = "crates/engine" }
-effectcraft-host = { path = "crates/host" }
-effectcraft-ui-egui = { path = "crates/ui-egui" }
-effectcraft-automation = { path = "crates/automation" }
-effectcraft-opusenc = { path = "crates/opusenc" }
-effectcraft-script = { path = "crates/script" }
-effectcraft-hevcenc = { path = "crates/hevcenc" }
-effectcraft-av1enc = { path = "crates/av1enc" }
-effectcraft-plugin = { path = "crates/plugin" }
+redrob-effects-time = { path = "crates/time" }
+redrob-effects-geom = { path = "crates/geom" }
+redrob-effects-color = { path = "crates/color" }
+redrob-effects-raster = { path = "crates/raster" }
+redrob-effects-path = { path = "crates/path" }
+redrob-effects-keyframe = { path = "crates/keyframe" }
+redrob-effects-project = { path = "crates/project" }
+redrob-effects-text = { path = "crates/text" }
+redrob-effects-effects = { path = "crates/effects" }
+redrob-effects-track = { path = "crates/track" }
+redrob-effects-segment = { path = "crates/segment" }
+redrob-effects-model = { path = "crates/model" }
+redrob-effects-render = { path = "crates/render" }
+redrob-effects-gpu = { path = "crates/gpu" }
+redrob-effects-media = { path = "crates/media" }
+redrob-effects-export = { path = "crates/export" }
+redrob-effects-expr = { path = "crates/expr" }
+redrob-effects-lottie = { path = "crates/lottie" }
+redrob-effects-interchange = { path = "crates/interchange" }
+redrob-effects-pdf = { path = "crates/pdf" }
+redrob-effects-psd = { path = "crates/psd" }
+redrob-effects-vp9enc = { path = "crates/vp9enc" }
+redrob-effects-svg = { path = "crates/svg" }
+redrob-effects-engine = { path = "crates/engine" }
+redrob-effects-host = { path = "crates/host" }
+redrob-effects-ui-egui = { path = "crates/ui-egui" }
+redrob-effects-automation = { path = "crates/automation" }
+redrob-effects-opusenc = { path = "crates/opusenc" }
+redrob-effects-script = { path = "crates/script" }
+redrob-effects-hevcenc = { path = "crates/hevcenc" }
+redrob-effects-av1enc = { path = "crates/av1enc" }
+redrob-effects-plugin = { path = "crates/plugin" }
 
 # foundation
 thiserror = "2"
@@ -71,26 +71,26 @@ image = { version = "0.25", default-features = false, features = ["png", "jpeg"]
 
 # media codecs + containers: FilmCraft's pure-Rust crates, pinned to a revision (plan/adr/0001).
 # Only `crates/media`, `crates/export` and `crates/interchange` may depend on these.
-filmcraft-codecs = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-media = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-frame = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-color = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-time = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-codecs = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-media = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-frame = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-color = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-time = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
 # encoders + muxer (crates/export)
-filmcraft-h264enc = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-prores = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-aac = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-isobmff = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-# decoder used as the round-trip oracle of effectcraft-opusenc (crates/export dev-dependency)
-filmcraft-opus = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-vp9 = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-# decoders used as the round-trip oracles of effectcraft-hevcenc / effectcraft-av1enc (dev-dependencies only)
-filmcraft-hevc = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-av1 = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-h264enc = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-prores = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-aac = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-isobmff = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+# decoder used as the round-trip oracle of redrob-effects-opusenc (crates/export dev-dependency)
+redrob-film-opus = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-vp9 = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+# decoders used as the round-trip oracles of redrob-effects-hevcenc / redrob-effects-av1enc (dev-dependencies only)
+redrob-film-hevc = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-av1 = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
 # timeline interchange (EDL, FCP7 XML, FCPXML, OTIO) for Premiere Pro interop (crates/interchange only)
-filmcraft-interchange = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-project = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
-filmcraft-geom = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-interchange = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-project = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
+redrob-film-geom = { git = "https://github.com/storytold/filmcraft", rev = "2c5ba7a72619935f0481f99d59409e0d1844b234" }
 
 # gpu (the same wgpu eframe / egui-wgpu use)
 wgpu = { version = "30.0.1", features = ["fragile-send-sync-non-atomic-wasm"] }
@@ -110,15 +110,15 @@ sys-locale = "0.3"
 
 # Local co-development against a FilmCraft checkout next to this repo: uncomment.
 # [patch."https://github.com/storytold/filmcraft"]
-# filmcraft-codecs = { path = "../filmcraft/crates/codecs" }
-# filmcraft-media = { path = "../filmcraft/crates/media" }
-# filmcraft-frame = { path = "../filmcraft/crates/frame" }
-# filmcraft-color = { path = "../filmcraft/crates/color" }
-# filmcraft-time = { path = "../filmcraft/crates/time" }
-# filmcraft-h264enc = { path = "../filmcraft/crates/h264enc" }
-# filmcraft-prores = { path = "../filmcraft/crates/prores" }
-# filmcraft-aac = { path = "../filmcraft/crates/aac" }
-# filmcraft-isobmff = { path = "../filmcraft/crates/isobmff" }
+# redrob-film-codecs = { path = "../filmcraft/crates/codecs" }
+# redrob-film-media = { path = "../filmcraft/crates/media" }
+# redrob-film-frame = { path = "../filmcraft/crates/frame" }
+# redrob-film-color = { path = "../filmcraft/crates/color" }
+# redrob-film-time = { path = "../filmcraft/crates/time" }
+# redrob-film-h264enc = { path = "../filmcraft/crates/h264enc" }
+# redrob-film-prores = { path = "../filmcraft/crates/prores" }
+# redrob-film-aac = { path = "../filmcraft/crates/aac" }
+# redrob-film-isobmff = { path = "../filmcraft/crates/isobmff" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -137,68 +137,68 @@ opt-level = 2
 opt-level = 1
 
 # Pixel hot loops: keep debug builds interactive.
-[profile.dev.package.effectcraft-raster]
+[profile.dev.package.redrob-effects-raster]
 opt-level = 3
 
-[profile.dev.package.effectcraft-render]
+[profile.dev.package.redrob-effects-render]
 opt-level = 3
 
-[profile.dev.package.effectcraft-gpu]
+[profile.dev.package.redrob-effects-gpu]
 opt-level = 3
 
-[profile.dev.package.effectcraft-effects]
+[profile.dev.package.redrob-effects-effects]
 opt-level = 3
 
-[profile.dev.package.effectcraft-track]
+[profile.dev.package.redrob-effects-track]
 opt-level = 3
 
-[profile.dev.package.effectcraft-path]
+[profile.dev.package.redrob-effects-path]
 opt-level = 3
 
-[profile.dev.package.effectcraft-media]
+[profile.dev.package.redrob-effects-media]
 opt-level = 3
 
-[profile.dev.package.effectcraft-opusenc]
+[profile.dev.package.redrob-effects-opusenc]
 opt-level = 3
 
-[profile.dev.package.effectcraft-export]
+[profile.dev.package.redrob-effects-export]
 opt-level = 3
 
-[profile.dev.package.effectcraft-vp9enc]
+[profile.dev.package.redrob-effects-vp9enc]
 opt-level = 3
 
-[profile.dev.package.effectcraft-hevcenc]
+[profile.dev.package.redrob-effects-hevcenc]
 opt-level = 3
 
-[profile.dev.package.effectcraft-av1enc]
+[profile.dev.package.redrob-effects-av1enc]
 opt-level = 3
 
 # FilmCraft codec hot loops (same settings as FilmCraft's own workspace).
-[profile.dev.package.filmcraft-h264]
+[profile.dev.package.redrob-film-h264]
 opt-level = 3
 
-[profile.dev.package.filmcraft-h264enc]
+[profile.dev.package.redrob-film-h264enc]
 opt-level = 3
 
-[profile.dev.package.filmcraft-hevc]
+[profile.dev.package.redrob-film-hevc]
 opt-level = 3
 
-[profile.dev.package.filmcraft-vp9]
+[profile.dev.package.redrob-film-vp9]
 opt-level = 3
 
-[profile.dev.package.filmcraft-prores]
+[profile.dev.package.redrob-film-prores]
 opt-level = 3
 
-[profile.dev.package.filmcraft-dnx]
+[profile.dev.package.redrob-film-dnx]
 opt-level = 3
 
-[profile.dev.package.filmcraft-av1]
+[profile.dev.package.redrob-film-av1]
 opt-level = 3
 
-[profile.dev.package.filmcraft-aac]
+[profile.dev.package.redrob-film-aac]
 opt-level = 3
 
-[profile.dev.package.filmcraft-opus]
+[profile.dev.package.redrob-film-opus]
 opt-level = 3
 
 [profile.release]

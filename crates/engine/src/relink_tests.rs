@@ -2,9 +2,9 @@
 //! relinking one file finds the others by folder remap, fingerprint mismatches are refused,
 //! Make Offline, folder search and undo.
 
-use filmcraft_media::DemoScene;
-use filmcraft_project::ItemId;
-use filmcraft_render::offline::{OfflineReason, slate_rgba8};
+use redrob_film_media::DemoScene;
+use redrob_film_project::ItemId;
+use redrob_film_render::offline::{OfflineReason, slate_rgba8};
 use serde_json::json;
 
 use crate::Session;
@@ -14,7 +14,7 @@ use crate::relink::{apply_remap, derive_remap};
 const W: u32 = 160;
 const H: u32 = 90;
 
-/// A saved project at `<root>/Project/p.fcproj` using `<root>/Media/{a,b}.mov`.
+/// A saved project at `<root>/Project/p.rfilm` using `<root>/Media/{a,b}.mov`.
 fn saved_project(root: &std::path::Path) -> (String, Vec<ItemId>) {
     let media = root.join("Media");
     std::fs::create_dir_all(&media).unwrap();
@@ -24,7 +24,7 @@ fn saved_project(root: &std::path::Path) -> (String, Vec<ItemId>) {
     let (mut s, items, _) = session_with(&[&a, &b]);
     let proj = root.join("Project");
     std::fs::create_dir_all(&proj).unwrap();
-    let path = proj.join("p.fcproj").to_string_lossy().into_owned();
+    let path = proj.join("p.rfilm").to_string_lossy().into_owned();
     s.execute("file.save", json!({"path": path})).unwrap();
     (path, items)
 }
@@ -76,7 +76,7 @@ fn moved_media_opens_offline_and_relinks_others_by_folder() {
     assert!(!s.offline.prompt);
     assert_eq!(frame_rgba(&mut s, 3, 1.0).2, online, "relinked media renders as before the move");
     let b_path = s.project.item(items[1]).unwrap().as_media().unwrap().media.clone();
-    let filmcraft_project::MediaRef::File { path: b_path } = b_path else { panic!("relinked media must remain file-based") };
+    let redrob_film_project::MediaRef::File { path: b_path } = b_path else { panic!("relinked media must remain file-based") };
     assert_eq!(std::path::Path::new(&b_path), moved.join("b.mov"));
     // undo brings the old (missing) paths back, and the slate with them
     s.execute("edit.undo", json!({})).unwrap();

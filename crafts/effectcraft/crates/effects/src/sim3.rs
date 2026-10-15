@@ -22,10 +22,10 @@
 //! map layer (luminance → length, horizontal/vertical gradient → lean), and shades them with a
 //! Kajiya–Kay-style strand model (diffuse ∝ sin(tangent, light), specular from the half vector).
 
-use effectcraft_keyframe::Value;
-use effectcraft_project::ParamUi;
-use effectcraft_raster::{Image, Px};
 use rayon::prelude::*;
+use redrob_effects_keyframe::Value;
+use redrob_effects_project::ParamUi;
+use redrob_effects_raster::{Image, Px};
 
 use crate::sim::{Acc, Post, SPS, Shape, Sprite, SpritePlan, Tint, combine, splat, steps_at};
 use crate::util::{SimCache, hash1, params_key, point_in_poly, unpremul};
@@ -288,7 +288,7 @@ impl Affects {
         }
         if let Some(m) = &self.selection {
             let c = m.at(q.p[0], q.p[1]);
-            w *= effectcraft_color::luminance(c[0], c[1], c[2]).clamp(0.0, 1.0) * c[3];
+            w *= redrob_effects_color::luminance(c[0], c[1], c[2]).clamp(0.0, 1.0) * c[3];
         }
         w
     }

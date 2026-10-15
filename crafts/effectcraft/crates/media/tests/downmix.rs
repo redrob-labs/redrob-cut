@@ -5,8 +5,8 @@ use std::f64::consts::PI;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use effectcraft_media::{MediaPool, probe};
-use effectcraft_time::Tick;
+use redrob_effects_media::{MediaPool, probe};
+use redrob_effects_time::Tick;
 
 const RATE: u32 = 48_000;
 

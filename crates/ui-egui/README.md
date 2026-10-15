@@ -13,7 +13,7 @@ incompatible clip types show no valid transition preview. Ordinary effects retai
 outline. `timeline.transitionDropPreview` exposes the span and edge to automation.
 
 `transition_drop_ui` covers both edges of short video/audio clips, hover without project edits,
-the committed span and undo. Set `FILMCRAFT_UI_SNAPSHOT_DIR` to render screenshots with wgpu.
+the committed span and undo. Set `REDROB_FILM_UI_SNAPSHOT_DIR` to render screenshots with wgpu.
 
 ## Localisation
 
@@ -38,7 +38,7 @@ and preference values retain their original values. Engine errors, CLI and MCP m
 English. Brazilian Portuguese and Ukrainian currently cover the core menus, German every menu; they
 fall back to English elsewhere.
 
-Verification: `cargo test -p filmcraft-ui-egui` checks catalog syntax, duplicate keys, placeholders,
+Verification: `cargo test -p redrob-film-ui-egui` checks catalog syntax, duplicate keys, placeholders,
 literal/menu/registry coverage and UI behaviour; `cargo xtask ci` runs the workspace gates. Visual
 checks use the control channel to switch language and capture the resulting panels.
 

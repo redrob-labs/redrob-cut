@@ -1,9 +1,9 @@
-//! Round trip of `effectcraft-opusenc` through FilmCraft's spec-derived Opus decoder, plus an
+//! Round trip of `redrob-effects-opusenc` through FilmCraft's spec-derived Opus decoder, plus an
 //! ffmpeg oracle (skipped when ffmpeg is not installed) reading an Ogg Opus file written here.
 
 use std::process::Command;
 
-use effectcraft_opusenc::OpusEncoder;
+use redrob_effects_opusenc::OpusEncoder;
 
 const SR: f32 = 48_000.0;
 const FRAME: usize = OpusEncoder::FRAME_SIZE;
@@ -20,9 +20,9 @@ fn encode(pcm: &[f32], channels: u8, bitrate: u32) -> (OpusEncoder, Vec<Vec<u8>>
     (enc, packets)
 }
 
-/// Decodes with filmcraft-opus, drops the pre-skip and returns planar channels of `len` samples.
+/// Decodes with redrob-film-opus, drops the pre-skip and returns planar channels of `len` samples.
 fn decode(head: &[u8], packets: &[Vec<u8>], len: usize) -> Vec<Vec<f32>> {
-    let mut dec = filmcraft_opus::Decoder::new(head).expect("OpusHead");
+    let mut dec = redrob_film_opus::Decoder::new(head).expect("OpusHead");
     dec.set_trim_pre_skip(true);
     let mut out: Vec<Vec<f32>> = vec![Vec::new(); dec.channels()];
     for p in packets {
@@ -303,7 +303,7 @@ fn ogg_page(out: &mut Vec<u8>, packet: &[u8], header_type: u8, granule: u64, seq
 fn ogg_opus(enc: &OpusEncoder, packets: &[Vec<u8>], len: usize) -> Vec<u8> {
     let mut out = Vec::new();
     ogg_page(&mut out, &enc.opus_head(), 0x02, 0, 0);
-    let vendor = b"effectcraft-opusenc";
+    let vendor = b"redrob-effects-opusenc";
     let mut tags = b"OpusTags".to_vec();
     tags.extend_from_slice(&(vendor.len() as u32).to_le_bytes());
     tags.extend_from_slice(vendor);

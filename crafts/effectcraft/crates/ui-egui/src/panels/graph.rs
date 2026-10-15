@@ -5,12 +5,12 @@
 //!
 //! Every edit is an engine command (`keys.set`, `keys.setEase`, `keys.select`, `keys.*`).
 
-use effectcraft_engine::KeyRef;
-use effectcraft_engine::keyframe::{Interp, Value, side_ease};
-use effectcraft_engine::project::{Comp, Layer, LayerId, Property};
-use effectcraft_engine::render::EvalCtx;
-use effectcraft_engine::time::Tick;
 use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
+use redrob_effects_engine::KeyRef;
+use redrob_effects_engine::keyframe::{Interp, Value, side_ease};
+use redrob_effects_engine::project::{Comp, Layer, LayerId, Property};
+use redrob_effects_engine::render::EvalCtx;
+use redrob_effects_engine::time::Tick;
 use serde_json::json;
 
 use super::timeline::TMap;
@@ -129,9 +129,9 @@ fn curves<'a>(app: &EffectcraftApp, comp: &'a Comp, ectx: &EvalCtx, tm: TMap, pl
                 let v = if speed {
                     let lt = l.layer_time(tt);
                     if spatial {
-                        effectcraft_engine::keyframe::speed(&pr.keys, lt, true)
+                        redrob_effects_engine::keyframe::speed(&pr.keys, lt, true)
                     } else {
-                        effectcraft_engine::keyframe::velocity(&pr.keys, lt, false).get(d).copied().unwrap_or(0.0).abs()
+                        redrob_effects_engine::keyframe::velocity(&pr.keys, lt, false).get(d).copied().unwrap_or(0.0).abs()
                     }
                 } else {
                     ectx.at(tt).value(l, pr).components().get(d).copied().unwrap_or(0.0)

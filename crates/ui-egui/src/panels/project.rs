@@ -3,7 +3,7 @@
 //! Sequence, Find, New Bin, New Item, Clear) and the panel menu.
 //!
 //! View settings, columns, sorting and view presets are engine preferences
-//! (`filmcraft_engine::project_panel`, `project.view.*`, `project.columns.*`, `project.viewPreset.*`);
+//! (`redrob_film_engine::project_panel`, `project.view.*`, `project.columns.*`, `project.viewPreset.*`);
 //! Freeform positions are item metadata (`project.freeform.*`). This module keeps only what is on
 //! screen: the bin shown in place, bins opened as tabs or floating panels, the inline rename, the
 //! open dialog and the hover-scrubbed card ([`ProjectPanelUi`], `ui.set {"projectPanel": …}`).
@@ -12,8 +12,8 @@
 //! View Options…, Save Arrangement…) by `project_dialogs`.
 
 use egui::{Align2, Color32, Rect, Sense, Stroke, pos2, vec2};
-use filmcraft_engine::project_panel::{FontSize, ViewMode};
-use filmcraft_project::{BinId, ItemId, ItemKind};
+use redrob_film_engine::project_panel::{FontSize, ViewMode};
+use redrob_film_project::{BinId, ItemId, ItemKind};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -74,7 +74,7 @@ pub enum ProjectDialog {
     /// Manage Saved View Presets: the selected slot (0-based) and its name being edited.
     ManagePresets { selected: usize, name: String },
     /// Freeform View Options….
-    FreeformOptions { options: filmcraft_engine::project_panel::FreeformOptions },
+    FreeformOptions { options: redrob_film_engine::project_panel::FreeformOptions },
     /// Freeform ▸ Save Arrangement….
     SaveArrangement { name: String, bin: Option<u64> },
 }
@@ -407,7 +407,7 @@ fn body(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect, v: &View, actions
         let parent = parent_bin(&app.session.project.root, v.bin);
         navigate(app, v.inst, parent.map(|b| b.0));
     }
-    let mut crumb = format!("{}.fcproj", app.session.project.name);
+    let mut crumb = format!("{}.rfilm", app.session.project.name);
     for b in bin_path(&app.session.project.root, v.bin) {
         crumb.push_str(" / ");
         crumb.push_str(&b);
@@ -461,10 +461,10 @@ fn body(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect, v: &View, actions
     footer(app, ui, Rect::from_min_max(pos2(rect.min.x, rect.max.y - FOOTER_H), rect.max), v, actions);
 }
 
-fn bin_path(root: &filmcraft_project::Bin, target: BinId) -> Vec<String> {
-    fn walk(b: &filmcraft_project::Bin, target: BinId, path: &mut Vec<String>) -> bool {
+fn bin_path(root: &redrob_film_project::Bin, target: BinId) -> Vec<String> {
+    fn walk(b: &redrob_film_project::Bin, target: BinId, path: &mut Vec<String>) -> bool {
         for c in &b.children {
-            if let filmcraft_project::BinEntry::Bin(sub) = c {
+            if let redrob_film_project::BinEntry::Bin(sub) = c {
                 path.push(sub.name.clone());
                 if sub.id == target || walk(sub, target, path) {
                     return true;
@@ -482,9 +482,9 @@ fn bin_path(root: &filmcraft_project::Bin, target: BinId) -> Vec<String> {
 }
 
 /// The bin containing bin `id` (None at the root).
-pub fn parent_bin(root: &filmcraft_project::Bin, id: BinId) -> Option<BinId> {
+pub fn parent_bin(root: &redrob_film_project::Bin, id: BinId) -> Option<BinId> {
     for c in &root.children {
-        if let filmcraft_project::BinEntry::Bin(b) = c {
+        if let redrob_film_project::BinEntry::Bin(b) = c {
             if b.id == id {
                 return Some(root.id);
             }
@@ -501,7 +501,7 @@ fn count_items(app: &FilmcraftApp, bin: BinId) -> usize {
     if let Some(b) = app.session.project.root.find_bin(bin) {
         b.all_items(&mut ids);
     }
-    ids.iter().filter(|i| app.session.project.item(**i).is_some_and(|it| filmcraft_engine::project_panel::listed(&app.session.project, it))).count()
+    ids.iter().filter(|i| app.session.project.item(**i).is_some_and(|it| redrob_film_engine::project_panel::listed(&app.session.project, it))).count()
 }
 
 /// Preview Area: the selected item's poster frame and its properties.
@@ -517,15 +517,15 @@ fn preview_area(app: &mut FilmcraftApp, ui: &mut egui::Ui, r: Rect, pre: &str) {
     let th = Rect::from_min_size(r.min + vec2(6.0, 6.0), vec2((r.height() - 12.0) * 16.0 / 9.0, r.height() - 12.0));
     ui.painter().rect_filled(th, 2.0, Color32::from_gray(10));
     let ctx = ui.ctx().clone();
-    let poster = filmcraft_engine::keyboard::poster_frame(&it).unwrap_or(filmcraft_time::Tick(it.duration().0 / 3));
+    let poster = redrob_film_engine::keyboard::poster_frame(&it).unwrap_or(redrob_film_time::Tick(it.duration().0 / 3));
     if let Some((tex, sz)) = app.thumbnail(&ctx, id, quantize(poster), 160) {
         ui.painter().image(tex, crate::panels::monitor::fit(th, sz.x, sz.y), Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
     } else {
         icons::paint(ui.painter(), Rect::from_center_size(th.center(), vec2(24.0, 24.0)), item_icon(&it.kind), t.text_faint);
     }
     let p = &app.session.project;
-    let col = |c: &str| filmcraft_engine::project_panel::cell(p, &it, c).0;
-    let (vu, au) = filmcraft_engine::project_panel::usage(p, id);
+    let col = |c: &str| redrob_film_engine::project_panel::cell(p, &it, c).0;
+    let (vu, au) = redrob_film_engine::project_panel::usage(p, id);
     let lines = [
         it.name.clone(),
         format!("{}{}", crate::i18n::t(it.type_label()), if it.has_video() { format!(", {}", col("Video Info")) } else { String::new() }),
@@ -545,9 +545,9 @@ fn preview_area(app: &mut FilmcraftApp, ui: &mut egui::Ui, r: Rect, pre: &str) {
 }
 
 /// Thumbnail times are cached on a quarter-second grid.
-pub fn quantize(t: filmcraft_time::Tick) -> filmcraft_time::Tick {
-    let q = filmcraft_time::TICKS_PER_SECOND / 4;
-    filmcraft_time::Tick((t.0 / q) * q)
+pub fn quantize(t: redrob_film_time::Tick) -> redrob_film_time::Tick {
+    let q = redrob_film_time::TICKS_PER_SECOND / 4;
+    redrob_film_time::Tick((t.0 / q) * q)
 }
 
 fn footer(app: &mut FilmcraftApp, ui: &mut egui::Ui, bar: Rect, v: &View, actions: &mut Actions) {

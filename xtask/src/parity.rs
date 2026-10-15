@@ -108,7 +108,7 @@ pub fn run(root: &Path, args: &[&str]) -> Result<(), String> {
 /// Our menu bar as JSON, from the `menu_tree` example.
 fn dump_ours() -> Result<String, String> {
     let mut cmd = Command::new(env!("CARGO"));
-    cmd.args(["run", "-q", "-p", "filmcraft-ui-egui", "--example", "menu_tree"]).stderr(Stdio::inherit());
+    cmd.args(["run", "-q", "-p", "redrob-film-ui-egui", "--example", "menu_tree"]).stderr(Stdio::inherit());
     let out = cmd.output().map_err(|e| format!("menu_tree: {e}"))?;
     if !out.status.success() {
         return Err(format!("menu_tree failed: {}", out.status));

@@ -1,5 +1,5 @@
 [package]
-name = "effectcraft-host"
+name = "redrob-effects-host"
 description = "Builds a fully wired Redrob Film session: media decoding (Redrob Film codecs), importer, the expression engine and scripting"
 version.workspace = true
 edition.workspace = true
@@ -10,27 +10,27 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-effectcraft-engine = { workspace = true }
-effectcraft-project = { workspace = true }
+redrob-effects-engine = { workspace = true }
+redrob-effects-project = { workspace = true }
 log = { workspace = true }
-effectcraft-media = { workspace = true }
-effectcraft-expr = { workspace = true }
-effectcraft-script = { workspace = true }
-effectcraft-export = { workspace = true }
-effectcraft-plugin = { workspace = true }
+redrob-effects-media = { workspace = true }
+redrob-effects-expr = { workspace = true }
+redrob-effects-script = { workspace = true }
+redrob-effects-export = { workspace = true }
+redrob-effects-plugin = { workspace = true }
 
 # WebAssembly effect plug-ins run in wasmi on native builds.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-effectcraft-plugin = { workspace = true, features = ["wasm"] }
+redrob-effects-plugin = { workspace = true, features = ["wasm"] }
 
 [dev-dependencies]
 serde_json = { workspace = true }
-effectcraft-psd = { workspace = true }
-effectcraft-svg = { workspace = true }
-effectcraft-pdf = { workspace = true }
-effectcraft-raster = { workspace = true }
-effectcraft-time = { workspace = true }
-effectcraft-interchange = { workspace = true }
+redrob-effects-psd = { workspace = true }
+redrob-effects-svg = { workspace = true }
+redrob-effects-pdf = { workspace = true }
+redrob-effects-raster = { workspace = true }
+redrob-effects-time = { workspace = true }
+redrob-effects-interchange = { workspace = true }
 image = { workspace = true }
 gif = { workspace = true }
 exr = { workspace = true }

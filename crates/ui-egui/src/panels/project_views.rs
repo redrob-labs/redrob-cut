@@ -4,9 +4,9 @@
 //! grid).
 
 use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
-use filmcraft_engine::project_panel::{self as pp, Card, SortSpec, ViewMode};
-use filmcraft_project::{Bin, BinEntry, BinId, ItemId, ItemKind};
-use filmcraft_time::Tick;
+use redrob_film_engine::project_panel::{self as pp, Card, SortSpec, ViewMode};
+use redrob_film_project::{Bin, BinEntry, BinId, ItemId, ItemKind};
+use redrob_film_time::Tick;
 use serde_json::json;
 
 use crate::FilmcraftApp;
@@ -22,8 +22,8 @@ const LEAD: f32 = 26.0;
 pub fn item_icon(k: &ItemKind) -> Icon {
     match k {
         ItemKind::Media(m) => match m.info.kind {
-            filmcraft_media::MediaKind::AudioOnly => Icon::Audio,
-            filmcraft_media::MediaKind::Still | filmcraft_media::MediaKind::ImageSequence => Icon::Image,
+            redrob_film_media::MediaKind::AudioOnly => Icon::Audio,
+            redrob_film_media::MediaKind::Still | redrob_film_media::MediaKind::ImageSequence => Icon::Image,
             _ => Icon::Film,
         },
         ItemKind::Sequence(_) => Icon::Sequence,
@@ -41,7 +41,7 @@ pub struct Badge {
     pub proxy_on: bool,
 }
 
-pub fn media_badge(app: &FilmcraftApp, it: &filmcraft_project::ProjectItem) -> Badge {
+pub fn media_badge(app: &FilmcraftApp, it: &redrob_film_project::ProjectItem) -> Badge {
     let mut b = Badge { offline: false, offline_text: "", proxy: false, proxy_on: false };
     let target = match &it.kind {
         ItemKind::Subclip { parent, .. } => app.session.project.item(*parent),
@@ -55,7 +55,7 @@ pub fn media_badge(app: &FilmcraftApp, it: &filmcraft_project::ProjectItem) -> B
         (b.offline, b.offline_text) = (true, tl!("Media missing"));
     } else if let Some(st) = app.session.media.offline_status(id) {
         b.offline = true;
-        b.offline_text = if st.reason == filmcraft_render::offline::OfflineReason::Unreadable { tl!("Unreadable") } else { tl!("Media missing") };
+        b.offline_text = if st.reason == redrob_film_render::offline::OfflineReason::Unreadable { tl!("Unreadable") } else { tl!("Media missing") };
     }
     b.proxy = m.proxy.is_some();
     b.proxy_on = app.session.media.use_proxies();
@@ -79,7 +79,7 @@ fn matches_filter(app: &FilmcraftApp, id: ItemId, filter: &str) -> bool {
     app.session.project.item(id).is_some_and(|i| pp::listed(&app.session.project, i) && (filter.is_empty() || i.name.to_ascii_lowercase().contains(filter)))
 }
 
-fn label_color(app: &FilmcraftApp, l: filmcraft_project::Label) -> Color32 {
+fn label_color(app: &FilmcraftApp, l: redrob_film_project::Label) -> Color32 {
     let c = app.session.prefs.labels.rgb(l);
     Color32::from_rgb(c[0], c[1], c[2])
 }
@@ -183,7 +183,7 @@ pub fn item_interactions(
         actions.push(("project.select".into(), json!({"items": sel.iter().map(|i| i.0).collect::<Vec<_>>()})));
     }
     if resp.double_clicked() {
-        let matte = matches!(kind, ItemKind::Media(m) if matches!(m.media, filmcraft_engine::project::MediaRef::Generator(filmcraft_media::Generator::ColorMatte { .. })));
+        let matte = matches!(kind, ItemKind::Media(m) if matches!(m.media, redrob_film_engine::project::MediaRef::Generator(redrob_film_media::Generator::ColorMatte { .. })));
         if matte {
             // like Premiere: double-clicking a Color Matte opens its color picker
             actions.push(("project.select".into(), json!({"items": [id.0]})));
@@ -254,7 +254,7 @@ fn item_menu(app: &mut FilmcraftApp, ui: &mut egui::Ui, id: ItemId, kind: &ItemK
         }
     }
     ui.menu_button(tl!("Label"), |ui| {
-        for l in filmcraft_project::Label::ALL {
+        for l in redrob_film_project::Label::ALL {
             if ui.button(crate::i18n::t(l.name())).clicked() {
                 actions.push(("project.select".into(), json!({"items": [id.0]})));
                 actions.push(("edit.label".into(), json!({"label": l.name()})));
@@ -262,7 +262,7 @@ fn item_menu(app: &mut FilmcraftApp, ui: &mut egui::Ui, id: ItemId, kind: &ItemK
             }
         }
     });
-    if matches!(kind, ItemKind::Media(m) if matches!(m.media, filmcraft_project::MediaRef::File { .. })) {
+    if matches!(kind, ItemKind::Media(m) if matches!(m.media, redrob_film_project::MediaRef::File { .. })) {
         ui.separator();
         for (label, cmd) in [(tl!("Link Media…"), "media.linkMedia"), (tl!("Make Offline…"), "media.makeOffline")] {
             if ui.button(label).clicked() {
@@ -323,7 +323,7 @@ fn bin_menu(app: &mut FilmcraftApp, ui: &mut egui::Ui, v: &View, bin: u64, actio
 
 /// Parameters for `project.delete`: the selected items, else the selected bin by id (the engine
 /// deletes a named bin with everything in it). `None` when nothing is selected.
-pub fn clear_params(selection: &[filmcraft_project::ItemId], selected_bin: Option<u64>) -> Option<serde_json::Value> {
+pub fn clear_params(selection: &[redrob_film_project::ItemId], selected_bin: Option<u64>) -> Option<serde_json::Value> {
     if !selection.is_empty() {
         return Some(json!({}));
     }
@@ -748,9 +748,9 @@ fn list_bin(app: &mut FilmcraftApp, ui: &mut egui::Ui, bin: &Bin, depth: usize, 
 }
 
 /// An item's thumbnail at `t` (None: the poster frame or a third in) fitted into `r`.
-fn thumb(app: &mut FilmcraftApp, ui: &egui::Ui, r: Rect, it: &filmcraft_project::ProjectItem, at: Option<Tick>) {
+fn thumb(app: &mut FilmcraftApp, ui: &egui::Ui, r: Rect, it: &redrob_film_project::ProjectItem, at: Option<Tick>) {
     ui.painter().rect_filled(r, 2.0, Color32::from_rgb(12, 12, 12));
-    let tt = at.or_else(|| filmcraft_engine::keyboard::poster_frame(it)).unwrap_or(Tick(it.duration().0 * 3 / 10));
+    let tt = at.or_else(|| redrob_film_engine::keyboard::poster_frame(it)).unwrap_or(Tick(it.duration().0 * 3 / 10));
     let ctx = ui.ctx().clone();
     let w = (r.width() as u32).clamp(96, 320);
     if let Some((tex, sz)) = app.thumbnail(&ctx, it.id, quantize(tt), w) {
@@ -768,7 +768,7 @@ fn thumb(app: &mut FilmcraftApp, ui: &egui::Ui, r: Rect, it: &filmcraft_project:
 // ------------------------------------------------------------------------------------ icon view
 
 /// Hover scrub over a thumbnail: the media time under the pointer (recorded for I / O).
-fn hover_time(app: &mut FilmcraftApp, ui: &egui::Ui, resp: &egui::Response, r: Rect, it: &filmcraft_project::ProjectItem) -> Option<Tick> {
+fn hover_time(app: &mut FilmcraftApp, ui: &egui::Ui, resp: &egui::Response, r: Rect, it: &redrob_film_project::ProjectItem) -> Option<Tick> {
     if !(resp.hovered() && app.session.prefs.project_panel.hover_scrub) || it.duration().0 <= 0 {
         return None;
     }
@@ -1157,7 +1157,7 @@ fn canvas_menu(app: &mut FilmcraftApp, ui: &mut egui::Ui, v: &View, bin: Option<
 #[cfg(test)]
 mod clear_tests {
     use super::clear_params;
-    use filmcraft_project::ItemId;
+    use redrob_film_project::ItemId;
     use serde_json::json;
 
     #[test]

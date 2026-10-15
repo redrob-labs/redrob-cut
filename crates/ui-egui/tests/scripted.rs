@@ -11,9 +11,9 @@
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -212,7 +212,7 @@ fn effects_panel_lists_the_premiere_transition_folders() {
     d.ok("ui.panel.show", json!({"panel": "Effects"}));
     d.frames(3);
     let folders = d.element_ids("effects.folder.");
-    for f in filmcraft_project::vtransition::VIDEO_TRANSITION_FOLDERS {
+    for f in redrob_film_project::vtransition::VIDEO_TRANSITION_FOLDERS {
         assert!(folders.contains(&format!("effects.folder.Video Transitions/{f}")), "{f}: {folders:?}");
     }
     assert!(folders.iter().any(|f| f == "effects.folder.Legacy"), "{folders:?}");
@@ -370,7 +370,7 @@ impl Driver {
             self.frames(1);
         }
         let img = self.harness.render().expect("render");
-        let png = filmcraft_ui_egui::control::encode_png(img.as_raw(), img.width(), img.height()).expect("png");
+        let png = redrob_film_ui_egui::control::encode_png(img.as_raw(), img.width(), img.height()).expect("png");
         let dir = std::path::PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("ui-screenshots");
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join(format!("{name}.png"));
@@ -381,7 +381,7 @@ impl Driver {
 }
 
 /// Renders the Trim Monitor and the Keyboard Shortcuts dialog to PNGs for visual review (needs a
-/// GPU): `cargo test -p filmcraft-ui-egui --test scripted -- --ignored screenshots`.
+/// GPU): `cargo test -p redrob-film-ui-egui --test scripted -- --ignored screenshots`.
 #[test]
 #[ignore]
 fn screenshots() {
@@ -523,7 +523,7 @@ fn waveform_peaks_do_not_survive_opening_another_project() {
     }
     let (item, old) = first.expect("the demo timeline computes waveform peaks");
     // Reopen the same project from disk: same item ids, new media pool.
-    let path = std::env::temp_dir().join(format!("fc-peaks-{}.fcproj", std::process::id()));
+    let path = std::env::temp_dir().join(format!("fc-peaks-{}.rfilm", std::process::id()));
     let path = path.to_string_lossy().to_string();
     d.exec("file.saveAs", json!({"path": path}));
     d.exec("file.open", json!({"path": path}));

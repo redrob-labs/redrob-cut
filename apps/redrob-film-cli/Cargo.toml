@@ -1,0 +1,35 @@
+[package]
+name = "redrob-film-cli"
+description = "Redrob Film headless CLI and MCP server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "redrob-film-cli"
+path = "src/main.rs"
+
+[features]
+default = []
+# Speech-to-text (Text panel ▸ Transcribe) with Whisper on the CPU, and model downloads.
+whisper = ["redrob-film-engine/whisper", "redrob-film-engine/speech-download"]
+
+[dependencies]
+redrob-film-engine = { workspace = true }
+redrob-film-export = { workspace = true }
+redrob-film-project = { workspace = true }
+redrob-film-render = { workspace = true }
+redrob-film-time = { workspace = true }
+redrob-film-gpu = { workspace = true }
+redrob-film-media = { workspace = true }
+redrob-film-codecs = { workspace = true }
+redrob-film-platform = { workspace = true }
+redrob-film-mxf = { workspace = true }
+redrob-film-mpegts = { workspace = true }
+redrob-film-ogg = { workspace = true }
+redrob-film-automation = { workspace = true }
+serde_json = { workspace = true }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }

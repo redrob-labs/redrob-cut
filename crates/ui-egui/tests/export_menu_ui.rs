@@ -6,10 +6,10 @@ use std::sync::mpsc::{Sender, channel};
 use std::sync::{Arc, Mutex};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
-use filmcraft_ui_egui::state::Mode;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
+use redrob_film_ui_egui::state::Mode;
 use serde_json::{Value, json};
 
 /// What the save panel was asked: filter label, extensions, suggested name.
@@ -30,7 +30,7 @@ impl Driver {
             save_to.as_ref().map(|d| d.join(suggested).to_string_lossy().into_owned())
         }));
         let mut builder = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
-        if std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").is_some() {
+        if std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").is_some() {
             builder = builder.wgpu();
         }
         let harness = builder.build_eframe(move |_cc| app);
@@ -91,7 +91,7 @@ const SAVED: [(&str, &str); 6] = [
     ("file.exportFcpxml", "fcpxml"),
     ("file.exportOtio", "otio"),
     ("file.exportAle", "ale"),
-    ("file.exportSelectionProject", "fcproj"),
+    ("file.exportSelectionProject", "rfilm"),
 ];
 
 #[test]
@@ -165,7 +165,7 @@ fn marker_csv_menu_exports_sequence_review_notes() {
     d.frames(3);
     let elements = d.ok("ui.elements", json!({"prefix":"menu.markers.exportCsv"}));
     assert!(!elements.as_array().unwrap().is_empty(), "the menu command has an automation id");
-    if let Some(dir) = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR") {
+    if let Some(dir) = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR") {
         let dir = std::path::PathBuf::from(dir);
         std::fs::create_dir_all(&dir).unwrap();
         d.harness.render().unwrap().save(dir.join("marker-csv-menu.png")).unwrap();

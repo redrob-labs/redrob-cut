@@ -10,8 +10,8 @@ use common::*;
 /// Auto as with it Off, and the hardware decoder really ran.
 #[test]
 fn webm_and_mkv_match_software() {
-    use filmcraft_media::FrameRequest;
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    use redrob_film_media::FrameRequest;
+    let ff = redrob_film_testkit::require_ffmpeg!();
     let src = "testsrc2=s=640x360:r=24:d=2,noise=alls=12:allf=t";
     let cases: [(&str, Vec<&str>); 2] = [
         (
@@ -65,21 +65,21 @@ fn webm_and_mkv_match_software() {
             ],
         ),
     ];
-    filmcraft_platform::register();
+    redrob_film_platform::register();
     for (name, args) in cases {
         let Some(path) = fixture(&ff, name, &args) else { continue };
         let bytes: std::sync::Arc<[u8]> = std::fs::read(&path).unwrap().into();
         let frames = |hw: bool| {
-            filmcraft_codecs::hw::set_hardware_decoding(hw);
-            let src = filmcraft_codecs::open_bytes(name, bytes.clone()).unwrap();
+            redrob_film_codecs::hw::set_hardware_decoding(hw);
+            let src = redrob_film_codecs::open_bytes(name, bytes.clone()).unwrap();
             let rate = src.info().frame_rate();
             (0..40).map(|i| src.video_frame(FrameRequest::full(rate.tick_of(i))).unwrap()).collect::<Vec<_>>()
         };
         let off = frames(false);
-        let before = filmcraft_codecs::hw::hw_stats();
+        let before = redrob_film_codecs::hw::hw_stats();
         let auto = frames(true);
-        let after = filmcraft_codecs::hw::hw_stats();
-        filmcraft_codecs::hw::set_hardware_decoding(true);
+        let after = redrob_film_codecs::hw::hw_stats();
+        redrob_film_codecs::hw::set_hardware_decoding(true);
         if after.sessions == before.sessions {
             eprintln!("SKIPPED: no Media Foundation decoder for {name}");
             continue;
@@ -90,8 +90,8 @@ fn webm_and_mkv_match_software() {
             let (x, y) = (a.as_ref().clone(), b.as_ref().clone());
             assert_same(
                 &format!("{name} frame {i}"),
-                &[filmcraft_codecs::DecodedFrame { pts: 0, frame: x, draft: false }],
-                &[filmcraft_codecs::DecodedFrame { pts: 0, frame: y, draft: false }],
+                &[redrob_film_codecs::DecodedFrame { pts: 0, frame: x, draft: false }],
+                &[redrob_film_codecs::DecodedFrame { pts: 0, frame: y, draft: false }],
             );
         }
     }

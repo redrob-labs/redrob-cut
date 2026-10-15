@@ -1,5 +1,5 @@
 [package]
-name = "filmcraft-gpu"
+name = "redrob-film-gpu"
 description = "wgpu compositor: YUV/RGB layer sampling, linear-light premultiplied compositing in WGSL"
 version.workspace = true
 edition.workspace = true
@@ -10,12 +10,12 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-filmcraft-color = { workspace = true }
-filmcraft-frame = { workspace = true }
-filmcraft-geom = { workspace = true }
-filmcraft-project = { workspace = true }
-filmcraft-render = { workspace = true }
-filmcraft-time = { workspace = true }
+redrob-film-color = { workspace = true }
+redrob-film-frame = { workspace = true }
+redrob-film-geom = { workspace = true }
+redrob-film-project = { workspace = true }
+redrob-film-render = { workspace = true }
+redrob-film-time = { workspace = true }
 wgpu = { version = "30", default-features = false, features = ["wgsl"] }
 log = { workspace = true }
 pollster = "0.4"
@@ -23,8 +23,8 @@ rayon = { workspace = true }
 
 [dev-dependencies]
 pollster = "0.4"
-filmcraft-export = { workspace = true }
+redrob-film-export = { workspace = true }
 image = { version = "0.25", default-features = false, features = ["png"] }
 wgpu = { version = "30", features = ["wgsl", "metal", "vulkan", "dx12", "gles"] }
-filmcraft-media = { workspace = true }
-filmcraft-time = { workspace = true }
+redrob-film-media = { workspace = true }
+redrob-film-time = { workspace = true }

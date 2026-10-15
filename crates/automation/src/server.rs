@@ -3,7 +3,7 @@
 use std::sync::{Arc, Mutex, PoisonError};
 
 use base64::Engine as _;
-use filmcraft_engine::Session;
+use redrob_film_engine::Session;
 use rmcp::handler::server::router::tool::ToolRouter;
 use rmcp::handler::server::wrapper::Parameters;
 use rmcp::model::{CallToolResult, ContentBlock as Content};
@@ -422,7 +422,7 @@ impl FilmcraftMcp {
                 let r = tokio::task::spawn_blocking(move || -> Result<Vec<u8>, AutomationError> {
                     let g = s.lock().unwrap_or_else(PoisonError::into_inner);
                     // read-only: render at `seconds` without moving the playhead (#114)
-                    let t = p.seconds.map_or_else(|| g.playhead(), filmcraft_time::Tick::from_seconds_f64);
+                    let t = p.seconds.map_or_else(|| g.playhead(), redrob_film_time::Tick::from_seconds_f64);
                     let (w, h) =
                         g.active_sequence().map(|q| (q.settings.width, q.settings.height)).ok_or_else(|| AutomationError::Other("no sequence".into()))?;
                     let scale = render_scale(max, w, h);
@@ -587,8 +587,11 @@ impl FilmcraftMcp {
 const INSTRUCTIONS: &str = "Redrob Film video editor (Premiere Pro-class). Every edit is an engine command: `command_list` to discover ids/params, `command_run` to execute (undoable; `command_batch` runs several). `doc_inspect` (or `project_inspect`/`sequence_inspect`) returns ids you can pass to commands; `render_preview` shows the result. In bridge mode the `ui_*` tools drive the live app: `ui_elements` lists clickable ids, `ui_click`/`ui_drag`/`ui_key` operate it, `ui_screenshot` shows it. Time is in ticks: 254016000000 per second (commands also accept `seconds`, `frame` or `timecode`).";
 
 /// Resources: the project (as `doc_inspect`) and the command catalog (as `command_list`).
-const DOCUMENT_URI: &str = "filmcraft://document";
-const COMMANDS_URI: &str = "filmcraft://commands";
+const DOCUMENT_URI: &str = "redrob-film://document";
+const COMMANDS_URI: &str = "redrob-film://commands";
+// legacy: the URIs the resources had before the rename still read
+const LEGACY_DOCUMENT_URI: &str = "filmcraft://document"; // legacy:
+const LEGACY_COMMANDS_URI: &str = "filmcraft://commands"; // legacy:
 
 /// MCP 2026-07-28 clients (current Claude Code) require `ttlMs` and `cacheScope` on list and read
 /// results; rmcp fills `resultType` and leaves the cache hints to the server, as the generated
@@ -657,8 +660,8 @@ impl ServerHandler for FilmcraftMcp {
         context: rmcp::service::RequestContext<rmcp::RoleServer>,
     ) -> Result<rmcp::model::ReadResourceResponse, McpError> {
         let v = match request.uri.as_str() {
-            DOCUMENT_URI => self.document().await,
-            COMMANDS_URI => self.run("command.list", json!({})).await,
+            DOCUMENT_URI | LEGACY_DOCUMENT_URI => self.document().await,
+            COMMANDS_URI | LEGACY_COMMANDS_URI => self.run("command.list", json!({})).await,
             other => return Err(McpError::resource_not_found(format!("resource not found: {other}"), None)),
         }
         .map_err(|e| McpError::internal_error(e.to_string(), None))?;
@@ -837,7 +840,7 @@ mod tests {
         assert_eq!(r["result"]["content"][0]["type"], "image", "{r}");
     }
 
-    /// `filmcraft://document` and `filmcraft://commands` are listed and readable as JSON.
+    /// `redrob-film://document` and `redrob-film://commands` are listed and readable as JSON.
     #[tokio::test(flavor = "multi_thread")]
     async fn resources_document_and_commands() {
         let mut c = Client::start(demo());
@@ -853,7 +856,7 @@ mod tests {
         assert!(v["project"].is_object() && v["sequence"].is_object(), "{v}");
         let r = c.ask(json!({"jsonrpc":"2.0","id":3,"method":"resources/read","params":{"uri":COMMANDS_URI}})).await;
         assert!(r["result"]["contents"][0]["text"].as_str().unwrap().contains("timeline.razor"), "{r}");
-        let r = c.ask(json!({"jsonrpc":"2.0","id":4,"method":"resources/read","params":{"uri":"filmcraft://nope"}})).await;
+        let r = c.ask(json!({"jsonrpc":"2.0","id":4,"method":"resources/read","params":{"uri":"redrob-film://nope"}})).await;
         assert!(r["error"]["code"].is_i64(), "{r}");
     }
 

@@ -5,7 +5,7 @@
 // and scales by opacity. Normal layers blend into the Rgba16Float accumulator with fixed-function
 // premultiplied "over"; Dissolve does too (each pixel is either dropped or drawn opaque). The other
 // blend modes (`fs_blend`) read the accumulator under the layer from a copy (`backdrop`) and write
-// the composited result, with the math of `filmcraft_render::blend::composite`.
+// the composited result, with the math of `redrob_film_render::blend::composite`.
 
 struct U {
     m0: vec4<f32>,   // a b c d
@@ -175,7 +175,7 @@ fn fs(in: VOut) -> @location(0) vec4<f32> {
 }
 
 // ---- the other blend modes: W3C Compositing and Blending formulas on straight, sRGB-encoded
-// colour, exactly as `filmcraft_render::blend` (no recursion in WGSL, so helpers are split out).
+// colour, exactly as `redrob_film_render::blend` (no recursion in WGSL, so helpers are split out).
 
 fn screen(b: f32, s: f32) -> f32 { return b + s - b * s; }
 

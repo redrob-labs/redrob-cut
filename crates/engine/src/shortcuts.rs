@@ -572,7 +572,7 @@ impl Shortcuts {
                 out.push(Binding::new(&c.id, k, p.as_deref()));
             }
         }
-        for (c, k, p) in presets::FILMCRAFT_PANEL.iter().chain(presets::PREMIERE_PANEL) {
+        for (c, k, p) in presets::REDROB_FILM_PANEL.iter().chain(presets::PREMIERE_PANEL) {
             if self.known(c) {
                 out.push(Binding::new(c, k, panel_opt(p)));
             }
@@ -697,7 +697,7 @@ impl Shortcuts {
         let Some(dir) = self.presets_dir() else { return };
         let f = self.file(&self.preset, self.modified);
         if let Err(e) = std::fs::create_dir_all(&dir)
-            .and_then(|_| filmcraft_format::atomic_write(&dir.join(ACTIVE_FILE), &serde_json::to_vec_pretty(&f).unwrap_or_default()))
+            .and_then(|_| redrob_film_format::atomic_write(&dir.join(ACTIVE_FILE), &serde_json::to_vec_pretty(&f).unwrap_or_default()))
         {
             log::warn!("saving keyboard shortcuts: {e}");
         }
@@ -1047,7 +1047,7 @@ fn write_file(path: &Path, f: &PresetFile) -> std::result::Result<(), String> {
     if let Some(d) = path.parent() {
         std::fs::create_dir_all(d).map_err(|e| format!("{}: {e}", d.display()))?;
     }
-    filmcraft_format::atomic_write(path, &serde_json::to_vec_pretty(f).unwrap_or_default()).map_err(|e| format!("{}: {e}", path.display()))
+    redrob_film_format::atomic_write(path, &serde_json::to_vec_pretty(f).unwrap_or_default()).map_err(|e| format!("{}: {e}", path.display()))
 }
 
 // ------------------------------------------------------------------ commands

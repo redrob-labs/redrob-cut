@@ -26,8 +26,8 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-use filmcraft_project::{Sequence, TrackId, TrackKind};
-use filmcraft_time::{Tick, TimeRange};
+use redrob_film_project::{Sequence, TrackId, TrackKind};
+use redrob_film_time::{Tick, TimeRange};
 
 use crate::commands::{CommandSpec, bad, bool_p, f64_p, has_seq, str_p, time_p, u64_p};
 use crate::{EngineError, Result, Session};
@@ -158,7 +158,7 @@ impl Default for VoiceOverPrefs {
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Recording {
-    pub seq: filmcraft_project::ItemId,
+    pub seq: redrob_film_project::ItemId,
     pub track: TrackId,
     /// Record point (sequence time): where the clip starts.
     pub record_start: Tick,
@@ -495,10 +495,10 @@ fn stop(s: &mut Session, p: &Value) -> Result<Value> {
         if !seq.audio_tracks.iter().any(|t| t.id == track) {
             return Err(bad("audio.voiceover.stop", "the record track was deleted"));
         }
-        let durations = |_: filmcraft_project::ItemId| -> Option<Tick> { None };
+        let durations = |_: redrob_film_project::ItemId| -> Option<Tick> { None };
         let mut ctx =
-            filmcraft_edit::EditCtx { next_id: &mut next, media_duration: &durations, media_start: &|_| Tick::ZERO, min_duration: rate.frame_duration() };
-        filmcraft_edit::overwrite(seq, vec![(track, it)], &mut ctx)?;
+            redrob_film_edit::EditCtx { next_id: &mut next, media_duration: &durations, media_start: &|_| Tick::ZERO, min_duration: rate.frame_duration() };
+        redrob_film_edit::overwrite(seq, vec![(track, it)], &mut ctx)?;
         seq.check().map_err(EngineError::Other)?;
         pr.next_id = next;
         Ok(id)

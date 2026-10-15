@@ -1,5 +1,5 @@
 [package]
-name = "effectcraft-media"
+name = "redrob-effects-media"
 description = "Footage import: probing, stills, image sequences, video and audio via Redrob Film's pure-Rust codecs, memory-budgeted frame cache"
 version.workspace = true
 edition.workspace = true
@@ -10,20 +10,20 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-effectcraft-time = { workspace = true }
-effectcraft-project = { workspace = true }
-effectcraft-raster = { workspace = true }
-effectcraft-render = { workspace = true }
-effectcraft-psd = { workspace = true }
-effectcraft-svg = { workspace = true }
-effectcraft-pdf = { workspace = true }
-effectcraft-model = { workspace = true }
-filmcraft-codecs = { workspace = true }
-filmcraft-media = { workspace = true }
-filmcraft-isobmff = { workspace = true }
-filmcraft-frame = { workspace = true }
-filmcraft-color = { workspace = true }
-filmcraft-time = { workspace = true }
+redrob-effects-time = { workspace = true }
+redrob-effects-project = { workspace = true }
+redrob-effects-raster = { workspace = true }
+redrob-effects-render = { workspace = true }
+redrob-effects-psd = { workspace = true }
+redrob-effects-svg = { workspace = true }
+redrob-effects-pdf = { workspace = true }
+redrob-effects-model = { workspace = true }
+redrob-film-codecs = { workspace = true }
+redrob-film-media = { workspace = true }
+redrob-film-isobmff = { workspace = true }
+redrob-film-frame = { workspace = true }
+redrob-film-color = { workspace = true }
+redrob-film-time = { workspace = true }
 exr = { workspace = true }
 gif = { workspace = true }
 image = { workspace = true, features = ["gif", "webp", "tiff", "bmp", "exr", "tga", "hdr"] }

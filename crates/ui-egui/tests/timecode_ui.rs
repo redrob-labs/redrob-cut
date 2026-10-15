@@ -5,10 +5,10 @@
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_time::{FrameRate, parse_timecode};
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_time::{FrameRate, parse_timecode};
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -75,7 +75,7 @@ impl Driver {
         s.sequence_rate().frame_at(s.playhead())
     }
     fn source_rate(&self) -> FrameRate {
-        filmcraft_engine::clip_ops::source_view(&self.harness.state().session, filmcraft_project::ItemId(5)).unwrap().rate
+        redrob_film_engine::clip_ops::source_view(&self.harness.state().session, redrob_film_project::ItemId(5)).unwrap().rate
     }
     fn source_frame(&self) -> i64 {
         self.source_rate().frame_at(self.harness.state().session.state.source_playhead)

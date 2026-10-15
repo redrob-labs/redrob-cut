@@ -35,7 +35,7 @@ env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: 0
   RUST_BACKTRACE: 1
-  FILMCRAFT_BUILD_SHA: ${{ github.sha }}
+  REDROB_FILM_BUILD_SHA: ${{ github.sha }}
   INPUT_VERSION: ${{ inputs.version }}
 
 jobs:
@@ -98,8 +98,8 @@ jobs:
     runs-on: macos-latest
     environment: release
     env:
-      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
+      REDROB_FILM_VERSION: ${{ needs.validate.outputs.version }}
+      REDROB_FILM_BUILD_DATE: ${{ needs.validate.outputs.date }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -115,7 +115,7 @@ jobs:
           key: release-macos-universal
       - name: Apply version override
         if: inputs.version != ''
-        run: cargo xtask version set "$FILMCRAFT_VERSION"
+        run: cargo xtask version set "$REDROB_FILM_VERSION"
       - name: Import signing certificate
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CODESIGN_CERT_P12_BASE64 }}
@@ -151,8 +151,8 @@ jobs:
       # The OIDC token `azure/login` exchanges for the Artifact Signing credential.
       id-token: write
     env:
-      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
+      REDROB_FILM_VERSION: ${{ needs.validate.outputs.version }}
+      REDROB_FILM_BUILD_DATE: ${{ needs.validate.outputs.date }}
       # Plain IDs (not credentials); here so the login step can be skipped when signing is not set up.
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
@@ -173,7 +173,7 @@ jobs:
       - name: Apply version override
         if: inputs.version != ''
         shell: bash
-        run: cargo xtask version set "$FILMCRAFT_VERSION"
+        run: cargo xtask version set "$REDROB_FILM_VERSION"
       - name: Install WiX
         shell: pwsh
         run: dotnet tool install --global wix --version 5.0.2
@@ -229,8 +229,8 @@ jobs:
     runs-on: ubuntu-22.04
     # No `environment: release`: this job signs nothing, so it gets no release secrets.
     env:
-      FILMCRAFT_VERSION: ${{ needs.validate.outputs.version }}
-      FILMCRAFT_BUILD_DATE: ${{ needs.validate.outputs.date }}
+      REDROB_FILM_VERSION: ${{ needs.validate.outputs.version }}
+      REDROB_FILM_BUILD_DATE: ${{ needs.validate.outputs.date }}
       NFPM_VERSION: 2.47.0
     steps:
       - uses: actions/checkout@v4
@@ -254,7 +254,7 @@ jobs:
           key: release-linux-x86_64
       - name: Apply version override
         if: inputs.version != ''
-        run: cargo xtask version set "$FILMCRAFT_VERSION"
+        run: cargo xtask version set "$REDROB_FILM_VERSION"
       - name: Build and package (tar.gz, deb)
         env:
           CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
@@ -265,9 +265,9 @@ jobs:
           dpkg-deb --info dist/release/*.deb
           dpkg-deb --contents dist/release/*.deb | grep -E 'usr/bin/redrob-film$|metainfo|applications'
           ldd target/release/redrob-film
-          # Exactly the two Linux assets the launcher and the in-app updater (apps/filmcraft/src/update.rs) expect.
-          test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.tar.gz"
-          test -s "dist/release/redrob-film-$FILMCRAFT_VERSION-linux-x86_64.deb"
+          # Exactly the two Linux assets the launcher and the in-app updater (apps/redrob-film-app/src/update.rs) expect.
+          test -s "dist/release/redrob-film-$REDROB_FILM_VERSION-linux-x86_64.tar.gz"
+          test -s "dist/release/redrob-film-$REDROB_FILM_VERSION-linux-x86_64.deb"
           extra="$(find dist/release -mindepth 1 -maxdepth 1 -printf '%f\n' | grep -vE '^redrob-film-.*-linux-x86_64\.(tar\.gz|deb)$' || true)"
           if [ -n "$extra" ]; then echo "::error::unexpected Linux asset: $extra"; exit 1; fi
       - uses: actions/upload-artifact@v4

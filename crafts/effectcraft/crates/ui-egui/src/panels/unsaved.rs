@@ -58,14 +58,14 @@ pub fn on_close_requested(app: &mut EffectcraftApp, ctx: &egui::Context) {
     }
 }
 
-/// The project's display name: its file name, or `Untitled Project.ecproj`.
+/// The project's display name: its file name, or `Untitled Project.rfx`.
 pub fn project_name(app: &EffectcraftApp) -> String {
     app.session
         .path
         .as_deref()
         .and_then(|p| std::path::Path::new(p).file_name())
         .map(|n| n.to_string_lossy().into_owned())
-        .unwrap_or_else(|| "Untitled Project.ecproj".into())
+        .unwrap_or_else(|| "Untitled Project.rfx".into())
 }
 
 /// The window title: the project's path (or name) and `*` while it has unsaved changes.
@@ -186,7 +186,7 @@ mod tests {
 
     fn app() -> (EffectcraftApp, egui::Context) {
         let ctx = egui::Context::default();
-        let app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         crate::theme::install(&ctx, &app.tokens, crate::i18n::language(&app));
         (app, ctx)
     }
@@ -219,7 +219,7 @@ mod tests {
         crate::menus::invoke(&mut app, &ctx, "file.newProject", json!({})).unwrap();
         assert!(app.dialog.is_none());
         modified(&mut app);
-        assert!(window_title(&app).ends_with("Untitled Project.ecproj *"), "{}", window_title(&app));
+        assert!(window_title(&app).ends_with("Untitled Project.rfx *"), "{}", window_title(&app));
         let r = crate::menus::invoke(&mut app, &ctx, "file.newProject", json!({})).unwrap();
         assert_eq!(r, json!({"dialog": "unsavedChanges"}));
         assert_eq!(app.dialog, Some(Dialog::UnsavedChanges));
@@ -257,7 +257,7 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("ec-unsaved-key-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         modified(&mut app);
-        app.session.execute("file.saveAs", json!({"path": dir.join("Kept.ecproj").to_string_lossy()})).unwrap();
+        app.session.execute("file.saveAs", json!({"path": dir.join("Kept.rfx").to_string_lossy()})).unwrap();
         app.session.execute("layer.newNull", json!({})).unwrap();
         crate::menus::invoke(&mut app, &ctx, "file.revert", json!({})).unwrap();
         press(&mut app, &ctx);
@@ -272,7 +272,7 @@ mod tests {
         let (mut app, ctx) = app();
         let dir = std::env::temp_dir().join(format!("ec-unsaved-enter-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        let path = dir.join("Kept.ecproj");
+        let path = dir.join("Kept.rfx");
         modified(&mut app);
         app.session.execute("file.saveAs", json!({"path": path.to_string_lossy()})).unwrap();
         // The Revert prompt discards work: Enter leaves it open.
@@ -301,11 +301,11 @@ mod tests {
         let (mut app, ctx) = app();
         let dir = std::env::temp_dir().join(format!("ec-unsaved-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        let path = dir.join("Kept.ecproj");
+        let path = dir.join("Kept.rfx");
         modified(&mut app);
         app.session.execute("file.saveAs", json!({"path": path.to_string_lossy()})).unwrap();
         assert!(!app.session.is_dirty());
-        assert!(window_title(&app).ends_with("Kept.ecproj"), "{}", window_title(&app));
+        assert!(window_title(&app).ends_with("Kept.rfx"), "{}", window_title(&app));
         // Revert: Revert / Cancel.
         app.session.execute("layer.newNull", json!({})).unwrap();
         crate::menus::invoke(&mut app, &ctx, "file.revert", json!({})).unwrap();

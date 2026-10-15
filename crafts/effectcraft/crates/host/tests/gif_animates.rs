@@ -1,9 +1,9 @@
 //! Animated GIF footage through the wired session (#651): the imported item is a movie whose
 //! frames follow the file's own delays in preview rendering, not one frozen still.
 
-use effectcraft_engine::render::RenderOpts;
-use effectcraft_project::{ItemId, ItemKind};
-use effectcraft_time::Tick;
+use redrob_effects_engine::render::RenderOpts;
+use redrob_effects_project::{ItemId, ItemKind};
+use redrob_effects_time::Tick;
 use serde_json::json;
 
 fn tmp(name: &str) -> String {
@@ -26,7 +26,7 @@ fn animated_gif() -> Vec<u8> {
     out
 }
 
-fn centre(s: &effectcraft_engine::Session, comp: ItemId, t: f64) -> [f32; 3] {
+fn centre(s: &redrob_effects_engine::Session, comp: ItemId, t: f64) -> [f32; 3] {
     let img = s.render(comp, Tick::from_seconds_f64(t), RenderOpts::default());
     let p = img.data[8 * 16 + 8];
     [p[0], p[1], p[2]]
@@ -34,7 +34,7 @@ fn centre(s: &effectcraft_engine::Session, comp: ItemId, t: f64) -> [f32; 3] {
 
 #[test]
 fn an_imported_animated_gif_plays_its_frames() {
-    let mut s = effectcraft_host::session();
+    let mut s = redrob_effects_host::session();
     let path = tmp("anim.gif");
     std::fs::write(&path, animated_gif()).unwrap();
     s.execute("comp.new", json!({"name": "Gif", "width": 16, "height": 16, "frameRate": 10, "duration": 1})).unwrap();

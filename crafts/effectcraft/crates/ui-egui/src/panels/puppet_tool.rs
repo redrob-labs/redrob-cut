@@ -5,12 +5,12 @@
 
 use std::sync::Arc;
 
-use effectcraft_engine::effects::puppet::{self, Mesh, Pin, PinKind};
-use effectcraft_engine::geom::vec2 as gv2;
-use effectcraft_engine::project::{ItemId, Layer, LayerId};
-use effectcraft_engine::render::EvalCtx;
-use effectcraft_engine::time::Tick;
 use egui::{Color32, Pos2, Stroke};
+use redrob_effects_engine::effects::puppet::{self, Mesh, Pin, PinKind};
+use redrob_effects_engine::geom::vec2 as gv2;
+use redrob_effects_engine::project::{ItemId, Layer, LayerId};
+use redrob_effects_engine::render::EvalCtx;
+use redrob_effects_engine::time::Tick;
 
 use super::viewer::{ViewerMap, fx2c};
 use crate::EffectcraftApp;
@@ -76,7 +76,7 @@ pub fn overlay(app: &EffectcraftApp, ctx: &egui::Context, cid: ItemId, layer: &L
     {
         return Some(c.overlay);
     }
-    let (buf, params) = effectcraft_engine::commands::puppet::puppet_eval(&app.session, cid, layer.id, fx.uid, t)?;
+    let (buf, params) = redrob_effects_engine::commands::puppet::puppet_eval(&app.session, cid, layer.id, fx.uid, t)?;
     let overlay: Overlay = Arc::new(puppet::overlay(&buf, &params));
     ctx.data_mut(|d| d.insert_temp(id, Cached { key, overlay: overlay.clone() }));
     Some(overlay)

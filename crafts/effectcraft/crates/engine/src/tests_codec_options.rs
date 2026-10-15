@@ -1,6 +1,6 @@
 //! M13.4: HEVC / AV1 output modules and the WebM codec / Opus options over the command API.
 
-use effectcraft_project::render_queue::{Channels, CodecProfile, OpusApplication, OutputFormat, RateControlMode, VideoCodecOptions, WebmVideoCodec};
+use redrob_effects_project::render_queue::{Channels, CodecProfile, OpusApplication, OutputFormat, RateControlMode, VideoCodecOptions, WebmVideoCodec};
 use serde_json::json;
 
 use crate::Session;
@@ -111,15 +111,15 @@ fn output_to_keeps_a_format_that_writes_the_extension() {
 }
 
 /// Output To ends in the format's extension exactly once (#293). A name from a save dialog
-/// filtered to projects (`Comp 1.mov.ecproj`; for a PNG sequence every frame got `.png.ecproj`)
-/// loses the `.ecproj` and picks the file type from the extension before it; a comp named
+/// filtered to projects (`Comp 1.mov.rfx`; for a PNG sequence every frame got `.png.rfx`)
+/// loses the `.rfx` and picks the file type from the extension before it; a comp named
 /// `Comp 2.mov` renders to `Comp 2.mov`, not `Comp 2.mov.mov`.
 #[test]
 fn output_to_ends_in_the_format_extension_once() {
     let mut s = session();
     let cases = [
-        ("h264", "/out/Comp 1.mov.ecproj", OutputFormat::ProRes, "/out/Comp 1.mov"),
-        ("png", "/out/Comp 1_[#####].png.ecproj", OutputFormat::PngSequence, "/out/Comp 1_[#####].png"),
+        ("h264", "/out/Comp 1.mov.rfx", OutputFormat::ProRes, "/out/Comp 1.mov"),
+        ("png", "/out/Comp 1_[#####].png.rfx", OutputFormat::PngSequence, "/out/Comp 1_[#####].png"),
         ("prores", "/out/Comp 2.mov.mov", OutputFormat::ProRes, "/out/Comp 2.mov"),
         ("prores", "/out/render", OutputFormat::ProRes, "/out/render.mov"),
     ];

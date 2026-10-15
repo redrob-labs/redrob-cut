@@ -4,16 +4,18 @@
 crafts/effectcraft is storytold/effectcraft as a git subtree. Cargo allows one workspace per
 tree, so its `[workspace]` is folded into ours:
 
-- every `crates/*` of the subtree becomes a root workspace member (its apps/ and xtask are excluded);
+- every `crates/*` of the subtree becomes a root workspace member (its apps/ and xtask are pruned);
 - its `[workspace.dependencies]` are unioned into ours: a key we already define is kept as ours
   (features unioned), the subtree's own `path = "crates/x"` entries are re-rooted to
   `crafts/effectcraft/crates/x`, and its `filmcraft-* = { git = storytold/filmcraft, rev = ... }`
-  entries are replaced by OUR path crates (this repository is the filmcraft fork) so one copy of
-  every filmcraft crate is built;
-- its `[profile.dev.package.effectcraft-*]` overrides are appended to ours.
+  entries (renamed `redrob-film-*` by tools/rename_crates.py) are replaced by OUR path crates (this
+  repository is the filmcraft fork) so one copy of every film crate is built;
+- its `[profile.dev.package.redrob-effects-*]` overrides are appended to ours.
 
 The subtree's own manifest is parked as `Cargo.upstream.toml` so cargo does not see a nested
-workspace root. Re-run after every `git subtree pull --prefix crafts/effectcraft ...`:
+workspace root. Before merging, tools/prune_upstream.py removes upstream's repository furniture
+and tools/rename_crates.py renames the upstream crate names (`effectcraft-*` -> `redrob-effects-*`,
+`filmcraft-*` -> `redrob-film-*`). Re-run after every `git subtree pull --prefix crafts/effectcraft ...`:
 
     python3 tools/merge_effectcraft.py
 """
@@ -44,7 +46,7 @@ def toml_value(v) -> str:
     raise TypeError(type(v))
 
 
-def our_filmcraft_crates() -> dict[str, str]:
+def our_film_crates() -> dict[str, str]:
     out = {}
     for manifest in (ROOT / "crates").glob("*/Cargo.toml"):
         name = tomllib.load(manifest.open("rb"))["package"]["name"]
@@ -57,24 +59,32 @@ def strip_generated(text: str) -> str:
 
 
 def main() -> None:
+    # Upstream repo furniture (README, packaging, CI, apps, xtask...) comes back with every
+    # subtree pull; drop it first so the merged tree only carries the crates and attribution.
+    import prune_upstream
+
+    prune_upstream.main([])
     live = SUBTREE / "Cargo.toml"
     parked = SUBTREE / "Cargo.upstream.toml"
     if live.exists():
         live.replace(parked)
+    # Upstream crate names (effectcraft-*, and the filmcraft-* it depends on) -> Redrob's.
+    import rename_crates
+
+    rename_crates.main(["--no-lock"])
     up = tomllib.load(parked.open("rb"))["workspace"]
 
     root_path = ROOT / "Cargo.toml"
     root_text = strip_generated(root_path.read_text())
     root = tomllib.load(root_path.open("rb"))["workspace"] if not root_text else tomllib.loads(root_text)["workspace"]
     ours = root.get("dependencies", {})
-    filmcraft = our_filmcraft_crates()
+    film = our_film_crates()
 
     # 1. members
     if '"crafts/effectcraft/crates/*"' not in root_text:
         root_text = root_text.replace(
             'members = ["crates/*", "apps/*", "xtask"]',
-            'members = ["crates/*", "apps/*", "xtask", "crafts/effectcraft/crates/*"]\n'
-            'exclude = ["crafts/effectcraft/apps", "crafts/effectcraft/xtask"]',
+            'members = ["crates/*", "apps/*", "xtask", "crafts/effectcraft/crates/*"]',
             1,
         )
 
@@ -83,10 +93,10 @@ def main() -> None:
     for name, spec in up.get("dependencies", {}).items():
         if name in ours:
             continue
-        if name.startswith("filmcraft-"):
-            if name not in filmcraft:
+        if name.startswith("redrob-film-"):
+            if name not in film:
                 raise SystemExit(f"effectcraft wants {name} but this tree has no such crate")
-            spec = {"path": filmcraft[name]}
+            spec = {"path": film[name]}
         elif isinstance(spec, dict) and "path" in spec:
             spec = dict(spec)
             spec["path"] = f"crafts/effectcraft/{spec['path']}"
@@ -107,7 +117,7 @@ def main() -> None:
     # 3. profile overrides
     profiles = []
     parked_text = parked.read_text()
-    for m in re.finditer(r'\[profile\.dev\.package\.(effectcraft-[a-z0-9-]+)\]\n((?:[^\[\n][^\n]*\n)+)', parked_text):
+    for m in re.finditer(r'\[profile\.dev\.package\.(redrob-effects-[a-z0-9-]+)\]\n((?:[^\[\n][^\n]*\n)+)', parked_text):
         profiles.append(f"[profile.dev.package.{m.group(1)}]\n{m.group(2).rstrip()}")
 
     deps_block = "\n".join([MARK_BEGIN + " deps"] + added + [MARK_END + " deps"])

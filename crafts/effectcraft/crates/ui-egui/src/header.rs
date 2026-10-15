@@ -10,10 +10,10 @@ use crate::state::Tool;
 use crate::theme::Tokens;
 use crate::widgets;
 use crate::{Dialog, EffectcraftApp};
-use effectcraft_color::BlendMode;
-use effectcraft_engine::commands::shape_tool::{PaintKind, ToolPaint};
-use effectcraft_engine::project::{LayerId, LayerSource, PropGroup};
-use effectcraft_engine::viewer as vw;
+use redrob_effects_color::BlendMode;
+use redrob_effects_engine::commands::shape_tool::{PaintKind, ToolPaint};
+use redrob_effects_engine::project::{LayerId, LayerSource, PropGroup};
+use redrob_effects_engine::viewer as vw;
 
 pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
     let t = app.tokens;
@@ -135,7 +135,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
         .unwrap_or_default();
     let layer_paint = shape_layers.first().and_then(|id| app.session.active_comp()?.layer(LayerId(*id))).map(|l| {
         let lt = l.layer_time(app.session.time());
-        (effectcraft_engine::commands::shape_stroke::first_paint(l, lt), effectcraft_engine::commands::shape_stroke::first_paint_kinds(l, lt))
+        (redrob_effects_engine::commands::shape_stroke::first_paint(l, lt), redrob_effects_engine::commands::shape_stroke::first_paint_kinds(l, lt))
     });
     if let Some(((fill, stroke, width), (fill_kind, stroke_kind))) = layer_paint {
         let rgb = |c: [f64; 4]| [c[0] as f32, c[1] as f32, c[2] as f32];
@@ -214,7 +214,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
             ui.close();
         }
         let favorites = app.session.prefs.appearance.favorite_themes.clone();
-        for options in [effectcraft_engine::prefs::LIGHT_THEMES, effectcraft_engine::prefs::DARK_THEMES] {
+        for options in [redrob_effects_engine::prefs::LIGHT_THEMES, redrob_effects_engine::prefs::DARK_THEMES] {
             let group: Vec<_> = options.iter().filter(|(_, id)| favorites.iter().any(|saved| saved == id)).collect();
             if !group.is_empty() {
                 ui.separator();
@@ -679,7 +679,7 @@ mod tests {
 
     #[test]
     fn long_press_type_keeps_the_tool_until_vertical_is_selected() {
-        let mut app = EffectcraftApp::new(effectcraft_engine::Session::default());
+        let mut app = EffectcraftApp::new(redrob_effects_engine::Session::default());
         let ctx = egui::Context::default();
         crate::theme::install(&ctx, &app.tokens, crate::i18n::language(&app));
         frame(&mut app, &ctx, 0.0, vec![]);

@@ -8,14 +8,14 @@
 //! [`Inbox`] that the session drains every frame ([`Session::poll_render`],
 //! [`Session::poll_offload`]). The worker side is [`run_request_async`]: a plain session fed the
 //! project runs the job and reports through a callback. With a WebGPU device of the worker's
-//! own (deferred readbacks, `effectcraft_render::passes`) the job's frames render on the GPU in
+//! own (deferred readbacks, `redrob_effects_render::passes`) the job's frames render on the GPU in
 //! passes, the job awaiting the device between them; [`run_request`] runs it blocking.
 //!
 //! | Job | Worker runs | Reply applied on the UI thread |
 //! |---|---|---|
 //! | Render Queue | the export of every queued item | item status, progress; files arrive through the host |
 //! | Warp Stabilizer analysis | [`Session::start_warp`], then the stabilization plan | the effect's property group (one undo step); the plan's summary ([`WorkerReply::WarpPlan`]) |
-//! | Warp Stabilizer stabilization (settings changed after the analysis) | the plan ([`effectcraft_effects::warp_stab::summary_at`]) | its summary, for `warp.status` |
+//! | Warp Stabilizer stabilization (settings changed after the analysis) | the plan ([`redrob_effects_effects::warp_stab::summary_at`]) | its summary, for `warp.status` |
 //! | Track Motion / Stabilize Motion | the tracker analysis | the tracker group |
 //! | Mask tracking | the mask track | the mask group |
 //! | Roto Brush Freeze | the freeze | the effect group |
@@ -36,12 +36,12 @@ use std::rc::Rc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
-use effectcraft_keyframe::ShapePath;
-use effectcraft_project::render_queue::{RenderQueueItem, RenderStatus};
-use effectcraft_project::tracking::TrackerSettings;
-use effectcraft_project::{ItemId, ItemKind, LayerId, Project, PropGroup, Uid};
-use effectcraft_render::{Accelerator, Backend, RenderOpts};
-use effectcraft_time::Tick;
+use redrob_effects_keyframe::ShapePath;
+use redrob_effects_project::render_queue::{RenderQueueItem, RenderStatus};
+use redrob_effects_project::tracking::TrackerSettings;
+use redrob_effects_project::{ItemId, ItemKind, LayerId, Project, PropGroup, Uid};
+use redrob_effects_render::{Accelerator, Backend, RenderOpts};
+use redrob_effects_time::Tick;
 use serde::{Deserialize, Serialize};
 
 use crate::mask_track::MaskMethod;
@@ -225,11 +225,11 @@ pub enum WorkerReply {
         group: Box<PropGroup>,
         message: String,
     },
-    /// A Warp Stabilizer plan's summary ([`effectcraft_effects::warp_stab::summary_key`]): the
+    /// A Warp Stabilizer plan's summary ([`redrob_effects_effects::warp_stab::summary_key`]): the
     /// page keeps it for `warp.status` instead of solving the plan itself.
     WarpPlan {
         key: [u64; 2],
-        summary: Box<effectcraft_effects::warp_stab::PlanSummary>,
+        summary: Box<redrob_effects_effects::warp_stab::PlanSummary>,
     },
     /// Roto Brush segmentations computed so far (propagation), not sent before.
     Segs {
@@ -249,7 +249,7 @@ pub enum WorkerReply {
 }
 
 /// One full-resolution Roto Brush segmentation: its chain key and the base64 of
-/// [`effectcraft_track::roto::FrameSeg::to_bytes`].
+/// [`redrob_effects_track::roto::FrameSeg::to_bytes`].
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SegData {
     pub key: u64,
@@ -257,24 +257,24 @@ pub struct SegData {
 }
 
 impl SegData {
-    pub fn new(key: u64, seg: &effectcraft_track::roto::FrameSeg) -> SegData {
-        SegData { key, data: effectcraft_track::roto::rle::base64_encode(&seg.to_bytes()) }
+    pub fn new(key: u64, seg: &redrob_effects_track::roto::FrameSeg) -> SegData {
+        SegData { key, data: redrob_effects_track::roto::rle::base64_encode(&seg.to_bytes()) }
     }
 
     /// Put the segmentation into this instance's cache (what the Roto Brush effect renders from).
     pub fn store(&self) -> bool {
-        let Some(seg) = effectcraft_track::roto::rle::base64_decode(&self.data).and_then(|b| effectcraft_track::roto::FrameSeg::from_bytes(&b)) else {
+        let Some(seg) = redrob_effects_track::roto::rle::base64_decode(&self.data).and_then(|b| redrob_effects_track::roto::FrameSeg::from_bytes(&b)) else {
             return false;
         };
-        effectcraft_effects::roto::store(self.key, 1.0, Arc::new(seg));
+        redrob_effects_effects::roto::store(self.key, 1.0, Arc::new(seg));
         true
     }
 }
 
 /// The full-resolution segmentations of `keys` that are cached here and not in `sent` yet.
 pub fn segs_to_send(keys: &[u64], sent: &mut std::collections::HashSet<u64>) -> Vec<SegData> {
-    let new: Vec<(u64, Arc<effectcraft_track::roto::FrameSeg>)> =
-        keys.iter().filter(|k| !sent.contains(k)).filter_map(|k| effectcraft_effects::roto::cached(*k, 1.0).map(|s| (*k, s))).collect();
+    let new: Vec<(u64, Arc<redrob_effects_track::roto::FrameSeg>)> =
+        keys.iter().filter(|k| !sent.contains(k)).filter_map(|k| redrob_effects_effects::roto::cached(*k, 1.0).map(|s| (*k, s))).collect();
     new.into_iter()
         .map(|(k, s)| {
             sent.insert(k);
@@ -378,9 +378,9 @@ pub(crate) fn analysis_opts(accel: Option<&dyn Accelerator>) -> RenderOpts {
     RenderOpts { scale: 1.0, backend: if accel.is_some() { Backend::Auto } else { Backend::Cpu }, ..Default::default() }
 }
 
-/// A render in passes ([`effectcraft_render::passes::in_passes`]): its value.
+/// A render in passes ([`redrob_effects_render::passes::in_passes`]): its value.
 pub(crate) async fn in_passes<'a, T>(accel: Option<&'a dyn Accelerator>, render: impl FnMut(Option<&'a dyn Accelerator>) -> T) -> T {
-    effectcraft_render::passes::in_passes(accel, render).await.value
+    redrob_effects_render::passes::in_passes(accel, render).await.value
 }
 
 /// `work()` while the next frame renders (`fetch`): side by side on the thread pool, or — with
@@ -394,7 +394,7 @@ pub(crate) async fn join_fetch<R: Send, F: Send, Fut: Future<Output = F>>(
         let r = work();
         return (r, fetch().await);
     }
-    rayon::join(work, || effectcraft_render::passes::block_on(fetch()))
+    rayon::join(work, || redrob_effects_render::passes::block_on(fetch()))
 }
 
 /// Run an analysis started with `wait`: inside [`run_request_async`] it is queued and awaited
@@ -409,7 +409,7 @@ pub(crate) fn run_or_queue(f: impl Future<Output = ()> + 'static) {
         None => Some(f),
     });
     if let Some(f) = now {
-        effectcraft_render::passes::block_on(f);
+        redrob_effects_render::passes::block_on(f);
     }
 }
 
@@ -437,7 +437,7 @@ pub type Post = Rc<dyn Fn(WorkerReply)>;
 /// Run `req` on `s` (a session with footage, expressions and an exporter, but no project yet),
 /// blocking, reporting through `post`. Always ends with [`WorkerReply::Done`].
 pub fn run_request(s: &mut Session, req: WorkerRequest, post: &Post) {
-    effectcraft_render::passes::block_on(run_request_async(s, req, post));
+    redrob_effects_render::passes::block_on(run_request_async(s, req, post));
 }
 
 /// [`run_request`] as a future: with an accelerator whose readbacks are deferred
@@ -670,9 +670,9 @@ fn warp_plan(s: &Session, comp: ItemId, layer: LayerId, effect: Uid, t: Tick) ->
     let c = s.project.comp(comp)?;
     let l = c.layer(layer)?;
     let g = l.props.find_group(effect)?;
-    let ctx = effectcraft_render::EvalCtx::new(&s.project, comp, c, t);
-    let params = effectcraft_effects::flatten_params(g, &mut |pr| ctx.value(l, pr));
-    let (key, summary) = effectcraft_effects::warp_stab::summary(&params)?;
+    let ctx = redrob_effects_render::EvalCtx::new(&s.project, comp, c, t);
+    let params = redrob_effects_effects::flatten_params(g, &mut |pr| ctx.value(l, pr));
+    let (key, summary) = redrob_effects_effects::warp_stab::summary(&params)?;
     Some(WorkerReply::WarpPlan { key, summary: Box::new((*summary).clone()) })
 }
 
@@ -800,7 +800,7 @@ impl Session {
                     }
                     WorkerReply::Group { comp, layer, group, message } => results.push((j.id, j.kind, comp, layer, group, message, j.base.clone())),
                     WorkerReply::Fill { plan, files } => fills.push((plan, files)),
-                    WorkerReply::WarpPlan { key, summary } => effectcraft_effects::warp_stab::store_summary(key, *summary),
+                    WorkerReply::WarpPlan { key, summary } => redrob_effects_effects::warp_stab::store_summary(key, *summary),
                     WorkerReply::Segs { segs } => {
                         for sd in &segs {
                             sd.store();
@@ -931,10 +931,10 @@ fn pick<T: PartialEq + Clone>(base: &T, live: &T, result: &T) -> Option<T> {
     }
 }
 
-fn node_uid(n: &effectcraft_project::Node) -> Uid {
+fn node_uid(n: &redrob_effects_project::Node) -> Uid {
     match n {
-        effectcraft_project::Node::Prop(p) => p.uid,
-        effectcraft_project::Node::Group(g) => g.uid,
+        redrob_effects_project::Node::Prop(p) => p.uid,
+        redrob_effects_project::Node::Group(g) => g.uid,
     }
 }
 
@@ -945,7 +945,7 @@ fn node_uid(n: &effectcraft_project::Node) -> Uid {
 /// differently, one side removed a child the other changed, or both reordered or added and
 /// removed children differently: a conflict.
 pub(crate) fn merge_group(base: &PropGroup, live: &PropGroup, result: &PropGroup) -> Option<PropGroup> {
-    use effectcraft_project::Node;
+    use redrob_effects_project::Node;
     if live == base {
         return Some(result.clone());
     }
@@ -964,7 +964,7 @@ pub(crate) fn merge_group(base: &PropGroup, live: &PropGroup, result: &PropGroup
     } else {
         return None;
     };
-    fn find(g: &PropGroup, u: Uid) -> Option<&effectcraft_project::Node> {
+    fn find(g: &PropGroup, u: Uid) -> Option<&redrob_effects_project::Node> {
         g.children.iter().find(|n| node_uid(n) == u)
     }
     // A child one side removed must be unchanged on the other, or that side's edit would be lost.
@@ -1004,8 +1004,8 @@ mod tests {
     /// A group with properties `a` (uid 2) and `b` (uid 3) and a sub-group (uid 4) holding `c`
     /// (uid 5).
     fn group() -> PropGroup {
-        use effectcraft_keyframe::Value as KV;
-        use effectcraft_project::{Node, Property};
+        use redrob_effects_keyframe::Value as KV;
+        use redrob_effects_project::{Node, Property};
         let mut sub = PropGroup::new(4, "sub", "Sub");
         sub.children.push(Node::Prop(Property::new(5, "c", "C", KV::Scalar(0.0))));
         let mut g = PropGroup::new(1, "fx", "Effect");
@@ -1016,19 +1016,19 @@ mod tests {
     }
 
     fn set(g: &mut PropGroup, uid: Uid, v: f64) {
-        g.find_mut(uid).unwrap().value = effectcraft_keyframe::Value::Scalar(v);
+        g.find_mut(uid).unwrap().value = redrob_effects_keyframe::Value::Scalar(v);
     }
 
     fn get(g: &PropGroup, uid: Uid) -> f64 {
         match g.find(uid).unwrap().value {
-            effectcraft_keyframe::Value::Scalar(v) => v,
+            redrob_effects_keyframe::Value::Scalar(v) => v,
             ref v => panic!("{v:?}"),
         }
     }
 
     #[test]
     fn analysis_results_merge_with_edits_made_meanwhile() {
-        use effectcraft_project::Node;
+        use redrob_effects_project::Node;
         let base = group();
         // The user changes `a` and switches the effect off; the analysis writes `b` and `c`.
         let mut live = base.clone();
@@ -1086,7 +1086,7 @@ mod tests {
                 settings: TrackerSettings::default(),
                 points: vec![PointValues {
                     uid: 5,
-                    spec: effectcraft_track::PointSpec { center: [1.0, 2.0], feature_size: [3.0, 4.0], search_offset: [0.5, 0.0], search_size: [9.0, 9.0] },
+                    spec: redrob_effects_track::PointSpec { center: [1.0, 2.0], feature_size: [3.0, 4.0], search_offset: [0.5, 0.0], search_size: [9.0, 9.0] },
                     attach_offset: [0.25, -1.0],
                 }],
                 times: vec![Tick::ZERO, Tick::from_seconds_f64(0.5)],
@@ -1133,7 +1133,7 @@ mod tests {
             WorkerReply::Progress { done: 1, total: 2 },
             WorkerReply::WarpPlan {
                 key: [1, u64::MAX],
-                summary: Box::new(effectcraft_effects::warp_stab::PlanSummary {
+                summary: Box::new(redrob_effects_effects::warp_stab::PlanSummary {
                     warps: vec![[[1.0, 0.0, 2.5], [0.0, 1.0, -1.0], [0.0, 0.0, 1.0]]],
                     auto_scale: 1.08,
                     crop: Some([1.0, 2.0, 300.0, 200.0]),
@@ -1141,7 +1141,7 @@ mod tests {
                 }),
             },
             WorkerReply::Group { comp, layer: LayerId(1), group: Box::new(g), message: "ok".into() },
-            WorkerReply::Segs { segs: vec![SegData::new(5, &effectcraft_track::roto::FrameSeg::empty(4, 3))] },
+            WorkerReply::Segs { segs: vec![SegData::new(5, &redrob_effects_track::roto::FrameSeg::empty(4, 3))] },
             WorkerReply::Fill {
                 plan: Box::new(crate::commands::content_fill::FillPlan {
                     comp,
@@ -1203,7 +1203,7 @@ mod tests {
     }
 
     /// Runs jobs in a session sharing `footage` (the synthetic clip of the tracking tests).
-    struct InlineWith(Arc<dyn effectcraft_render::FootageSource>);
+    struct InlineWith(Arc<dyn redrob_effects_render::FootageSource>);
     impl Offload for InlineWith {
         fn start(&self, req: WorkerRequest, inbox: Arc<Inbox>) -> Result<(), String> {
             let req: WorkerRequest = serde_json::from_str(&serde_json::to_string(&req).unwrap()).unwrap();
@@ -1296,7 +1296,7 @@ mod tests {
         report(1, 2); // no hook: nothing happens
         let seen = Rc::new(RefCell::new(vec![]));
         let s2 = seen.clone();
-        effectcraft_render::passes::block_on(with_hook(Box::new(move |d, t| s2.borrow_mut().push((d, t))), async {
+        redrob_effects_render::passes::block_on(with_hook(Box::new(move |d, t| s2.borrow_mut().push((d, t))), async {
             report(1, 3);
             report(2, 3);
         }));

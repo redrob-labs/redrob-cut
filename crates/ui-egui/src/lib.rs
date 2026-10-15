@@ -1,6 +1,6 @@
 //! The Redrob Film egui frontend.
 //!
-//! Thin by design: all project changes go through `filmcraft_engine::Session::execute`; this crate
+//! Thin by design: all project changes go through `redrob_film_engine::Session::execute`; this crate
 //! owns only presentation state ([`state::UiState`]), GPU textures, the playback clock and the
 //! control-channel handlers. Swap it for another toolkit without touching the engine.
 
@@ -60,8 +60,8 @@ use std::sync::Arc;
 use std::sync::mpsc::{Receiver, Sender};
 
 use egui::{TextureHandle, TextureOptions};
-use filmcraft_engine::{Services, Session};
-use filmcraft_time::Tick;
+use redrob_film_engine::{Services, Session};
+use redrob_film_time::Tick;
 use serde_json::{Value, json};
 
 pub use control::ControlRequest;
@@ -90,7 +90,7 @@ pub trait AudioOut {
     /// Apply Settings ▸ Audio Hardware (device class/output, buffer size, sample rate). Takes
     /// effect at the next `start`; `document_rate` is the sequence sample rate for "Attempt to
     /// force hardware to document sample rate".
-    fn configure(&mut self, _hw: &filmcraft_engine::settings::AudioHardwarePrefs, _document_rate: Option<u32>) {}
+    fn configure(&mut self, _hw: &redrob_film_engine::settings::AudioHardwarePrefs, _document_rate: Option<u32>) {}
     /// A hardware note for the status bar — e.g. the default output device could not be opened
     /// and a fallback device is in use, or no output device was found — or None.
     fn note(&self) -> Option<String> {
@@ -251,7 +251,7 @@ pub(crate) const EXPORT_SAVE_DIALOGS: [(&str, &str, &str); 7] = [
     ("file.exportFcpxml", "FCPXML", "fcpxml"),
     ("file.exportOtio", "OpenTimelineIO", "otio"),
     ("file.exportAle", "Avid Log Exchange", "ale"),
-    ("file.exportSelectionProject", "Redrob Film Project", "fcproj"),
+    ("file.exportSelectionProject", "Redrob Film Project", "rfilm"),
 ];
 
 pub struct FilmcraftApp {
@@ -282,7 +282,7 @@ pub struct FilmcraftApp {
     last_ui_time: f64,
     pub(crate) synthetic: Vec<egui::Event>,
     /// BS.1770 loudness of the programme as it plays, and the next sample position to feed.
-    pub(crate) loudness: Option<(filmcraft_audio_dsp::LoudnessMeter, i64)>,
+    pub(crate) loudness: Option<(redrob_film_audio_dsp::LoudnessMeter, i64)>,
     /// Status message last shown and when it first appeared (messages expire after a few seconds).
     status_seen: (String, f64),
     /// Screenshots waiting for their frame: (token, path, crop, reply, give-up time).
@@ -315,12 +315,12 @@ pub struct FilmcraftApp {
     pub last_timeline_width: f32,
     /// The sequence whose view `ui.timeline` holds, and that view as it was last exchanged with
     /// `session.state.timeline_views` (see `sync_timeline_view`).
-    timeline_view_of: Option<filmcraft_engine::project::ItemId>,
+    timeline_view_of: Option<redrob_film_engine::project::ItemId>,
     /// Items imported by an OS file drop, to place on the Timeline at the drop point this frame.
-    pending_timeline_drop: Option<(Vec<filmcraft_engine::project::ItemId>, egui::Pos2)>,
+    pending_timeline_drop: Option<(Vec<redrob_film_engine::project::ItemId>, egui::Pos2)>,
     /// Files being dragged over the window from the OS (count, pointer): the Timeline previews where they would land.
     file_drag_hover: Option<(usize, egui::Pos2)>,
-    timeline_view_last: Option<filmcraft_engine::project::SequenceView>,
+    timeline_view_last: Option<redrob_film_engine::project::SequenceView>,
     pub fps: f32,
     last_time: f64,
     bindings: Vec<menus::KeyBinding>,
@@ -339,7 +339,7 @@ pub struct FilmcraftApp {
     /// Preview render job being watched (job id, where to start playing when it completes).
     watched_render: Option<(u64, Tick)>,
     /// Settings last applied to the UI (theme, tooltips, frame cache, audio device).
-    applied_prefs: Option<filmcraft_engine::autosave::Preferences>,
+    applied_prefs: Option<redrob_film_engine::autosave::Preferences>,
     /// Settings ▸ Appearance ▸ UI Scale last applied, with the system scale it was applied for.
     applied_ui_scale: Option<(Option<f32>, f32)>,
     workspace_restored: bool,
@@ -351,7 +351,7 @@ pub struct FilmcraftApp {
 
 pub struct GpuState {
     pub render_state: eframe::egui_wgpu::RenderState,
-    pub compositor: filmcraft_gpu::GpuCompositor,
+    pub compositor: redrob_film_gpu::GpuCompositor,
     pub texture: Option<egui::TextureId>,
     pub last_key: Option<FrameKey>,
     pub size: (u32, u32),
@@ -365,7 +365,7 @@ pub struct GpuState {
 }
 
 /// Largest texture side a plan needs on the GPU (output and every layer).
-fn plan_side(plan: &filmcraft_render::plan::FramePlan) -> usize {
+fn plan_side(plan: &redrob_film_render::plan::FramePlan) -> usize {
     plan.max_side()
 }
 
@@ -427,7 +427,7 @@ impl FilmcraftApp {
             log::error!("GPU error, switching to the CPU compositor: {e}");
             flag.store(true, std::sync::atomic::Ordering::Relaxed);
         }));
-        let made = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| filmcraft_gpu::GpuCompositor::new(&rs.device, &rs.queue)));
+        let made = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| redrob_film_gpu::GpuCompositor::new(&rs.device, &rs.queue)));
         match made {
             Ok(compositor) if !broken.load(std::sync::atomic::Ordering::Relaxed) => {
                 let max_texture = rs.device.limits().max_texture_dimension_2d;
@@ -588,7 +588,7 @@ impl FilmcraftApp {
     /// Show theme `k` with the Settings ▸ Appearance highlight colour and contrast.
     pub fn set_theme(&mut self, ctx: &egui::Context, k: ThemeKind) {
         let a = &self.session.prefs.appearance;
-        let highlight = filmcraft_engine::settings::parse_hex(&a.highlight_color);
+        let highlight = redrob_film_engine::settings::parse_hex(&a.highlight_color);
         self.tokens = Tokens::for_kind(k).with_appearance(highlight, a.accessible_contrast);
         theme::apply_visuals(ctx, &self.tokens);
         self.apply_tooltips(ctx);
@@ -721,7 +721,7 @@ impl FilmcraftApp {
         };
         let stored = self.session.state.timeline_views.get(&active).copied();
         let v = &mut self.ui.timeline;
-        let shown = filmcraft_engine::project::SequenceView {
+        let shown = redrob_film_engine::project::SequenceView {
             pps: v.target_pps,
             scroll: v.target_scroll,
             v_scroll: v.v_scroll,
@@ -729,7 +729,7 @@ impl FilmcraftApp {
             video_track_h: v.video_track_h,
             audio_track_h: v.audio_track_h,
         };
-        let show = |v: &mut state::TimelineView, s: filmcraft_engine::project::SequenceView| {
+        let show = |v: &mut state::TimelineView, s: redrob_film_engine::project::SequenceView| {
             (v.pps, v.target_pps, v.scroll, v.target_scroll) = (s.pps, s.pps, s.scroll, s.scroll);
             (v.v_scroll, v.a_scroll, v.video_track_h, v.audio_track_h) = (s.v_scroll, s.a_scroll, s.video_track_h, s.audio_track_h);
             (v.fit_pending, v.fit_empty) = (false, None);
@@ -823,16 +823,16 @@ impl FilmcraftApp {
 
     /// Reveal in Project: bring the Project panel forward, showing the bin that holds `item` with
     /// the search cleared, so the (already selected) item is on show.
-    fn reveal_in_project(&mut self, item: filmcraft_project::ItemId) {
+    fn reveal_in_project(&mut self, item: redrob_film_project::ItemId) {
         // the bins on the way down to the item (bounded: a project file can nest bins arbitrarily deep)
-        fn path(b: &filmcraft_project::Bin, item: filmcraft_project::ItemId, depth: usize, out: &mut Vec<u64>) -> bool {
+        fn path(b: &redrob_film_project::Bin, item: redrob_film_project::ItemId, depth: usize, out: &mut Vec<u64>) -> bool {
             if depth > 256 {
                 return false;
             }
             for c in &b.children {
                 match c {
-                    filmcraft_project::BinEntry::Item(i) if *i == item => return true,
-                    filmcraft_project::BinEntry::Bin(inner) => {
+                    redrob_film_project::BinEntry::Item(i) if *i == item => return true,
+                    redrob_film_project::BinEntry::Bin(inner) => {
                         out.push(inner.id.0);
                         if path(inner, item, depth + 1, out) {
                             return true;
@@ -848,7 +848,7 @@ impl FilmcraftApp {
         let found = path(&self.session.project.root, item, 0, &mut bins);
         // the list shows the whole tree: open the bins on the way. Icons and freeform show one bin
         // at a time: go into the one that holds the item.
-        let list = self.session.prefs.project_panel.view.mode == filmcraft_engine::project_panel::ViewMode::List;
+        let list = self.session.prefs.project_panel.view.mode == redrob_film_engine::project_panel::ViewMode::List;
         self.ui.project_panel.bin = if list || !found { None } else { bins.last().copied() };
         if list {
             for b in bins {
@@ -1152,17 +1152,17 @@ impl FilmcraftApp {
     /// Cache revision of a project item's own frames: media changes only when its file does
     /// (relink, Make Offline, proxies on/off), so its frames survive unrelated edits; other items
     /// (sequences) follow the project revision.
-    pub fn item_revision(&self, item: filmcraft_project::ItemId) -> u64 {
+    pub fn item_revision(&self, item: redrob_film_project::ItemId) -> u64 {
         let p = &self.session.project;
         let target = match p.item(item).map(|i| &i.kind) {
-            Some(filmcraft_project::ItemKind::Subclip { parent, .. }) => *parent,
+            Some(redrob_film_project::ItemKind::Subclip { parent, .. }) => *parent,
             _ => item,
         };
         match p.item(target).map(|i| &i.kind) {
-            Some(filmcraft_project::ItemKind::Media(m)) => {
+            Some(redrob_film_project::ItemKind::Media(m)) => {
                 use std::hash::{Hash, Hasher};
                 let mut h = std::collections::hash_map::DefaultHasher::new();
-                filmcraft_engine::media_pool::media_key(m).hash(&mut h);
+                redrob_film_engine::media_pool::media_key(m).hash(&mut h);
                 (m.proxy.is_some() && self.session.media.use_proxies()).hash(&mut h);
                 h.finish()
             }
@@ -1170,11 +1170,11 @@ impl FilmcraftApp {
         }
     }
 
-    pub fn thumbnail(&mut self, ctx: &egui::Context, item: filmcraft_project::ItemId, t: Tick, width: u32) -> Option<(egui::TextureId, egui::Vec2)> {
+    pub fn thumbnail(&mut self, ctx: &egui::Context, item: redrob_film_project::ItemId, t: Tick, width: u32) -> Option<(egui::TextureId, egui::Vec2)> {
         let pi = self.session.project.item(item)?;
         let src_w = match &pi.kind {
-            filmcraft_project::ItemKind::Media(m) => m.info.video.as_ref()?.width,
-            filmcraft_project::ItemKind::Sequence(s) => s.settings.width,
+            redrob_film_project::ItemKind::Media(m) => m.info.video.as_ref()?.width,
+            redrob_film_project::ItemKind::Sequence(s) => s.settings.width,
             _ => return None,
         };
         let rate = pi.frame_rate();
@@ -1195,17 +1195,17 @@ impl FilmcraftApp {
     // ---------------------------------------------------------------- files
 
     /// Destination of imports started from the currently shown Project panel view.
-    pub fn import_bin(&self) -> filmcraft_project::BinId {
+    pub fn import_bin(&self) -> redrob_film_project::BinId {
         panels::project::view_of(self, panels::project::shown_inst(self)).bin
     }
 
     pub fn file_dialog(&mut self, id: &str, params: &Value) -> Result<Value, String> {
         match id {
             "file.import" => {
-                let exts: Vec<&str> = filmcraft_media::VIDEO_EXTENSIONS
+                let exts: Vec<&str> = redrob_film_media::VIDEO_EXTENSIONS
                     .iter()
-                    .chain(filmcraft_media::AUDIO_EXTENSIONS)
-                    .chain(filmcraft_media::STILL_EXTENSIONS)
+                    .chain(redrob_film_media::AUDIO_EXTENSIONS)
+                    .chain(redrob_film_media::STILL_EXTENSIONS)
                     .chain(&["srt", "vtt", "scc", "edl", "xml", "fcpxml", "otio", "aaf", "omf"])
                     .copied()
                     .collect();
@@ -1225,7 +1225,7 @@ impl FilmcraftApp {
             }
             // File ▸ Import with Image Sequence: choose the first numbered still
             "file.importImageSequence" => {
-                let paths = self.hooks.pick_files.as_mut().map(|f| f(filmcraft_media::STILL_EXTENSIONS)).unwrap_or_default();
+                let paths = self.hooks.pick_files.as_mut().map(|f| f(redrob_film_media::STILL_EXTENSIONS)).unwrap_or_default();
                 let Some(path) = paths.into_iter().next() else { return Ok(Value::Null) };
                 let r = self.session.execute("file.importImageSequence", json!({"path": path})).map_err(|e| e.to_string());
                 if let Err(e) = &r {
@@ -1235,7 +1235,7 @@ impl FilmcraftApp {
             }
             "file.saveAs" | "file.save" | "file.saveCopy" => {
                 let suggested =
-                    if id == "file.saveCopy" { format!("{} copy.fcproj", self.session.project.name) } else { format!("{}.fcproj", self.session.project.name) };
+                    if id == "file.saveCopy" { format!("{} copy.rfilm", self.session.project.name) } else { format!("{}.rfilm", self.session.project.name) };
                 let Some(path) = self.hooks.pick_save.as_mut().and_then(|f| f(&suggested)) else { return Ok(Value::Null) };
                 let cmd = if id == "file.saveCopy" { "file.saveCopy" } else { "file.saveAs" };
                 self.session.execute(cmd, json!({"path": path})).map_err(|e| e.to_string())
@@ -1245,7 +1245,7 @@ impl FilmcraftApp {
                 self.session.execute("file.open", json!({"path": path})).map_err(|e| e.to_string())
             }
             "graphics.newFromFile" => {
-                let exts: Vec<&str> = filmcraft_media::STILL_EXTENSIONS.iter().chain(filmcraft_media::VIDEO_EXTENSIONS).copied().collect();
+                let exts: Vec<&str> = redrob_film_media::STILL_EXTENSIONS.iter().chain(redrob_film_media::VIDEO_EXTENSIONS).copied().collect();
                 let paths = self.hooks.pick_files.as_mut().map(|f| f(&exts)).unwrap_or_default();
                 let Some(path) = paths.into_iter().next() else { return Ok(Value::Null) };
                 self.session.execute("graphics.newFromFile", json!({"path": path})).map_err(|e| e.to_string())
@@ -1279,7 +1279,7 @@ impl FilmcraftApp {
     /// File ▸ Export ▸ EDL…, Final Cut Pro XML… etc. from the menus (#382): ask where to save, then
     /// run the command with that `path` and the rest of `params`.
     fn export_save_dialog(&mut self, id: &str, filter: &str, ext: &str, params: &Value) -> Result<Value, String> {
-        filmcraft_engine::find_command(id).map_or(Ok(()), |c| (c.enabled)(&self.session))?;
+        redrob_film_engine::find_command(id).map_or(Ok(()), |c| (c.enabled)(&self.session))?;
         let Some(pick) = self.hooks.pick_save_as.as_mut() else {
             return Err("no save dialog available: run the command with a `path`".into());
         };
@@ -1329,8 +1329,8 @@ impl FilmcraftApp {
                 && let Some(pos) = pointer
                 && self.session.prefs.timeline.drop_import_to_timeline
             {
-                let items: Vec<filmcraft_engine::project::ItemId> =
-                    v["items"].as_array().map(|a| a.iter().filter_map(|i| i.as_u64()).map(filmcraft_engine::project::ItemId).collect()).unwrap_or_default();
+                let items: Vec<redrob_film_engine::project::ItemId> =
+                    v["items"].as_array().map(|a| a.iter().filter_map(|i| i.as_u64()).map(redrob_film_engine::project::ItemId).collect()).unwrap_or_default();
                 if !items.is_empty() {
                     self.pending_timeline_drop = Some((items, pos));
                 }
@@ -1564,7 +1564,7 @@ impl FilmcraftApp {
     /// Settings ▸ Media ▸ Automatically refresh growing files: every *Refresh growing files every*
     /// seconds, and as soon as the window comes back to the front (after a render in another app),
     /// stamp the project's media files on a worker thread and read the changed ones again
-    /// ([`filmcraft_engine::media_watch`]).
+    /// ([`redrob_film_engine::media_watch`]).
     #[cfg(not(target_arch = "wasm32"))]
     fn tick_media_refresh(&mut self, ctx: &egui::Context) {
         if let Some(r) = self.session.poll_media_scan() {
@@ -1584,7 +1584,7 @@ impl FilmcraftApp {
         let focused = ctx.input(|i| i.focused);
         let was_focused: bool = ctx.data(|d| d.get_temp(focus_key)).unwrap_or(focused);
         ctx.data_mut(|d| d.insert_temp(focus_key, focused));
-        if !on || filmcraft_engine::media_watch::media_files(&self.session.project).is_empty() {
+        if !on || redrob_film_engine::media_watch::media_files(&self.session.project).is_empty() {
             return;
         }
         let last: f64 = ctx.data(|d| d.get_temp(last_key)).unwrap_or(f64::NEG_INFINITY);
@@ -1616,18 +1616,18 @@ impl FilmcraftApp {
         self.tick_media_refresh(&ctx);
         for ev in self.session.drain_events() {
             match ev {
-                filmcraft_engine::Event::OpenSequence(_) => {
+                redrob_film_engine::Event::OpenSequence(_) => {
                     // show the sequence with its own view (or fitted, the first time)
                     self.timeline_view_of = None;
                     self.ui.dock.restore_timeline();
                     self.ui.dock.activate(PanelKind::Timeline);
                 }
-                filmcraft_engine::Event::OpenSource(_) => {
+                redrob_film_engine::Event::OpenSource(_) => {
                     self.ui.dock.activate(PanelKind::Source);
                 }
-                filmcraft_engine::Event::RevealInProject(item) => self.reveal_in_project(item),
-                filmcraft_engine::Event::Toast { message, .. } => self.toast = Some((message, ctx.input(|i| i.time))),
-                filmcraft_engine::Event::ProjectChanged { .. } => {}
+                redrob_film_engine::Event::RevealInProject(item) => self.reveal_in_project(item),
+                redrob_film_engine::Event::Toast { message, .. } => self.toast = Some((message, ctx.input(|i| i.time))),
+                redrob_film_engine::Event::ProjectChanged { .. } => {}
             }
         }
         self.sync_timeline_view();
@@ -1696,7 +1696,7 @@ impl FilmcraftApp {
 
     /// The running job (export / render previews), if any; plays the rendered range when a preview
     /// render completes. Runs every frame, with or without the status bar.
-    fn watch_jobs(&mut self, ctx: &egui::Context) -> Option<filmcraft_engine::Job> {
+    fn watch_jobs(&mut self, ctx: &egui::Context) -> Option<redrob_film_engine::Job> {
         use std::sync::atomic::Ordering;
         let running = self.session.jobs.iter().rev().find(|j| !j.progress.finished.load(Ordering::Relaxed)).cloned();
         // Play after rendering previews.
@@ -1796,7 +1796,7 @@ impl FilmcraftApp {
                 .open_sequences
                 .iter()
                 .filter_map(|id| {
-                    self.session.project.item(*id).filter(|i| matches!(i.kind, filmcraft_project::ItemKind::Sequence(_))).map(|i| (id.0, i.name.clone()))
+                    self.session.project.item(*id).filter(|i| matches!(i.kind, redrob_film_project::ItemKind::Sequence(_))).map(|i| (id.0, i.name.clone()))
                 })
                 .collect(),
             active: self.session.state.active_sequence.map(|i| i.0),
@@ -2028,14 +2028,14 @@ fn shuttle_mix_rate(device_rate: u32, speed: f64) -> Option<u32> {
 /// The program mix that playback plays: `mix(device_frame, interleaved, channels)` renders the
 /// active sequence at device rate `sr` from `device_frame`, with the live project snapshot (edits
 /// made while playing are heard), Output Mapping, the 5.1 mixdown and voice-over cues.
-pub fn playback_mix(session: &Session, seq_id: filmcraft_project::ItemId, sr: u32) -> impl FnMut(i64, &mut [f32], usize) + Send + 'static {
+pub fn playback_mix(session: &Session, seq_id: redrob_film_project::ItemId, sr: u32) -> impl FnMut(i64, &mut [f32], usize) + Send + 'static {
     let project = session.project.clone();
     let provider = session.media.provider(project.clone(), session.services.clone());
     let previews = session.previews.clone();
     // Settings ▸ Audio Hardware ▸ Output Mapping
     let map = [session.prefs.audio_hardware.map_left, session.prefs.audio_hardware.map_right];
     // Preferences ▸ Audio ▸ 5.1 Mixdown Type: how a 5.1 Mix plays on a stereo device
-    let mixdown = filmcraft_audio_dsp::channels::Mixdown::from_id(&session.prefs.audio.mixdown_type).unwrap_or_default();
+    let mixdown = redrob_film_audio_dsp::channels::Mixdown::from_id(&session.prefs.audio.mixdown_type).unwrap_or_default();
     let cues = panels::voiceover::cues(session, sr);
     previews.live.publish_project(project.clone());
     let mut resampler = None;
@@ -2049,8 +2049,8 @@ pub fn playback_mix(session: &Session, seq_id: filmcraft_project::ItemId, sr: u3
         let n = buf.len() / ch.max(1);
         let seq_sr = seq.settings.sample_rate;
         // a 5.1 Mix plays as six channels (L, R, C, LFE, Ls, Rs) on a device with at least six
-        use filmcraft_audio_dsp::channels::Layout;
-        let layout = if ch >= 6 && seq.settings.audio_master == filmcraft_project::AudioChannels::Surround51 { Layout::Surround51 } else { Layout::Stereo };
+        use redrob_film_audio_dsp::channels::Layout;
+        let layout = if ch >= 6 && seq.settings.audio_master == redrob_film_project::AudioChannels::Surround51 { Layout::Surround51 } else { Layout::Stereo };
         let mix = if seq_sr == sr {
             previews.mix_layout(&project, seq_id, cursor, n, &provider, layout, mixdown)
         } else {
@@ -2058,14 +2058,14 @@ pub fn playback_mix(session: &Session, seq_id: filmcraft_project::ItemId, sr: u3
             // (started afresh when the rate or the channel layout changes while playing).
             let key = (seq_sr, layout);
             if resampler.as_ref().is_none_or(|(k, _)| *k != key) {
-                resampler = Some((key, filmcraft_audio_dsp::resample::StreamResampler::new(seq_sr, sr)));
+                resampler = Some((key, redrob_film_audio_dsp::resample::StreamResampler::new(seq_sr, sr)));
             }
             let Some((_, r)) = resampler.as_mut() else {
                 buf.fill(0.0);
                 return;
             };
             let channels = r.process(cursor, n, |s0, m| previews.mix_layout(&project, seq_id, s0, m, &provider, layout, mixdown).channels);
-            filmcraft_frame::AudioBuffer { sample_rate: sr, channels }
+            redrob_film_frame::AudioBuffer { sample_rate: sr, channels }
         };
         if layout == Layout::Surround51 {
             buf.fill(0.0);
@@ -2075,7 +2075,7 @@ pub fn playback_mix(session: &Session, seq_id: filmcraft_project::ItemId, sr: u3
                 }
             }
         } else {
-            filmcraft_engine::settings::map_output(&mix.channels[0], &mix.channels[1.min(mix.channels.len() - 1)], buf, ch, map);
+            redrob_film_engine::settings::map_output(&mix.channels[0], &mix.channels[1.min(mix.channels.len() - 1)], buf, ch, map);
         }
         panels::voiceover::mix_cues(buf, ch, cursor, &cues);
     }
@@ -2156,7 +2156,7 @@ mod clipboard_key_tests {
 
 #[cfg(test)]
 mod gpu_fallback_tests {
-    use filmcraft_render::plan::{FramePlan, PlanLayer};
+    use redrob_film_render::plan::{FramePlan, PlanLayer};
 
     /// Software rasterizers must not be treated as a GPU compositor: the preview crawled while
     /// "GPU" usage read 0 % because wgpu had silently fallen back to llvmpipe.
@@ -2174,15 +2174,20 @@ mod gpu_fallback_tests {
 
     #[test]
     fn plan_side_covers_output_and_every_layer() {
-        let frame = |w: u32, h: u32| std::sync::Arc::new(filmcraft_frame::VideoFrame::rgba_f32(w, h, vec![0.0; (w * h * 4) as usize]));
-        let layer =
-            |w, h| PlanLayer { frame: frame(w, h), matrix: filmcraft_geom::Affine::IDENTITY, opacity: 1.0, blend: filmcraft_render::Blend::Normal, fx: None };
+        let frame = |w: u32, h: u32| std::sync::Arc::new(redrob_film_frame::VideoFrame::rgba_f32(w, h, vec![0.0; (w * h * 4) as usize]));
+        let layer = |w, h| PlanLayer {
+            frame: frame(w, h),
+            matrix: redrob_film_geom::Affine::IDENTITY,
+            opacity: 1.0,
+            blend: redrob_film_render::Blend::Normal,
+            fx: None,
+        };
         // a 4K source in an HD sequence still needs a 3840-wide texture on the GPU
         let p = FramePlan::Layers { width: 1920, height: 1080, layers: vec![layer(64, 64), layer(3840, 2160)] };
         assert_eq!(super::plan_side(&p), 3840);
         let p = FramePlan::Layers { width: 1920, height: 1080, layers: vec![] };
         assert_eq!(super::plan_side(&p), 1920);
-        let p = FramePlan::Image(filmcraft_render::Image::new(800, 4000));
+        let p = FramePlan::Image(redrob_film_render::Image::new(800, 4000));
         assert_eq!(super::plan_side(&p), 4000);
     }
 }
@@ -2208,7 +2213,7 @@ mod audio_recovery_tests {
         fn channels(&self) -> usize {
             2
         }
-        fn configure(&mut self, hardware: &filmcraft_engine::settings::AudioHardwarePrefs, _: Option<u32>) {
+        fn configure(&mut self, hardware: &redrob_film_engine::settings::AudioHardwarePrefs, _: Option<u32>) {
             self.ready = hardware.default_output == "available";
         }
         fn start(&mut self, _: Box<dyn FnMut(&mut [f32], usize) + Send>) -> Result<u32, String> {

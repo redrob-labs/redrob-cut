@@ -1,7 +1,7 @@
 # Console product id: `film`
 
 Redrob Film signs in to a Redrob workspace with the console's device flow (Help ▸ Connect to Redrob…,
-`apps/filmcraft/src/device.rs`). The flow identifies the app by a **product id**, and Redrob Film's is
+`apps/redrob-film-app/src/device.rs`). The flow identifies the app by a **product id**, and Redrob Film's is
 **`film`** (the former `cut` is gone with the rename; nothing in this repository sends it any more).
 
 ## What the console needs
@@ -22,10 +22,10 @@ never needs an account, only the AI dock does.
 
 ## Where `film` appears
 
-- `apps/filmcraft/src/device.rs`: the device-flow start body (`product: "film"`) and the tests that
+- `apps/redrob-film-app/src/device.rs`: the device-flow start body (`product: "film"`) and the tests that
   pin it.
 - Redrob Launcher's catalog slug for this app is `redrob-film` (`crates/native/src/catalog.rs` in
   redrob-launcher); the in-app updater reads the launcher's `installed.json` under that key
-  (`apps/filmcraft/src/update.rs`, `LAUNCHER_APP_ID`).
+  (`apps/redrob-film-app/src/update.rs`, `LAUNCHER_APP_ID`).
 - The release assets and `redrob-launcher.json` carry the `redrob-film-<version>-…` names
   ([releasing.md](releasing.md)).

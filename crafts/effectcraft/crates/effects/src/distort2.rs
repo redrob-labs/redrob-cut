@@ -13,11 +13,11 @@
 
 use std::f64::consts::{FRAC_PI_2, PI};
 
-use effectcraft_color::{BlendMode, blend_pixel};
-use effectcraft_keyframe::Value;
-use effectcraft_project::ParamUi;
-use effectcraft_raster::{Image, Px};
 use rayon::prelude::*;
+use redrob_effects_color::{BlendMode, blend_pixel};
+use redrob_effects_keyframe::Value;
+use redrob_effects_project::ParamUi;
+use redrob_effects_raster::{Image, Px};
 
 use crate::generate::value_noise;
 use crate::util::{SRC_NAMES, Src, fit_layer, layer_cover_pad, layer_rect, lerp4, map_xy, pick, premul, remap, smoothstep, src_at, unpremul};

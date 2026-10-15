@@ -1,0 +1,85 @@
+[package]
+name = "redrob-film-app"
+description = "Redrob Film desktop app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+default-run = "redrob-film"
+build = "build.rs"
+
+# The package is `redrob-film-app`; the executable is `redrob-film`.
+[[bin]]
+name = "redrob-film"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[features]
+default = []
+# Speech-to-text (Text panel ▸ Transcribe) with Whisper on the CPU, and model downloads.
+whisper = ["redrob-film-engine/whisper", "redrob-film-engine/speech-download"]
+# Natural Text to Speech voices (Kokoro-82M on the CPU, downloaded on first use).
+neural-voices = ["redrob-film-engine/neural-voices"]
+
+[dependencies]
+redrob-film-engine = { workspace = true }
+redrob-film-export = { workspace = true }
+redrob-film-project = { workspace = true }
+redrob-film-render = { workspace = true }
+redrob-film-time = { workspace = true }
+redrob-film-gpu = { workspace = true }
+redrob-film-ui-egui = { workspace = true }
+redrob-film-platform = { workspace = true }
+# The shell's hand-offs: a composition as a timeline source (`MediaSource` over the effects renderer).
+redrob-film-media = { workspace = true }
+redrob-film-frame = { workspace = true }
+redrob-film-color = { workspace = true }
+# Effects mode: effectcraft hosted as the second editor of the one window (`shell.rs`).
+redrob-effects-ui-egui = { workspace = true }
+redrob-effects-host = { workspace = true }
+redrob-effects-engine = { workspace = true }
+redrob-effects-project = { workspace = true }
+redrob-effects-render = { workspace = true }
+redrob-effects-time = { workspace = true }
+redrob-effects-color = { workspace = true }
+# `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
+redrob-film-automation = { workspace = true }
+tokio = { version = "1", features = ["rt-multi-thread"] }
+egui = { workspace = true }
+eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11"] }
+serde_json = { workspace = true }
+log = { workspace = true }
+rfd = { workspace = true }
+cpal = "0.16"
+# Files and images on the system clipboard for Paste (#611); egui already uses it for text.
+arboard = "3"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+sys-locale = "0.3"
+# Help menu / About links and the console approval page in the system browser (MIT).
+open = "5"
+# The console's device flow (two JSON POSTs) and the in-app update check (`update.rs`: the GitHub
+# release JSON, SHA256SUMS.txt and the installer download). rustls only: no system TLS, no OpenSSL.
+ureq = { version = "=3.4.2", default-features = false, features = ["rustls"] }
+# SHA-256 of the downloaded installer against the release's SHA256SUMS.txt (`update.rs`).
+sha2 = { workspace = true }
+
+[dev-dependencies]
+glob = "0.3"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+muda = "0.21"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSProcessInfo", "NSString", "NSArray"] }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSApplication", "NSResponder", "NSWindow"] }
+objc2 = "0.6"
+# Same winit as eframe: macOS event-loop options (no app activation when driven by an agent).
+winit = { version = "0.30", default-features = false }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+# Settings ▸ Appearance ▸ Sync with system: the XDG desktop portal's colour scheme. The zbus the
+# portal file dialogs (rfd) and accesskit already use.
+zbus = "5.19"
+
+# Icon + VERSIONINFO for filmcraft.exe (build.rs); only needed when building on Windows.
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"

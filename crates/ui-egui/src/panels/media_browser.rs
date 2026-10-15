@@ -4,15 +4,15 @@
 //! Columns…, Import / Open In Source Monitor and dragging files to the Project panel or Timeline.
 //!
 //! Listing, navigation, Favorites, settings and import are engine commands
-//! (`filmcraft_engine::media_browser`, `mediaBrowser.*`); this module draws them and keeps only view
+//! (`redrob_film_engine::media_browser`, `mediaBrowser.*`); this module draws them and keeps only view
 //! state ([`MediaBrowserUi`], `ui.set {"mediaBrowser": …}`).
 
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
-use filmcraft_engine::media_browser::{self as mb, Entry};
-use filmcraft_project::{ItemId, ItemKind, Label, MediaClip, MediaRef, Project, ProjectItem};
+use redrob_film_engine::media_browser::{self as mb, Entry};
+use redrob_film_project::{ItemId, ItemKind, Label, MediaClip, MediaRef, Project, ProjectItem};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -571,7 +571,7 @@ fn preview_item(
     app: &mut FilmcraftApp,
     ctx: &egui::Context,
     e: &Entry,
-) -> Option<(Arc<Project>, ItemId, filmcraft_time::Tick, filmcraft_time::FrameRate, u32)> {
+) -> Option<(Arc<Project>, ItemId, redrob_film_time::Tick, redrob_film_time::FrameRate, u32)> {
     if let Some(i) = mb::item_for_path(&app.session, &e.path) {
         let it = app.session.project.item(i)?;
         let w = it.as_media()?.info.video.as_ref()?.width;
@@ -691,7 +691,7 @@ fn thumbnails(app: &mut FilmcraftApp, ui: &mut egui::Ui, r: Rect, entries: &[Ent
 
 fn draw_preview(app: &mut FilmcraftApp, ui: &egui::Ui, ctx: &egui::Context, e: &Entry, r: Rect, frac: f32) -> bool {
     let Some((proj, id, dur, rate, src_w)) = preview_item(app, ctx, e) else { return false };
-    let t = filmcraft_time::Tick((dur.0 as f64 * frac as f64) as i64);
+    let t = redrob_film_time::Tick((dur.0 as f64 * frac as f64) as i64);
     let frame = rate.frame_at(crate::panels::project::quantize(t));
     let width = (r.width() as u32).clamp(96, 320);
     let rev = if proj.item(id).is_some() && id.0 < PREVIEW_BASE { app.item_revision(id) } else { 0 };

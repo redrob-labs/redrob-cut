@@ -9,9 +9,9 @@
 //! `timeline.clip.<id>.volume.kf.<n>` (the keyframes) and `….kf.<n>.delete` (their menu).
 
 use egui::{Color32, CursorIcon, Pos2, Rect, Sense, Stroke, pos2, vec2};
-use filmcraft_project::mixer::{FADER_MAX_DB, FADER_MIN_DB};
-use filmcraft_project::{ClipId, Param, Sequence, TrackItem, TrackKind};
-use filmcraft_time::Tick;
+use redrob_film_project::mixer::{FADER_MAX_DB, FADER_MIN_DB};
+use redrob_film_project::{ClipId, Param, Sequence, TrackItem, TrackKind};
+use redrob_film_time::Tick;
 use serde_json::{Value, json};
 
 use super::mixer::{db_to_pos, pos_to_db};
@@ -42,7 +42,7 @@ fn level_at(it: &TrackItem, t: Tick) -> f64 {
 /// bypassed, as the mixer plays it).
 pub fn gain_at(it: &TrackItem, t: Tick) -> f32 {
     match it.effect("volume").filter(|e| e.enabled && !e.param("bypass").and_then(|p| p.value.as_bool()).unwrap_or(false)) {
-        Some(e) => filmcraft_render::audio::db_to_gain(e.f64_at("level", it.source_time_at(t))),
+        Some(e) => redrob_film_render::audio::db_to_gain(e.f64_at("level", it.source_time_at(t))),
         None => 1.0,
     }
 }
@@ -306,7 +306,7 @@ pub fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layou
 #[cfg(test)]
 mod tests {
     use super::*;
-    use filmcraft_project::{ItemId, Label};
+    use redrob_film_project::{ItemId, Label};
 
     fn clip(speed: f64, reverse: bool) -> TrackItem {
         TrackItem {
@@ -322,7 +322,7 @@ mod tests {
             enabled: true,
             link: None,
             group: None,
-            effects: filmcraft_project::effect::intrinsic_audio(),
+            effects: redrob_film_project::effect::intrinsic_audio(),
             markers: Vec::new(),
             gain_db: 0.0,
             frame_hold: None,
@@ -354,8 +354,8 @@ mod tests {
         for (speed, reverse) in [(1.0, false), (1e-12, true), (f64::NAN, false), (-3.0, true)] {
             let mut it = clip(speed, reverse);
             let p = it.effect_mut("volume").and_then(|e| e.param_mut("level")).unwrap();
-            p.put_keyframe(Tick(i64::MIN), filmcraft_project::ParamValue::Float(f64::NAN));
-            p.put_keyframe(Tick(i64::MAX), filmcraft_project::ParamValue::Float(1e300));
+            p.put_keyframe(Tick(i64::MIN), redrob_film_project::ParamValue::Float(f64::NAN));
+            p.put_keyframe(Tick(i64::MAX), redrob_film_project::ParamValue::Float(1e300));
             let body = Rect::from_min_max(pos2(0.0, 0.0), pos2(400.0, 80.0));
             assert_eq!(keys(&it, body).len(), 2);
         }
@@ -366,10 +366,10 @@ mod tests {
         let mut it = clip(1.0, false);
         assert_eq!(gain_at(&it, Tick(2_000)), 1.0);
         let e = it.effect_mut("volume").unwrap();
-        e.param_mut("level").unwrap().value = filmcraft_project::ParamValue::Float(-6.0);
+        e.param_mut("level").unwrap().value = redrob_film_project::ParamValue::Float(-6.0);
         assert!((gain_at(&it, Tick(2_000)) - 0.501).abs() < 0.01);
         let e = it.effect_mut("volume").unwrap();
-        e.param_mut("bypass").unwrap().value = filmcraft_project::ParamValue::Bool(true);
+        e.param_mut("bypass").unwrap().value = redrob_film_project::ParamValue::Bool(true);
         assert_eq!(gain_at(&it, Tick(2_000)), 1.0, "bypassed");
     }
 
@@ -381,8 +381,8 @@ mod tests {
         assert_eq!(flat.len(), 2);
         assert!(flat.iter().all(|p| (p.y - y_of(body, 0.0)).abs() < 1e-3));
         let p = it.effect_mut("volume").and_then(|e| e.param_mut("level")).unwrap();
-        p.put_keyframe(Tick(500), filmcraft_project::ParamValue::Float(0.0));
-        p.put_keyframe(Tick(4_500), filmcraft_project::ParamValue::Float(-20.0));
+        p.put_keyframe(Tick(500), redrob_film_project::ParamValue::Float(0.0));
+        p.put_keyframe(Tick(4_500), redrob_film_project::ParamValue::Float(-20.0));
         let ramp = line(&it, body, 0.0, 400.0);
         assert!(ramp.len() > 100);
         assert!(ramp.windows(2).all(|w| w[1].y >= w[0].y), "goes down as the level falls");

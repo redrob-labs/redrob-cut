@@ -2,9 +2,9 @@
 //! `i.modifiers` from `ModifiersChanged` events, not from the pointer events, and synthetic
 //! events arrive one per frame, so a Shift-click must hold Shift from its press to its release.
 
-use effectcraft_engine::Session;
-use effectcraft_ui_egui::EffectcraftApp;
-use effectcraft_ui_egui::control::{self, ControlRequest};
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::control::{self, ControlRequest};
 use serde_json::{Value, json};
 
 /// Feed the queued synthetic input frame by frame; per frame: (has a press/release, the

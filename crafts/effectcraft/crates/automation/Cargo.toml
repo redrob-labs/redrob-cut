@@ -1,5 +1,5 @@
 [package]
-name = "effectcraft-automation"
+name = "redrob-effects-automation"
 description = "Redrob Film MCP server (JSON-RPC 2.0 over stdio) over a headless session or bridged to the running app's control channel"
 version.workspace = true
 edition.workspace = true
@@ -10,11 +10,11 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-effectcraft-engine = { workspace = true }
+redrob-effects-engine = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 image = { workspace = true }
 
 [dev-dependencies]
-effectcraft-script = { workspace = true }
-effectcraft-host = { workspace = true }
+redrob-effects-script = { workspace = true }
+redrob-effects-host = { workspace = true }

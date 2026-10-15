@@ -1,7 +1,7 @@
-//! Round trips through the filmcraft-hevc decoder and (when installed) ffmpeg: decoded pictures must
+//! Round trips through the redrob-film-hevc decoder and (when installed) ffmpeg: decoded pictures must
 //! equal the encoder's own reconstruction bit-exactly.
 
-use effectcraft_hevcenc::{Encoder, EncoderConfig, Frame, Profile, RateControl};
+use redrob_effects_hevcenc::{Encoder, EncoderConfig, Frame, Profile, RateControl};
 use std::process::Command;
 
 struct Pic {
@@ -84,9 +84,9 @@ fn encode(cfg: EncoderConfig, pics: &[Pic]) -> Run {
     run
 }
 
-/// Decode with filmcraft-hevc and compare with the reconstructions.
+/// Decode with redrob-film-hevc and compare with the reconstructions.
 fn check_filmcraft(run: &Run, w: usize, h: usize) {
-    let mut dec = filmcraft_hevc::Decoder::from_hvcc(&run.hvcc).unwrap();
+    let mut dec = redrob_film_hevc::Decoder::from_hvcc(&run.hvcc).unwrap();
     let mut pics = Vec::new();
     for (i, p) in run.packets.iter().enumerate() {
         pics.extend(dec.decode(p, i as i64).unwrap());
@@ -365,7 +365,7 @@ fn hvcc_layout() {
 }
 
 /// Speed / size / quality report on ffmpeg-generated 1080p test content:
-/// `cargo test -p effectcraft-hevcenc --test roundtrip bench_1080p -- --ignored --nocapture`
+/// `cargo test -p redrob-effects-hevcenc --test roundtrip bench_1080p -- --ignored --nocapture`
 /// (`HEVCENC_BENCH_SRC` selects another lavfi source).
 #[test]
 #[ignore]

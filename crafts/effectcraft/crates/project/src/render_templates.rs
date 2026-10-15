@@ -9,7 +9,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::render_queue::*;
-use effectcraft_time::FrameRate;
+use redrob_effects_time::FrameRate;
 
 /// A default slot (the Defaults section of the Templates dialogs).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]

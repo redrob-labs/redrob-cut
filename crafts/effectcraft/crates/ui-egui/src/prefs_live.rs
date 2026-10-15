@@ -61,7 +61,7 @@ pub fn dropped_files(app: &mut EffectcraftApp, ui: &egui::Ui, bounds: Rect) {
 
     let (proj, rest): (Vec<String>, Vec<String>) = paths.into_iter().partition(|p| {
         let l = p.to_ascii_lowercase();
-        l.ends_with(".ecproj") || l.ends_with(".ecprojx")
+        l.ends_with(".rfx") || l.ends_with(".rfxx") || l.ends_with(".ecproj") || l.ends_with(".ecprojx") // legacy: pre-rename recents still open
     });
 
     if proj.len() > 1 {

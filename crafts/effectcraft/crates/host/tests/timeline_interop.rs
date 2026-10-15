@@ -3,11 +3,11 @@
 //! exported (`file.exportTimeline`, with a ProRes 4444 pre-render) and re-imported, and both
 //! render the same pixels.
 
-use effectcraft_engine::render::RenderOpts;
-use effectcraft_interchange::{fc, fc_media, fc_project as fp, fc_time};
-use effectcraft_project::{ItemId, LayerSource};
-use effectcraft_raster::Image;
-use effectcraft_time::Tick;
+use redrob_effects_engine::render::RenderOpts;
+use redrob_effects_interchange::{fc, fc_media, fc_project as fp, fc_time};
+use redrob_effects_project::{ItemId, LayerSource};
+use redrob_effects_raster::Image;
+use redrob_effects_time::Tick;
 use serde_json::json;
 
 const W: u32 = 64;
@@ -109,7 +109,7 @@ fn document(fmt: fc::Format) -> Vec<u8> {
     fc::export(&p, seq, fmt, &Default::default()).unwrap().0
 }
 
-fn render(s: &effectcraft_engine::Session, cid: ItemId, secs: f64) -> Image {
+fn render(s: &redrob_effects_engine::Session, cid: ItemId, secs: f64) -> Image {
     s.render(cid, Tick::from_seconds_f64(secs), RenderOpts::default())
 }
 
@@ -118,7 +118,7 @@ fn imported_timelines_render_like_premiere() {
     for (fmt, motion) in [(fc::Format::Fcp7Xml, true), (fc::Format::Otio, false)] {
         let path = tmp(&format!("interop.{}", fmt.extension()));
         std::fs::write(&path, document(fmt)).unwrap();
-        let mut s = effectcraft_host::session();
+        let mut s = redrob_effects_host::session();
         let r = s.execute("file.importTimeline", json!({"path": path})).unwrap();
         assert!(r["missing"].as_array().unwrap().is_empty(), "{r}");
         let cid = ItemId(r["comps"][0].as_u64().unwrap());
@@ -139,7 +139,7 @@ fn imported_timelines_render_like_premiere() {
 #[test]
 fn export_prerenders_and_reimports_the_same_pixels() {
     let red = png("x_red.png", [255, 0, 0]);
-    let mut s = effectcraft_host::session();
+    let mut s = redrob_effects_host::session();
     s.execute("comp.new", json!({"name": "Spot", "width": W, "height": H, "frameRate": 25, "duration": 2})).unwrap();
     let cid = s.active_comp_id().unwrap();
     let item = s.execute("file.import", json!({"paths": [red]})).unwrap()["items"][0].as_u64().unwrap();

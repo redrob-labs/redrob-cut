@@ -1,8 +1,8 @@
 //! A form keeps its fields and its buttons inside the dialog, whatever a choice's text is (#978).
-use effectcraft_engine::Session;
-use effectcraft_ui_egui::{Dialog, EffectcraftApp, menus};
 use egui::{Rect, pos2, vec2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::{Dialog, EffectcraftApp, menus};
 use serde_json::json;
 
 fn rect(h: &Harness<'_, EffectcraftApp>, id: &str) -> Rect {

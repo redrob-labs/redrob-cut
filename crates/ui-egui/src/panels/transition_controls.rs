@@ -23,10 +23,10 @@
 //! the dialog's `transitionDuration.value`, `.ok`, `.cancel`.
 
 use egui::{Align2, Pos2, Rect, RichText, Sense, Stroke, pos2, vec2};
-use filmcraft_edit::Edge;
-use filmcraft_edit::transitions::{self as trn, Alignment};
-use filmcraft_project::{ParamKind, ParamValue, Transition, TransitionId};
-use filmcraft_time::{FrameRate, Tick};
+use redrob_film_edit::Edge;
+use redrob_film_edit::transitions::{self as trn, Alignment};
+use redrob_film_project::{ParamKind, ParamValue, Transition, TransitionId};
+use redrob_film_time::{FrameRate, Tick};
 use serde_json::{Value, json};
 
 use crate::FilmcraftApp;
@@ -62,7 +62,7 @@ pub fn selected(app: &FilmcraftApp) -> Option<TransitionId> {
 }
 
 fn timecode(frames: f64, rate: FrameRate, drop_frame: bool) -> String {
-    filmcraft_time::format_timecode_frames(frames.round() as i64, rate, drop_frame)
+    redrob_film_time::format_timecode_frames(frames.round() as i64, rate, drop_frame)
 }
 
 /// A duration field in frames that reads and takes timecode (or a plain frame count).
@@ -70,7 +70,7 @@ fn duration_field(ui: &mut egui::Ui, frames: &mut i64, max: i64, rate: FrameRate
     ui.add(egui::DragValue::new(frames).range(1..=max.max(1)).speed(0.25).custom_formatter(move |v, _| timecode(v, rate, drop_frame)).custom_parser(move |s| {
         match s.trim().parse::<i64>() {
             Ok(n) => Some(n as f64),
-            Err(_) => filmcraft_time::parse_timecode(s, rate, drop_frame, 0).ok().map(|n| n as f64),
+            Err(_) => redrob_film_time::parse_timecode(s, rate, drop_frame, 0).ok().map(|n| n as f64),
         }
     }))
 }
@@ -387,7 +387,7 @@ fn paint_ruler(p: &egui::Painter, ruler: Rect, view: (Tick, Tick), rate: FrameRa
             let x = x_of(ruler, view, rate.tick_of(f));
             p.line_segment([pos2(x, base_y - h), pos2(x, base_y)], Stroke::new(1.0, t.tl_ruler_tick));
             if labelled && f >= 0 {
-                let label = filmcraft_time::format_time(rate.tick_of(f), rate, drop_frame, filmcraft_time::TimeDisplay::Timecode, 48000);
+                let label = redrob_film_time::format_time(rate.tick_of(f), rate, drop_frame, redrob_film_time::TimeDisplay::Timecode, 48000);
                 p.text(pos2(x, ruler.min.y + 7.0), Align2::CENTER_CENTER, label, Tokens::ui(10.0), t.tl_ruler_text);
             }
             f = f.saturating_add(step);

@@ -2,15 +2,15 @@
 //! path construction and painting, clipping, colour, shading patterns and `sh`, form XObjects
 //! and optional-content marked sequences, text (§9: text state, text objects, glyph outlines
 //! from [`crate::font`]), images ([`crate::image`]), tiling patterns, blend modes and soft
-//! masks. What is not drawn is listed in [`effectcraft_svg::Doc::skipped`].
+//! masks. What is not drawn is listed in [`redrob_effects_svg::Doc::skipped`].
 
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use effectcraft_svg::{
+use kurbo::{Point, Shape as _};
+use redrob_effects_svg::{
     Affine, BezPath, BlendMode, Cap, FillRule, Gradient, GradientKind, Group, Image as SvgImage, Join, Node, Paint, SoftMask, Spread, Stroke,
 };
-use kurbo::{Point, Shape as _};
 
 use crate::build::Builder;
 use crate::color::{Cs, Func, color_space, text_string};

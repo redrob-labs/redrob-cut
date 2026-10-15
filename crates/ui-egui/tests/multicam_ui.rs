@@ -2,7 +2,7 @@
 //! and Merge Clips dialogs, the Program monitor's Multi-Camera view (angle grid, clicking an
 //! angle, Ctrl-click for video only) and live switching with the 1–9 keys while playing.
 //!
-//! Set `FILMCRAFT_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write PNGs
+//! Set `REDROB_FILM_UI_SNAPSHOT_DIR=<dir>` to also render the window offscreen with wgpu and write PNGs
 //! there (`multicam-*.png`).
 
 use std::path::{Path, PathBuf};
@@ -10,13 +10,13 @@ use std::sync::Arc;
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_engine::project::{ItemKind, Label, MediaClip, MediaRef, Project, SequenceSettings, TrackKind};
-use filmcraft_media::generators::GeneratorSource;
-use filmcraft_media::{DemoScene, Generator, MediaSource};
-use filmcraft_time::{FrameRate, Tick, TimeRange};
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_engine::project::{ItemKind, Label, MediaClip, MediaRef, Project, SequenceSettings, TrackKind};
+use redrob_film_media::generators::GeneratorSource;
+use redrob_film_media::{DemoScene, Generator, MediaSource};
+use redrob_film_time::{FrameRate, Tick, TimeRange};
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 const W: u32 = 320;
@@ -50,18 +50,18 @@ fn make_movie(path: &Path, scene: DemoScene, frames: i64) {
     let seq = p.new_sequence("s", SequenceSettings { width: W, height: H, frame_rate: rate, ..Default::default() }, 1, 0, None);
     let mut v = p.make_track_item(item, TrackKind::Video, Tick::ZERO, TimeRange::new(Tick::ZERO, dur), rate).unwrap();
     for e in &mut v.effects {
-        filmcraft_engine::project::resolve_auto_points(e, (W, H), (W, H));
+        redrob_film_engine::project::resolve_auto_points(e, (W, H), (W, H));
     }
     p.sequence_mut(seq).unwrap().video_tracks[0].items.push(v);
-    let settings = filmcraft_engine::export::ExportSettings {
-        format: filmcraft_engine::export::Format::ProRes,
+    let settings = redrob_film_engine::export::ExportSettings {
+        format: redrob_film_engine::export::Format::ProRes,
         path: path.to_string_lossy().into_owned(),
         include_audio: false,
         ..Default::default()
     };
-    let shared: filmcraft_media::SharedSource = Arc::new(src);
+    let shared: redrob_film_media::SharedSource = Arc::new(src);
     let provider = move |id| (id == item).then(|| shared.clone());
-    filmcraft_engine::export::export(&Arc::new(p), seq, &settings, &provider, &Default::default()).unwrap();
+    redrob_film_engine::export::export(&Arc::new(p), seq, &settings, &provider, &Default::default()).unwrap();
 }
 
 /// Four cameras imported into a session with an empty 320×180 sequence "Cut".
@@ -93,7 +93,7 @@ impl Driver {
     fn new(session: Session) -> Self {
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let snapshots = std::env::var_os("FILMCRAFT_UI_SNAPSHOT_DIR").map(PathBuf::from);
+        let snapshots = std::env::var_os("REDROB_FILM_UI_SNAPSHOT_DIR").map(PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if snapshots.is_some() {
             b = b.wgpu();
@@ -385,7 +385,7 @@ fn multicam_view_pages_beyond_sixteen_angles_and_edit_cameras() {
     d.click("editCameras.enabled.1");
     d.click("editCameras.ok");
     assert!(d.app().ui.edit_cameras.is_none());
-    let mc = d.app().session.project.sequence(filmcraft_engine::project::ItemId(src)).unwrap().multicam.clone().unwrap();
+    let mc = d.app().session.project.sequence(redrob_film_engine::project::ItemId(src)).unwrap().multicam.clone().unwrap();
     assert!(!mc.cameras[1].enabled);
     assert_eq!(d.exec("multicam.grid", json!({}))["angles"], 19);
 }

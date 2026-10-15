@@ -2,9 +2,9 @@
 //! Language menu (the ⓕ button next to an expression), written from the public Expression
 //! Language Reference.
 
-use effectcraft_project::{Expression, ItemId, Layer, Property};
-use effectcraft_render::EvalCtx;
-use effectcraft_time::Tick;
+use redrob_effects_project::{Expression, ItemId, Layer, Property};
+use redrob_effects_render::EvalCtx;
+use redrob_effects_time::Tick;
 use serde::Serialize;
 use serde_json::{Value, json};
 

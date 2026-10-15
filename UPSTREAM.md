@@ -47,15 +47,34 @@ What a person sees or installs is Redrob Film's: the name, app id `ai.redrob.fil
 MCP server name, links, icons, the About and Home lockup, and the brand colours (`redrob_tokens`,
 generated from redrob-ui). `scripts/check_brand.py` keeps it that way.
 
-Kept as upstream's, because they are stored in files or read back as identifiers, or because renaming
-them would make every upstream sync conflict:
+Renamed to Redrob's, with the old spelling still READ so existing files and set-ups keep working
+(every such read path is marked `// legacy:` in the code; `scripts/check_brand.py` fails on an
+unmarked leftover):
 
-- Cargo package and crate names (`filmcraft`, `filmcraft-cli`, `filmcraft_*`), log targets, thread names,
-  the `FILMCRAFT_*` environment variables.
-- File formats: the `.fcproj` extension and MIME type `application/x-filmcraft`, the `filmcraft.*` format
-  ids in project, preset and template files, the renderer names stored in
-  project settings, the AAF tag names and the XMP `CreatorTool` marker that interchange reads back, and
-  the `filmcraft://` MCP resource URIs.
+- Crate names: `filmcraft` → `redrob-film-app`, `filmcraft-*` → `redrob-film-*`, `effectcraft-*` →
+  `redrob-effects-*` (and the `redrob_film_*` / `redrob_effects_*` module paths and log targets).
+  `tools/rename_crates.py` does this idempotently and runs from `tools/merge_effectcraft.py`, so an
+  upstream sync is followed by the rename rather than conflicting with it.
+- Project files: `.fcproj` → `.rfilm` (the effects sidecar is `<name>.rfilm.effects.json`), effects
+  projects `.ecproj` → `.rfx` and XML copies `.ecprojx` → `.rfxx`, XML root `<EffectCraftProject>` →
+  `<RedrobEffectsProject>`. Old files open from the command line, the open dialogs, recents, the media
+  browser, watch folders, import, templates and recovery; auto-save rotation and schema backups keep
+  rotating pre-rename files. Nothing writes the old spelling.
+- MIME types `application/x-redrob-film` and `application/x-redrob-effects` (macOS UTType, Linux
+  shared-mime-info, .desktop); the old extensions are still declared as globs.
+- MCP resource URIs `redrob-film://document|commands` and `redrob-effects://…`; the old URIs still read.
+- Environment variables `REDROB_FILM_*` / `REDROB_EFFECTS_*`. The user-facing ones fall back to the
+  old name: `FILMCRAFT_DATA_DIR`, `FILMCRAFT_CONFIG_DIR`, `FILMCRAFT_CONTROL_PORT`,
+  `FILMCRAFT_CPU_COMPOSITE`, `EFFECTCRAFT_CONFIG_DIR`, `EFFECTCRAFT_FONT_DIRS`. Test-only ones
+  (`*_BLESS`, `*_UI_SNAPSHOT_DIR`, `*_FUZZ_*`, model paths) were simply renamed.
+- MKV `WritingApp` is `redrob-film`.
+
+Kept as upstream's, because they are stored in files and compared on read-back:
+
+- The `filmcraft.*` format ids in project, preset and template files (`"format": "filmcraft.project"`),
+  the `filmcraft` OTIO metadata namespace, the renderer names stored in project settings, the AAF
+  tag names and the XMP `CreatorTool` marker that interchange reads back. Thread names and temp-file
+  prefixes in the lower crates also keep the short `filmcraft-` word; they are not crate names.
 - Built-in decoder names (`FilmCraft H.264` and so on), test data and code comments in the lower-layer
   crates. The name the app writes into exported files (MP4 encoder tag, MXF/AAF/OMF identification,
   caption and LUT headers, the project `generator`) and the messages people read are Redrob Film's.
@@ -92,11 +111,20 @@ Per-asset attribution continues in [`ATTRIBUTION.md`](./ATTRIBUTION.md).
 `crafts/effectcraft/` is [storytold/effectcraft](https://github.com/storytold/effectcraft) as a git
 subtree, pinned at `0311bdc34d0dc10c2d18ff7875b4f52d483e5e27` (2026-10-15), MIT OR Apache-2.0; its
 LICENSE-* and NOTICE stay intact under that directory. Its own `Cargo.toml` is parked as
-`Cargo.upstream.toml`; `tools/merge_effectcraft.py` folds its crates and dependencies into this
-workspace (its `filmcraft-*` git dependencies become this repository's crates). Update:
+`Cargo.upstream.toml`; `tools/merge_effectcraft.py` first runs `tools/prune_upstream.py` (deletes
+upstream's repository furniture: README, ROADMAP, CONTRIBUTING, AGENTS/CLAUDE, contributors, packaging,
+.github, apps, xtask, app icons and all docs/examples the crates do not compile in) and
+`tools/rename_crates.py` (`effectcraft-*` → `redrob-effects-*`, its `filmcraft-*` dependencies →
+`redrob-film-*`), then folds the crates and dependencies into this workspace (the renamed
+`redrob-film-*` git dependencies become this repository's crates). Update:
 
 ```bash
 git subtree pull --prefix crafts/effectcraft https://github.com/storytold/effectcraft.git <sha> --squash
-python3 tools/merge_effectcraft.py
+python3 tools/merge_effectcraft.py      # prune + rename + merge; refreshes Cargo.lock offline
 python3 tools/rebrand_crafts.py
+python3 scripts/check_brand.py          # upstream names and identifiers all gone?
 ```
+
+A pull brings back upstream's `.ecproj` spelling in new code; the brand check names each line, and the
+fix is the same substitution (`.ecproj` → `.rfx`, `.ecprojx` → `.rfxx`) with a `// legacy:` marker on
+any read path that must keep accepting the old one.

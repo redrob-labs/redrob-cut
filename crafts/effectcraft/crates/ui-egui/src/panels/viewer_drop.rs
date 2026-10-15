@@ -4,9 +4,9 @@
 //! while it is dragged (#88). Agents do the same with `layer.addItem {position}`,
 //! `mediaBrowser.import {position}` and `effect.apply {layers}`.
 
-use effectcraft_engine::project::{ItemId, ItemKind};
-use effectcraft_engine::render::EvalCtx;
 use egui::{Rect, Stroke, StrokeKind, vec2};
+use redrob_effects_engine::project::{ItemId, ItemKind};
+use redrob_effects_engine::render::EvalCtx;
 use serde_json::{Value, json};
 
 use super::DragPayload;

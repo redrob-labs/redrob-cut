@@ -60,10 +60,10 @@ pub mod viewers;
 pub mod waveform;
 
 use crate::i18n::tr;
-use effectcraft_engine::Session;
-use effectcraft_engine::project::Comp;
-use effectcraft_engine::time::Tick;
 use egui::Rect;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::Comp;
+use redrob_effects_engine::time::Tick;
 
 use crate::EffectcraftApp;
 use crate::dock::PanelKind;
@@ -85,7 +85,7 @@ pub enum DragPayload {
 /// complete selection, while dragging an unselected item uses only that item.
 /// Folders and data files are not composition layers.
 pub(crate) fn project_drop_items(app: &EffectcraftApp, dragged: u64) -> Vec<u64> {
-    use effectcraft_engine::project::{FootageKind, ItemId, ItemKind};
+    use redrob_effects_engine::project::{FootageKind, ItemId, ItemKind};
 
     let selected = &app.session.state.project_selection;
     let candidates: Vec<u64> = if selected.iter().any(|id| id.0 == dragged) {
@@ -110,7 +110,7 @@ pub(crate) fn project_drop_items(app: &EffectcraftApp, dragged: u64) -> Vec<u64>
 /// The current time formatted per project settings (timecode with `;` for drop-frame, frames
 /// or Feet + Frames).
 pub fn timecode(session: &Session, comp: &Comp, t: Tick) -> String {
-    effectcraft_engine::commands::time::display_time(session, comp, t)
+    redrob_effects_engine::commands::time::display_time(session, comp, t)
 }
 
 /// Ctrl/Cmd-click on a current-time display toggles the project's Time Display Style between
@@ -119,7 +119,7 @@ pub(crate) fn toggle_time_display(app: &mut EffectcraftApp, resp: &egui::Respons
     if !(resp.clicked() && resp.ctx.input(|i| i.modifiers.command)) {
         return;
     }
-    let timecode = app.session.project.settings.time_display == effectcraft_engine::project::TimeDisplayStyle::Timecode;
+    let timecode = app.session.project.settings.time_display == redrob_effects_engine::project::TimeDisplayStyle::Timecode;
     if let Err(e) = app.session.execute("file.projectSettings", serde_json::json!({"timeDisplay": if timecode { "frames" } else { "timecode" }})) {
         app.ui.status = e.to_string();
     }

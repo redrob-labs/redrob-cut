@@ -10,9 +10,9 @@ use std::path::Path;
 use std::sync::Arc;
 
 use common::*;
-use filmcraft_media::sequence::{FrameLoader, ImageSequenceSource, Numbered, sequence_frames};
-use filmcraft_media::{FrameRequest, MediaKind, MediaSource};
-use filmcraft_time::FrameRate;
+use redrob_film_media::sequence::{FrameLoader, ImageSequenceSource, Numbered, sequence_frames};
+use redrob_film_media::{FrameRequest, MediaKind, MediaSource};
+use redrob_film_time::FrameRate;
 
 /// Twelve numbered stills written by ffmpeg, shared by every test that uses `ext` (#125).
 ///
@@ -27,7 +27,7 @@ fn make_sequence(ff: &Path, ext: &str, codec_args: &[&str]) -> Option<std::path:
     if complete(&d) {
         return Some(d);
     }
-    let tmp = filmcraft_testkit::fixtures::temp_path(&d);
+    let tmp = redrob_film_testkit::fixtures::temp_path(&d);
     std::fs::create_dir_all(&tmp).ok()?;
     let pattern = tmp.join(format!("img_%04d.{ext}"));
     let mut args = vec!["-y", "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=96x64:rate=25", "-frames:v", "12"];
@@ -54,9 +54,9 @@ fn open_sequence(d: &Path, ext: &str) -> ImageSequenceSource {
     ImageSequenceSource::new("img_0001", sequence_frames(&n, &names), FrameRate::FPS_25, loader()).unwrap()
 }
 
-fn rgba(f: &filmcraft_frame::VideoFrame) -> Vec<u8> {
+fn rgba(f: &redrob_film_frame::VideoFrame) -> Vec<u8> {
     match &f.data {
-        filmcraft_frame::PixelData::Rgba8(p) => p.to_vec(),
+        redrob_film_frame::PixelData::Rgba8(p) => p.to_vec(),
         _ => panic!("still frames are RGBA"),
     }
 }
@@ -91,33 +91,33 @@ fn check(ff: &Path, ext: &str, codec_args: &[&str], tol: u8) {
 
 #[test]
 fn png_sequence_exact() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     check(&ff, "png", &[], 0);
 }
 
 #[test]
 fn tiff_and_bmp_sequences_exact() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     check(&ff, "tif", &["-pix_fmt", "rgb24"], 0);
     check(&ff, "bmp", &[], 0);
 }
 
 #[test]
 fn jpeg_sequence_close() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     // different IDCT and chroma upsampling than ffmpeg's: a few levels
     check(&ff, "jpg", &["-q:v", "2", "-pix_fmt", "yuvj444p"], 12);
 }
 
 #[test]
 fn webp_sequence_lossless() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     check(&ff, "webp", &["-c:v", "libwebp", "-lossless", "1"], 0);
 }
 
 #[test]
 fn targa_and_dpx_sequences_exact() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     check(&ff, "tga", &[], 0);
     check(&ff, "dpx", &["-pix_fmt", "gbrp10be"], 1);
 }
@@ -135,11 +135,11 @@ fn still_matches(ff: &Path, ext: &str, pix_fmt: &str, extra: &[&str], tol: u8) {
         eprintln!("SKIPPED: ffmpeg cannot write {name}");
         return;
     };
-    let src = filmcraft_codecs::open_bytes(&name, bytes(&f)).unwrap_or_else(|e| panic!("{name}: {e}"));
+    let src = redrob_film_codecs::open_bytes(&name, bytes(&f)).unwrap_or_else(|e| panic!("{name}: {e}"));
     assert_eq!(src.info().kind, MediaKind::Still, "{name}");
     let v = src.info().video.as_ref().unwrap();
     assert_eq!((v.width, v.height), (95, 63), "{name}");
-    let ours = rgba(&src.video_frame(FrameRequest::full(filmcraft_time::Tick(0))).unwrap());
+    let ours = rgba(&src.video_frame(FrameRequest::full(redrob_film_time::Tick(0))).unwrap());
     // deeper than 8 bits: ffmpeg's 16-bit decode, rounded to 8 bits (its own 8-bit conversion dithers)
     let want: Vec<u8> = if tol == 0 {
         ffmpeg_out(ff, &["-i", f.to_str().unwrap(), "-f", "rawvideo", "-pix_fmt", "rgba", "-"])
@@ -156,7 +156,7 @@ fn still_matches(ff: &Path, ext: &str, pix_fmt: &str, extra: &[&str], tol: u8) {
 
 #[test]
 fn targa_stills_every_layout() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     for pix_fmt in ["bgr24", "bgra", "rgb555le", "gray", "pal8"] {
         still_matches(&ff, "tga", pix_fmt, &[], 0); // run-length encoded (ffmpeg's default)
         still_matches(&ff, "tga", pix_fmt, &["-rle", "0"], 0);
@@ -165,7 +165,7 @@ fn targa_stills_every_layout() {
 
 #[test]
 fn dpx_stills_every_layout() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     for (pix_fmt, tol) in [("rgb24", 0), ("rgba", 0), ("gray", 0), ("rgb48be", 1), ("rgba64be", 1), ("gray16be", 1), ("gbrp10be", 1), ("gbrp12be", 1)] {
         still_matches(&ff, "dpx", pix_fmt, &[], tol);
     }
@@ -173,10 +173,10 @@ fn dpx_stills_every_layout() {
 
 #[test]
 fn missing_frames_hold_the_previous_frame() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     let Some(d) = make_sequence(&ff, "png", &[]) else { return };
     // a private copy without frames 5 and 6
-    let gap = filmcraft_testkit::fixtures::temp_path(&dir().join("seq_png_gap"));
+    let gap = redrob_film_testkit::fixtures::temp_path(&dir().join("seq_png_gap"));
     std::fs::create_dir_all(&gap).unwrap();
     for n in (1..=12).filter(|n| *n != 5 && *n != 6) {
         let name = format!("img_{n:04}.png");
@@ -195,7 +195,7 @@ fn missing_frames_hold_the_previous_frame() {
 
 #[test]
 fn broadcast_wav_time_reference() {
-    let ff = filmcraft_testkit::require_ffmpeg!();
+    let ff = redrob_film_testkit::require_ffmpeg!();
     // 01:00:00:00 at 23.976: 86 400 frames × 2002 samples
     let tr = (86_400u64 * 2002).to_string();
     let meta = format!("time_reference={tr}");
@@ -206,11 +206,11 @@ fn broadcast_wav_time_reference() {
     ) else {
         panic!("could not write BWF")
     };
-    let src = filmcraft_codecs::open_bytes("bwf_1h.wav", bytes(&f)).unwrap();
+    let src = redrob_film_codecs::open_bytes("bwf_1h.wav", bytes(&f)).unwrap();
     assert_eq!(src.info().container, "Broadcast WAV");
     assert_eq!(src.info().start_timecode, Some(86_400));
     // ffprobe agrees on the time reference
-    if let Some(fp) = filmcraft_testkit::ffprobe() {
+    if let Some(fp) = redrob_film_testkit::ffprobe() {
         let o = std::process::Command::new(fp).args(["-v", "error", "-show_entries", "format_tags=time_reference", "-of", "csv=p=0"]).arg(&f).output().unwrap();
         assert_eq!(String::from_utf8_lossy(&o.stdout).trim(), tr);
     }

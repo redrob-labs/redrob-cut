@@ -1,7 +1,7 @@
 //! Everyday-operation performance: a large generated project and the engine-side measurements
 //! behind `effectcraft-cli bench --ops` (open, save, auto-save, large edits with undo/redo, first
 //! frame). The UI-side numbers (first UI frame, timeline and Project panel draw) live in
-//! `effectcraft-ui-egui`'s `bench` module. See `docs/architecture.md` ▸ Performance.
+//! `redrob-effects-ui-egui`'s `bench` module. See `docs/architecture.md` ▸ Performance.
 
 // A benchmark harness (`effectcraft-cli bench --ops`, tests): a failed step should fail loudly,
 // as in tests and benches (AGENTS.md, "Never crash"). Nothing here runs in the app.
@@ -9,10 +9,10 @@
 
 use std::sync::Arc;
 
-use effectcraft_keyframe::Value as KValue;
-use effectcraft_project::build::{self, Ids};
-use effectcraft_project::{AlphaMode, Comp, Expression, Footage, FootageKind, ItemId, ItemKind, Layer, LayerSource, Project, Solid};
-use effectcraft_time::{FrameRate, Tick};
+use redrob_effects_keyframe::Value as KValue;
+use redrob_effects_project::build::{self, Ids};
+use redrob_effects_project::{AlphaMode, Comp, Expression, Footage, FootageKind, ItemId, ItemKind, Layer, LayerSource, Project, Solid};
+use redrob_effects_time::{FrameRate, Tick};
 use serde_json::{Value, json};
 
 use crate::Session;
@@ -224,8 +224,8 @@ pub fn large_project(spec: &LargeSpec) -> Project {
         let item = p.items.remove(&main_id).expect("main");
         let other = p.items.remove(&first).expect("first");
         // Swap ids: references to `first` (the Media folder) are the footage/solid parents.
-        p.items.insert(first, effectcraft_project::Item { id: first, ..item });
-        p.items.insert(main_id, effectcraft_project::Item { id: main_id, ..other });
+        p.items.insert(first, redrob_effects_project::Item { id: first, ..item });
+        p.items.insert(main_id, redrob_effects_project::Item { id: main_id, ..other });
         for it in p.items.values_mut() {
             if it.parent == Some(first) {
                 it.parent = Some(main_id);
@@ -273,7 +273,7 @@ pub fn ops_bench(spec: &LargeSpec, dir: &std::path::Path, fresh: &dyn Fn() -> Se
     let layers: usize = project.comps().map(|(_, c)| c.layers.len()).sum();
     out.push(Measure { name: "generate", ms, note: format!("{comps} comps, {layers} layers, {} items", project.items.len()) });
 
-    let path = dir.join("bench-large.ecproj");
+    let path = dir.join("bench-large.rfx");
     let path_s = path.to_string_lossy().to_string();
     let mut s = fresh();
     s.replace_project(project, None);

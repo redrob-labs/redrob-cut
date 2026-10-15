@@ -1,5 +1,5 @@
 [package]
-name = "filmcraft-engine"
+name = "redrob-film-engine"
 description = "Redrob Film engine façade: session, command registry, history, media pool"
 version.workspace = true
 edition.workspace = true
@@ -12,32 +12,32 @@ workspace = true
 [features]
 default = []
 # Speech-to-text with Whisper (candle, CPU). Off by default and in wasm builds.
-whisper = ["filmcraft-speech/whisper"]
+whisper = ["redrob-film-speech/whisper"]
 # Speech-model downloads over HTTPS.
-speech-download = ["filmcraft-speech/download"]
+speech-download = ["redrob-film-speech/download"]
 # Natural voices for Text to Speech: Kokoro-82M on candle (CPU) and their download.
-neural-voices = ["filmcraft-tts/kokoro", "speech-download"]
+neural-voices = ["redrob-film-tts/kokoro", "speech-download"]
 
 [dependencies]
-filmcraft-time = { workspace = true }
-filmcraft-geom = { workspace = true }
-filmcraft-color = { workspace = true }
-filmcraft-frame = { workspace = true }
-filmcraft-media = { workspace = true }
-filmcraft-codecs = { workspace = true }
-filmcraft-project = { workspace = true }
-filmcraft-edit = { workspace = true }
-filmcraft-render = { workspace = true }
-filmcraft-scopes = { workspace = true }
-filmcraft-text = { workspace = true }
-filmcraft-audio-dsp = { workspace = true }
-filmcraft-export = { workspace = true }
-filmcraft-mxf = { workspace = true }
-filmcraft-format = { workspace = true }
-filmcraft-interchange = { workspace = true }
-filmcraft-captions = { workspace = true }
-filmcraft-speech = { workspace = true }
-filmcraft-tts = { workspace = true }
+redrob-film-time = { workspace = true }
+redrob-film-geom = { workspace = true }
+redrob-film-color = { workspace = true }
+redrob-film-frame = { workspace = true }
+redrob-film-media = { workspace = true }
+redrob-film-codecs = { workspace = true }
+redrob-film-project = { workspace = true }
+redrob-film-edit = { workspace = true }
+redrob-film-render = { workspace = true }
+redrob-film-scopes = { workspace = true }
+redrob-film-text = { workspace = true }
+redrob-film-audio-dsp = { workspace = true }
+redrob-film-export = { workspace = true }
+redrob-film-mxf = { workspace = true }
+redrob-film-format = { workspace = true }
+redrob-film-interchange = { workspace = true }
+redrob-film-captions = { workspace = true }
+redrob-film-speech = { workspace = true }
+redrob-film-tts = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -45,5 +45,5 @@ log = { workspace = true }
 web-time = "1"
 
 [dev-dependencies]
-filmcraft-testkit = { workspace = true }
+redrob-film-testkit = { workspace = true }
 image = { version = "0.25", default-features = false, features = ["png"] }

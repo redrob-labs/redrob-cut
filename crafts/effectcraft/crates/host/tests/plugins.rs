@@ -4,9 +4,9 @@
 
 use std::sync::Arc;
 
-use effectcraft_engine::Session;
-use effectcraft_engine::effects::plugin::{EffectPlugin, PluginFrame, PluginManifest, PluginParam, PluginParamKind, PluginParams, register_plugin};
-use effectcraft_engine::time::Tick;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::effects::plugin::{EffectPlugin, PluginFrame, PluginManifest, PluginParam, PluginParamKind, PluginParams, register_plugin};
+use redrob_effects_engine::time::Tick;
 use serde_json::json;
 
 struct Swap {
@@ -28,7 +28,7 @@ impl EffectPlugin for Swap {
 }
 
 fn setup() -> (Session, u64) {
-    let mut s = effectcraft_host::session();
+    let mut s = redrob_effects_host::session();
     s.execute("comp.new", json!({"name": "P", "width": 40, "height": 20, "duration": 1})).unwrap();
     let l = s.execute("layer.newSolid", json!({"color": [1.0, 0.5, 0.0], "width": 40, "height": 20})).unwrap()["layer"].as_u64().unwrap();
     (s, l)
