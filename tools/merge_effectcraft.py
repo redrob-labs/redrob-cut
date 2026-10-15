@@ -57,6 +57,11 @@ def strip_generated(text: str) -> str:
 
 
 def main() -> None:
+    # Upstream repo furniture (README, packaging, CI, apps, xtask...) comes back with every
+    # subtree pull; drop it first so the merged tree only carries the crates and attribution.
+    import prune_upstream
+
+    prune_upstream.main([])
     live = SUBTREE / "Cargo.toml"
     parked = SUBTREE / "Cargo.upstream.toml"
     if live.exists():
