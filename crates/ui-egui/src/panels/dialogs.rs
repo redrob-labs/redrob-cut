@@ -32,8 +32,8 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
     let mut open = true;
     match d {
         Dialog::About => {
-            egui::Window::new(tl!("About Redrob Cut"))
-                .id(egui::Id::new("About Redrob Cut"))
+            egui::Window::new(tl!("About Redrob Film"))
+                .id(egui::Id::new("About Redrob Film"))
                 .open(&mut open)
                 .collapsible(false)
                 .resizable(false)
@@ -408,7 +408,7 @@ fn delete_tracks(app: &mut FilmcraftApp, ctx: &egui::Context) -> bool {
     keep
 }
 
-/// Help ▸ About Redrob Cut, in three tabs: About (version and the Redrob links),
+/// Help ▸ About Redrob Film, in three tabs: About (version and the Redrob links),
 /// Contributors and Models (the credits compiled in from `contributors/contributors.json`, see
 /// `crate::credits` and docs/contributors.md).
 ///
@@ -489,7 +489,7 @@ fn about_tab(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
     };
     link(ui, "website", Icon::Globe, "redrob.io", links::WEBSITE, true);
     ui.add_space(6.0);
-    link(ui, "appPage", Icon::Globe, tl!("Redrob Cut on redrob.io"), links::APP_PAGE, false);
+    link(ui, "appPage", Icon::Globe, tl!("Redrob Film on redrob.io"), links::APP_PAGE, false);
     link(ui, "github", Icon::Code, tl!("Source code on GitHub"), links::GITHUB, false);
     link(ui, "reportIssue", Icon::Code, tl!("Report an issue"), links::ISSUES, false);
     ui.add_space(10.0);

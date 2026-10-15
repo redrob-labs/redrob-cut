@@ -1,4 +1,4 @@
-Redrob Cut app icon (every file in this directory, and apps/filmcraft-web/web/favicon.png and
+Redrob Film app icon (every file in this directory, and apps/filmcraft-web/web/favicon.png and
 favicon.svg).
 
 Derived from the Redrob design system's favicon files (assets/brand/). The Redrob name, symbol,

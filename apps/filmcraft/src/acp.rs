@@ -4,7 +4,7 @@
 //!
 //! Only the handful of ACP methods the Agent palette needs are typed here; anything else is
 //! ignored (notifications) or declined (requests). The editing tools reach the agent as an MCP
-//! server named in `session/new`: this same executable, run as `redrob-cut mcp --connect`, talking
+//! server named in `session/new`: this same executable, run as `redrob-film mcp --connect`, talking
 //! to the window's token-gated control port. Nothing is written to the user's Redrob Code config,
 //! and keys and subscriptions stay in Redrob Code's own sign-in (`redrob auth login`).
 
@@ -23,7 +23,7 @@ pub const BINARY_ENV: &str = "REDROB_CODE_PATH";
 pub const INSTALL_HINT: &str = "Redrob Code is not installed. Install it from https://code.redrob.ai, then send again.";
 pub const SIGN_IN_HINT: &str = "Redrob Code needs a Redrob workspace. Connect one above, then send again.";
 /// Overrides the model the agent uses; otherwise Redrob's own router.
-pub const MODEL_ENV: &str = "REDROB_CUT_MODEL";
+pub const MODEL_ENV: &str = "REDROB_FILM_MODEL";
 pub const DEFAULT_MODEL: &str = "redrob/auto";
 /// ACP's code for "authenticate first".
 const AUTH_REQUIRED: i64 = -32000;
@@ -116,7 +116,7 @@ impl Shared {
         let Ok(exe) = std::env::current_exe() else { return json!([]) };
         let env: Vec<Value> = self.mcp.token.iter().map(|t| json!({"name": filmcraft_automation::bridge::CONTROL_TOKEN_ENV, "value": t})).collect();
         json!([{
-            "name": "redrob-cut",
+            "name": "redrob-film",
             "command": exe.to_string_lossy(),
             "args": ["mcp", "--connect", self.mcp.addr],
             "env": env,
@@ -212,7 +212,7 @@ impl AcpHost {
                 "initialize",
                 json!({
                     "protocolVersion": 1,
-                    "clientInfo": {"name": "redrob_cut", "title": "Redrob Cut", "version": env!("CARGO_PKG_VERSION")},
+                    "clientInfo": {"name": "redrob_film", "title": "Redrob Film", "version": env!("CARGO_PKG_VERSION")},
                     "clientCapabilities": {},
                 }),
                 Pending::Initialize,
@@ -379,8 +379,8 @@ mod tests {
             vec![AgentEvent::Text("hi".into())]
         );
         assert_eq!(
-            update_events(&json!({"sessionUpdate": "tool_call", "toolCallId": "c1", "title": "redrob-cut_command_run"})),
-            vec![AgentEvent::Tool { id: "c1".into(), title: "redrob-cut_command_run".into(), status: "pending".into() }]
+            update_events(&json!({"sessionUpdate": "tool_call", "toolCallId": "c1", "title": "redrob-film_command_run"})),
+            vec![AgentEvent::Tool { id: "c1".into(), title: "redrob-film_command_run".into(), status: "pending".into() }]
         );
         assert_eq!(
             update_events(&json!({"sessionUpdate": "tool_call_update", "toolCallId": "c1", "status": "completed"})),
@@ -418,7 +418,7 @@ mod tests {
     #[test]
     fn talks_acp_to_a_scripted_agent() {
         use std::os::unix::fs::PermissionsExt;
-        let dir = std::env::temp_dir().join(format!("redrob-cut-acp-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("redrob-film-acp-{}", std::process::id()));
         let _ = std::fs::create_dir_all(&dir);
         let script = dir.join("redrob");
         let new_log = dir.join("new.json");
@@ -462,7 +462,7 @@ read l
         let new: Value = serde_json::from_str(&std::fs::read_to_string(&new_log).unwrap_or_default()).unwrap_or_default();
         let server = &new["params"]["mcpServers"][0];
         assert_eq!(new["method"], "session/new");
-        assert_eq!(server["name"], "redrob-cut");
+        assert_eq!(server["name"], "redrob-film");
         assert_eq!(server["args"], json!(["mcp", "--connect", "127.0.0.1:4242"]));
         assert_eq!(server["env"], json!([{"name": filmcraft_automation::bridge::CONTROL_TOKEN_ENV, "value": "t0k"}]));
         let ans: Value = serde_json::from_str(&std::fs::read_to_string(&ans_log).unwrap_or_default()).unwrap_or_default();

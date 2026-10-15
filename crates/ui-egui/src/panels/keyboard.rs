@@ -128,12 +128,12 @@ pub const COMMANDS: &[UiCommand] = &[
     uic!("textPanel.rippleDelete", "Ripple Delete", [], None),
     uic!("textPanel.showProgramTranscript", "Show Program Transcript", [], None),
     uic!("graphics.beginTextEditing", "Begin Text Editing for a Graphic Layer", [], Some("Cmd+Alt+'")),
-    uic!("help.filmcraftHelp", "Redrob Cut Help…", ["Help"], Some("F1")),
-    uic!("app.quit", "Quit Redrob Cut", [], Some("Cmd+Q")),
+    uic!("help.filmcraftHelp", "Redrob Film Help…", ["Help"], Some("F1")),
+    uic!("app.quit", "Quit Redrob Film", [], Some("Cmd+Q")),
 ];
 
-/// Redrob Cut's documentation (Help ▸ Redrob Cut Help…, F1).
-pub const HELP_URL: &str = "https://github.com/redrob-labs/redrob-cut/tree/develop/docs";
+/// Redrob Film's documentation (Help ▸ Redrob Film Help…, F1).
+pub const HELP_URL: &str = "https://github.com/redrob-labs/redrob-film/tree/develop/docs";
 
 const HEIGHT_STEP: f32 = 12.0;
 const MIN_TRACK_H: f32 = 24.0;

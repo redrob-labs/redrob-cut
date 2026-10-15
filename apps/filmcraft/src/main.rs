@@ -1,4 +1,8 @@
-//! Redrob Cut desktop app.
+//! Redrob Film desktop app.
+//!
+//! The window is a shell ([`shell`]) hosting two editors as modes: Edit (the timeline editor,
+//! `FilmcraftApp`) and Effects (the compositor, `EffectcraftApp`), with a shared AI dock
+//! ([`ai`]), hand-offs between them ([`handoff`]) and one project bundle ([`bundle`]).
 //!
 //! Usage: `filmcraft [--control <port>] [--demo|--empty] [--recover|--no-recover] [--data-dir <dir>]
 //! [project.fcproj | media files…]`; `--help` prints the options, `--version` the version. An
@@ -12,7 +16,7 @@
 //! either source. Without it the app still opens one, on a free port and gated by a per-launch
 //! token, for the built-in agent (Redrob Code) alone; see [`agent_setup`].
 //!
-//! `redrob-cut mcp [--connect HOST:PORT]` runs the MCP server on stdio instead of the window: the
+//! `redrob-film mcp [--connect HOST:PORT]` runs the MCP server on stdio instead of the window: the
 //! built-in agent starts it with `--connect`, Redrob Code in a terminal without (an in-process
 //! project).
 //!
@@ -22,18 +26,20 @@
 //! asking, `--no-recover` starts without asking (the changes stay available via File ▸ Recover
 //! Unsaved Changes…).
 //!
-//! `log` records go to standard error and `<data dir>/Logs/redrob-cut.log` (`RUST_LOG` sets the
+//! `log` records go to standard error and `<data dir>/Logs/redrob-film.log` (`RUST_LOG` sets the
 //! levels); see [`logging`].
 #![cfg_attr(all(target_os = "windows", not(debug_assertions)), windows_subsystem = "windows")]
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable))]
 
 mod acp;
 mod agent_setup;
+mod ai;
 mod app_nap;
 mod appearance;
 mod args;
 mod audio;
 mod audio_in;
+mod bundle;
 mod control_server;
 #[cfg(target_os = "linux")]
 mod dev_icon;
@@ -41,9 +47,12 @@ mod device;
 mod file_filters;
 #[cfg(any(target_os = "windows", test))]
 mod graphics;
+mod handoff;
 mod logging;
 #[cfg(target_os = "macos")]
 mod native_menu;
+mod shell;
+mod update;
 mod window_raise;
 
 use args::{Cli, Launch};
@@ -54,16 +63,16 @@ use filmcraft_ui_egui::FilmcraftApp;
 use serde_json::json;
 
 /// Reverse-DNS app id: Linux `.desktop` file, hicolor icon name and Wayland app id.
-const APP_ID: &str = "ai.redrob.cut";
+const APP_ID: &str = "ai.redrob.film";
 
 /// The window, Dock, taskbar and app-switcher icon: the Redrob tile (`assets/app-icon/`, derived
 /// from the design system's files by `packaging/brand-assets.sh`). One design on every OS: the
 /// design system forbids adding a margin or a second radius to the tile.
 fn app_icon() -> egui::IconData {
     #[cfg(target_os = "macos")]
-    let png: &[u8] = include_bytes!("../../../assets/app-icon/redrob-cut-512.png");
+    let png: &[u8] = include_bytes!("../../../assets/app-icon/redrob-film-512.png");
     #[cfg(not(target_os = "macos"))]
-    let png: &[u8] = include_bytes!("../../../assets/app-icon/hicolor/256x256/apps/ai.redrob.cut.png");
+    let png: &[u8] = include_bytes!("../../../assets/app-icon/hicolor/256x256/apps/ai.redrob.film.png");
     eframe::icon_data::from_png_bytes(png).unwrap_or_default()
 }
 
@@ -79,12 +88,12 @@ fn tell(text: &str, error: bool) {
     #[cfg(all(target_os = "windows", not(debug_assertions)))]
     {
         let level = if error { rfd::MessageLevel::Error } else { rfd::MessageLevel::Info };
-        let _ = rfd::MessageDialog::new().set_level(level).set_title("Redrob Cut").set_description(text).show();
+        let _ = rfd::MessageDialog::new().set_level(level).set_title("Redrob Film").set_description(text).show();
     }
 }
 
 fn main() -> eframe::Result {
-    // `redrob-cut mcp ...`: the MCP server, no window. Before logging, so stdout stays the protocol's.
+    // `redrob-film mcp ...`: the MCP server, no window. Before logging, so stdout stays the protocol's.
     let argv: Vec<String> = std::env::args().skip(1).collect();
     if argv.first().map(String::as_str) == Some("mcp") {
         std::process::exit(agent_setup::serve_mcp(&argv[1..]));
@@ -100,16 +109,16 @@ fn main() -> eframe::Result {
             return Ok(());
         }
         Ok(Cli::Version) => {
-            tell(&format!("redrob-cut {}\n", env!("CARGO_PKG_VERSION")), false);
+            tell(&format!("redrob-film {}\n", env!("CARGO_PKG_VERSION")), false);
             return Ok(());
         }
         Err(e) => {
-            tell(&format!("redrob-cut: {e}\n\n{}", args::USAGE), true);
+            tell(&format!("redrob-film: {e}\n\n{}", args::USAGE), true);
             std::process::exit(2);
         }
     };
     let log_dir = data_dir.clone().or_else(default_data_dir).map(|d| d.join(logging::LOG_DIR));
-    log::info!("Redrob Cut {} ({} {})", env!("CARGO_PKG_VERSION"), std::env::consts::OS, std::env::consts::ARCH);
+    log::info!("Redrob Film {} ({} {})", env!("CARGO_PKG_VERSION"), std::env::consts::OS, std::env::consts::ARCH);
     // The log file lives next to the crash logs; opened after the arguments, so `--help`,
     // `--version` and usage errors leave no file behind. Records logged until now go in first.
     if let Some(logger) = logger {
@@ -134,7 +143,7 @@ fn main() -> eframe::Result {
     register_gpu_frame_renderer();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("Redrob Cut")
+            .with_title("Redrob Film")
             .with_inner_size([1600.0, 980.0])
             .with_min_inner_size([900.0, 560.0])
             .with_drag_and_drop(true)
@@ -144,7 +153,7 @@ fn main() -> eframe::Result {
             // Started for an agent (`--control`): open without taking the user's keyboard focus.
             .with_active(control_port.is_none())
             .with_icon(app_icon())
-            // Wayland matches the window to `packaging/linux/ai.redrob.cut.desktop`.
+            // Wayland matches the window to `packaging/linux/ai.redrob.film.desktop`.
             .with_app_id(APP_ID),
         event_loop_builder: agent_event_loop(control_port.is_some()),
         ..Default::default()
@@ -157,7 +166,7 @@ fn main() -> eframe::Result {
         options
     };
     let started = eframe::run_native(
-        "Redrob Cut",
+        "Redrob Film",
         options,
         Box::new(move |cc| {
             let mut session = Session::default();
@@ -234,7 +243,7 @@ fn main() -> eframe::Result {
             }));
             app.hooks.pick_save = Some(Box::new(|name: &str| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t("Redrob Cut Project"), &file_filters::extensions(&["fcproj"]))
+                    .add_filter(filmcraft_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
                     .set_file_name(name)
                     .save_file()
                     .map(|p| p.to_string_lossy().to_string())
@@ -290,7 +299,7 @@ fn main() -> eframe::Result {
             }));
             app.hooks.pick_open_project = Some(Box::new(|| {
                 rfd::FileDialog::new()
-                    .add_filter(filmcraft_ui_egui::i18n::t("Redrob Cut Project"), &file_filters::extensions(&["fcproj"]))
+                    .add_filter(filmcraft_ui_egui::i18n::t("Redrob Film Project"), &file_filters::extensions(&["fcproj"]))
                     .pick_file()
                     .map(|p| p.to_string_lossy().to_string())
             }));
@@ -305,7 +314,10 @@ fn main() -> eframe::Result {
             // token that only the built-in agent's MCP server is handed.
             let token = control_port.is_none().then(agent_setup::control_token);
             let (rx, bound) = control_server::start(control_port.unwrap_or(0), cc.egui_ctx.clone(), token.clone());
-            app = app.with_control(rx);
+            // The shell sits on the channel first (its own `mode.*` commands, the catalogue, a
+            // `ui.*` refusal while Effects is on screen) and forwards the rest to the Edit editor.
+            let (edit_tx, edit_rx) = std::sync::mpsc::channel();
+            app = app.with_control(edit_rx);
             // The built-in agent: Redrob Code over ACP, started by the Agent panel's first message
             // (after `account::require`), with the connected workspace's key.
             if let Some(port) = bound {
@@ -319,16 +331,17 @@ fn main() -> eframe::Result {
                     Ok(Box::new(host) as Box<dyn filmcraft_ui_egui::agent::AgentHost>)
                 }));
             }
-            Ok(Box::new(app))
+            // One window, two modes: the Edit editor built above, Effects on its first switch.
+            Ok(Box::new(shell::ShellApp::new(app, Some(rx), edit_tx)))
         }),
     );
     // The window could not be created (no usable GPU / graphics driver, no display): say so
     // instead of exiting silently, and keep the reason in the crash log.
     if let Err(e) = &started {
-        let msg = format!("Redrob Cut could not start its window: {e}\n\nUpdating the graphics driver usually fixes this.");
+        let msg = format!("Redrob Film could not start its window: {e}\n\nUpdating the graphics driver usually fixes this.");
         log::error!("{msg}");
         filmcraft_ui_egui::crash::record(&msg);
-        let _ = rfd::MessageDialog::new().set_title("Redrob Cut").set_description(&msg).set_level(rfd::MessageLevel::Error).show();
+        let _ = rfd::MessageDialog::new().set_title("Redrob Film").set_description(&msg).set_level(rfd::MessageLevel::Error).show();
     }
     started
 }

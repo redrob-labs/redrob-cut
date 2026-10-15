@@ -1,4 +1,4 @@
-//! Connecting Redrob Cut to a Redrob workspace without anyone handling the key.
+//! Connecting Redrob Film to a Redrob workspace without anyone handling the key.
 //!
 //! The console implements RFC 8628's device authorization grant. The app asks it for a code under
 //! the product id `cut`, the person approves that code on console.redrob.ai, and the app polls
@@ -24,8 +24,8 @@ pub const CONSOLE_API: &str = "https://console.redrob.ai/api/backend/v1";
 /// Overrides the console base URL (tests, staging).
 pub const CONSOLE_API_ENV: &str = "REDROB_CONSOLE_API";
 /// Overrides where `account.json` lives.
-pub const CONFIG_DIR_ENV: &str = "REDROB_CUT_CONFIG_DIR";
-pub const PRODUCT: &str = "cut";
+pub const CONFIG_DIR_ENV: &str = "REDROB_FILM_CONFIG_DIR";
+pub const PRODUCT: &str = "film";
 
 const FALLBACK_EXPIRES: Duration = Duration::from_secs(600);
 const MAX_EXPIRES: Duration = Duration::from_secs(1800);
@@ -48,7 +48,7 @@ impl Transport for Https {
         let agent: ureq::Agent = ureq::Agent::config_builder()
             .timeout_global(Some(Duration::from_secs(20)))
             .http_status_as_error(false)
-            .user_agent(concat!("redrob-cut/", env!("CARGO_PKG_VERSION")))
+            .user_agent(concat!("redrob-film/", env!("CARGO_PKG_VERSION")))
             .build()
             .into();
         let mut resp = agent.post(url).header("content-type", "application/json").send(body.to_string()).map_err(|e| e.to_string())?;
@@ -123,11 +123,11 @@ pub fn config_dir() -> Option<PathBuf> {
     }
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
     if cfg!(windows) {
-        env("APPDATA").map(|d| d.join("Redrob Cut"))
+        env("APPDATA").map(|d| d.join("Redrob Film"))
     } else if cfg!(target_os = "macos") {
-        env("HOME").map(|h| h.join("Library/Application Support/ai.redrob.cut"))
+        env("HOME").map(|h| h.join("Library/Application Support/ai.redrob.film"))
     } else {
-        env("XDG_CONFIG_HOME").or_else(|| env("HOME").map(|h| h.join(".config"))).map(|d| d.join("redrob-cut"))
+        env("XDG_CONFIG_HOME").or_else(|| env("HOME").map(|h| h.join(".config"))).map(|d| d.join("redrob-film"))
     }
 }
 
@@ -450,7 +450,7 @@ mod tests {
         let r = authorize(&t, "https://c/api");
         assert!(r.is_ok());
         let Ok(s) = r else { return };
-        assert_eq!(t.asked(), vec![("https://c/api/device/authorize".to_string(), json!({"product": "cut"}))]);
+        assert_eq!(t.asked(), vec![("https://c/api/device/authorize".to_string(), json!({"product": "film"}))]);
         assert_eq!((s.user_code.as_str(), s.url.as_str()), ("ABCD-EFGH", "https://console.redrob.ai/connect?code=ABCD-EFGH"));
         assert_eq!((s.expires_in, s.interval), (Duration::from_secs(600), Duration::from_secs(5)));
         assert!(authorize(&Script::new(vec![Ok((400, json!({"error": "invalid_request"})))]), "b").is_err());
@@ -471,10 +471,10 @@ mod tests {
         assert_eq!(one(Err("down".into())), Poll::Unreachable);
         assert_eq!(one(Ok((200, json!({"apiKeyName": "k"})))), Poll::Failed("missing_key".into()));
         assert_eq!(
-            one(Ok((200, json!({"apiKey": "rk_1", "apiKeyName": "Redrob Cut", "accountName": "Acme"})))),
+            one(Ok((200, json!({"apiKey": "rk_1", "apiKeyName": "Redrob Film", "accountName": "Acme"})))),
             Poll::Connected(Stored {
                 api_key: "rk_1".into(),
-                api_key_name: "Redrob Cut".into(),
+                api_key_name: "Redrob Film".into(),
                 account_name: "Acme".into(),
                 api_base_url: "https://c".into()
             })
@@ -486,9 +486,9 @@ mod tests {
 
     #[test]
     fn the_key_file_round_trips_and_is_private() {
-        let dir = std::env::temp_dir().join(format!("redrob-cut-acct-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("redrob-film-acct-{}", std::process::id()));
         let path = dir.join("account.json");
-        let s = Stored { api_key: "rk_secret".into(), api_key_name: "Redrob Cut".into(), account_name: "Acme".into(), api_base_url: "https://c".into() };
+        let s = Stored { api_key: "rk_secret".into(), api_key_name: "Redrob Film".into(), account_name: "Acme".into(), api_base_url: "https://c".into() };
         assert!(save(&path, &s).is_ok());
         assert_eq!(load(&path), Some(s));
         #[cfg(unix)]
@@ -526,7 +526,7 @@ mod tests {
 
     #[test]
     fn the_shared_launcher_key_is_the_fallback_and_its_changes_restart_the_ai_features() {
-        let dir = std::env::temp_dir().join(format!("redrob-cut-shared-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("redrob-film-shared-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let own = dir.join("own").join("account.json");
         let shared = dir.join("shared").join("account.json");
@@ -542,7 +542,7 @@ mod tests {
         let g1 = acct.generation();
         assert_eq!(acct.generation(), g1, "an unchanged shared key restarts nothing");
         // The app's own key wins.
-        assert!(save(&own, &key("rk_own", "Redrob Cut")).is_ok());
+        assert!(save(&own, &key("rk_own", "Redrob Film")).is_ok());
         let mut acct = DeviceAccount::new(Some(own.clone()), Some(shared.clone()), Arc::new(Script::new(vec![])), "https://c".into(), None);
         assert_eq!(acct.key_source().current().map(|(s, via)| (s.api_key, via)), Some(("rk_own".into(), false)));
         // Disconnecting here removes only this app's own key; the launcher's file is not this app's to delete.

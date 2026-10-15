@@ -8,8 +8,8 @@
 #
 # 净室实现：每条译文均由英文含义直接译出，使用通用的中文视频剪辑术语（剪辑、时间轴、序列、
 #   轨道、关键帧……）。未参考或复制任何专有本地化资源、字符串表或产品界面。产品与技术名称
-#   （Redrob Cut、ArtCraft、Lumetri、ProRes、LUFS……）保留原文拼写。
-	About Redrob Cut	关于 Redrob Cut
+#   （Redrob Film、Lumetri、ProRes、LUFS……）保留原文拼写。
+	About Redrob Film	关于 Redrob Film
 	Add Audio Submix Track	添加音频子混音轨道
 	Add Caption at Playhead	在播放头处添加字幕
 	Add Chapter Marker…	添加章节标记…
@@ -127,7 +127,7 @@
 	File	文件
 	File…	文件…
 	Fill frame	填满帧
-	Redrob Cut Help…	Redrob Cut 帮助…
+	Redrob Film Help…	Redrob Film 帮助…
 	Find Next	查找下一个
 	Find…	查找…
 	Fit	适配
@@ -295,7 +295,7 @@
 	Select Previous Graphic	选择上一个图形
 	Select Previous Layer	选择上一个图层
 	Selection Follows Playhead	选择跟随播放头
-	Selection as Redrob Cut Project…	将所选对象另存为 Redrob Cut 项目…
+	Selection as Redrob Film Project…	将所选对象另存为 Redrob Film 项目…
 	Selection…	所选对象…
 	Send Backward	下移一层
 	Send to Back	置于底层
@@ -418,8 +418,8 @@
 	No background jobs.	无后台任务。
 	Recover Unsaved Changes	恢复未保存的更改
 	Untitled	未命名
-	Redrob Cut was closed while “{name}” had unsaved changes.	Redrob Cut 在“{name}”存在未保存的更改时被关闭。
-	Redrob Cut quit unexpectedly while “{name}” had unsaved changes.	Redrob Cut 在“{name}”存在未保存的更改时意外退出。
+	Redrob Film was closed while “{name}” had unsaved changes.	Redrob Film 在“{name}”存在未保存的更改时被关闭。
+	Redrob Film quit unexpectedly while “{name}” had unsaved changes.	Redrob Film 在“{name}”存在未保存的更改时意外退出。
 	Recover unsaved changes from {when}?	恢复 {when} 的未保存更改吗？
 	The project had not been saved yet.	该项目尚未保存。
 	{n} sessions have unsaved changes:	{n} 个会话存在未保存的更改：
@@ -942,7 +942,7 @@
 	Font family	字体族
 	Label Colors	标签颜色
 	Decoded frames held for the monitors and thumbnails: {used} of {budget}.	为监视器和缩略图保留的解码帧：{used} / {budget}。
-	Redrob Cut keeps the rest of the RAM free for other applications.	Redrob Cut 将剩余内存留给其他应用程序。
+	Redrob Film keeps the rest of the RAM free for other applications.	Redrob Film 将剩余内存留给其他应用程序。
 	not available in this session	在当前会话中不可用
 	Currently: {loc} — {files} file(s), {size}	当前：{loc} — {files} 个文件，{size}
 	 ({ch} output channels)	 （{ch} 个输出通道）
@@ -1051,7 +1051,7 @@
 	Video Frame	视频帧
 	Pin To	固定到
 	Pinned Edges	固定边
-	Redrob Cut Graphics Template	Redrob Cut 图形模板
+	Redrob Film Graphics Template	Redrob Film 图形模板
 	{n} Font	{n} 字体
 	{n} Size	{n} 大小
 	{n} Color	{n} 颜色
@@ -1061,7 +1061,7 @@
 	Export As Motion Graphics Template	导出为动态图形模板
 	Category:	分类：
 	Editable properties:	可编辑属性：
-	Saved as a Redrob Cut graphics template (.fcgt) in your templates folder.	已作为 Redrob Cut 图形模板（.fcgt）保存到你的模板文件夹。
+	Saved as a Redrob Film graphics template (.fcgt) in your templates folder.	已作为 Redrob Film 图形模板（.fcgt）保存到你的模板文件夹。
 	Exported graphics template to {path}	已将图形模板导出到 {path}
 	Replace Fonts in Projects	替换项目中的字体
 	Fonts used in the project:	项目中使用的字体：
@@ -1431,7 +1431,7 @@
 	Center of Sphere	球体中心
 	Cents	音分
 	Change to Color	更改为颜色
-	Changes are copied in the background a moment after each edit. If Redrob Cut quits unexpectedly, they are offered the next time it starts.	每次编辑后，更改会在后台稍后复制。如果 Redrob Cut 意外退出，下次启动时会提示恢复。
+	Changes are copied in the background a moment after each edit. If Redrob Film quits unexpectedly, they are offered the next time it starts.	每次编辑后，更改会在后台稍后复制。如果 Redrob Film 意外退出，下次启动时会提示恢复。
 	Channel	通道
 	Channel Blur	通道模糊
 	Channel Mix	通道混合
@@ -1804,7 +1804,7 @@
 	Hard Limiter	硬限制器
 	Hard Mix	硬混合
 	Hardware decoding	硬件解码
-	Hardware decoding: Auto uses the system's video decoder (VideoToolbox on macOS, Media Foundation on Windows, VA-API for H.264 and HEVC on Linux) for the streams it supports, and Redrob Cut's own decoder for everything else or if the hardware fails. Media that is already open keeps its decoder until it is reopened.	硬件解码：自动模式对支持的流使用系统视频解码器（macOS 上为 VideoToolbox，Windows 上为 Media Foundation，Linux 上对 H.264 和 HEVC 使用 VA-API），其余情况或硬件失败时回退到 Redrob Cut 自带的解码器。已打开的媒体会保留其解码器，直到重新打开。
+	Hardware decoding: Auto uses the system's video decoder (VideoToolbox on macOS, Media Foundation on Windows, VA-API for H.264 and HEVC on Linux) for the streams it supports, and Redrob Film's own decoder for everything else or if the hardware fails. Media that is already open keeps its decoder until it is reopened.	硬件解码：自动模式对支持的流使用系统视频解码器（macOS 上为 VideoToolbox，Windows 上为 Media Foundation，Linux 上对 H.264 和 HEVC 使用 VA-API），其余情况或硬件失败时回退到 Redrob Film 自带的解码器。已打开的媒体会保留其解码器，直到重新打开。
 	Head Size	头部大小
 	Heart	心形
 	Height	高度
@@ -2074,7 +2074,7 @@
 	Night	夜景
 	No Motion	无运动
 	No Scroll	不滚动
-	No plugins are installed. Changes will take effect the next time you start Redrob Cut.	未安装任何插件。更改将在下次启动 Redrob Cut 时生效。
+	No plugins are installed. Changes will take effect the next time you start Redrob Film.	未安装任何插件。更改将在下次启动 Redrob Film 时生效。
 	Noise	噪点
 	Noise & Grain	噪点与颗粒
 	Noise (Legacy)	噪点（旧版）
@@ -2505,7 +2505,7 @@
 	Template Properties	模板属性
 	Text Animator	文本动画器
 	Text Color	文本颜色
-	The media cache holds render previews of unsaved projects and other files Redrob Cut can recreate. Deleting them is always safe; Redrob Cut rebuilds them as needed.	媒体缓存保存未保存项目的渲染预览，以及其他 Redrob Cut 可重建的文件。删除它们始终安全；Redrob Cut 会在需要时重新构建。
+	The media cache holds render previews of unsaved projects and other files Redrob Film can recreate. Deleting them is always safe; Redrob Film rebuilds them as needed.	媒体缓存保存未保存项目的渲染预览，以及其他 Redrob Film 可重建的文件。删除它们始终安全；Redrob Film 会在需要时重新构建。
 	Thickness	厚度
 	Tile Gradient	平铺渐变
 	Tilt	倾斜
@@ -2715,7 +2715,7 @@
 	System Compatibility Report	系统兼容性报告
 	no GPU adapter: the CPU compositor is used	无 GPU 适配器：使用 CPU 合成器
 	Avid Log Exchange	Avid Log Exchange
-	Redrob Cut Project	Redrob Cut 项目
+	Redrob Film Project	Redrob Film 项目
 	{name} Selection.fcproj	{name} Selection.fcproj
 	{name} (Simplified)	{name}（简化）
 	Find in:	查找位置：
@@ -2855,7 +2855,7 @@
 	Start Queue	启动队列
 	Stop	停止
 	Clear Finished	清除已完成
-	Not supported by Redrob Cut's encoders yet	Redrob Cut 的编码器尚不支持
+	Not supported by Redrob Film's encoders yet	Redrob Film 的编码器尚不支持
 	Sequence name	序列名称
 	Folder	文件夹
 	Preset	预设
@@ -2940,7 +2940,7 @@
 	Drag a clip to slide it between its neighbours.	拖动剪辑以在其相邻剪辑之间滑动。
 	Drag to scroll the timeline.	拖动以滚动时间轴。
 	Click to zoom in; Opt-click to zoom out.	单击以放大；Opt-单击以缩小。
-	Redrob Cut hit an error	Redrob Cut 遇到错误
+	Redrob Film hit an error	Redrob Film 遇到错误
 	Details: {path}	详细信息：{path}
 	Opened {url}	已打开 {url}
 	(empty)	（空）
@@ -3194,7 +3194,7 @@
 	QuickTime, ProRes 4444 (4:4:4) with alpha channel, 24-bit 48 kHz PCM	QuickTime，ProRes 4444 (4:4:4)，带 Alpha 通道，24 位 48 kHz PCM
 	QuickTime, ProRes 4444 XQ (4:4:4), 24-bit 48 kHz PCM	QuickTime，ProRes 4444 XQ (4:4:4)，24 位 48 kHz PCM
 	QuickTime, ProRes 422, 24-bit 48 kHz PCM	QuickTime，ProRes 422，24 位 48 kHz PCM
-	Quit Redrob Cut	退出 Redrob Cut
+	Quit Redrob Film	退出 Redrob Film
 	Rate Stretch Tool	速率伸缩工具
 	Razor Tool	剃刀工具
 	Rectangle Tool	矩形工具
@@ -3493,8 +3493,8 @@
 	Composite in Linear Color	在线性色彩中合成
 	Auto Tone Map Media (HDR and log into SDR)	自动色调映射媒体（HDR 与 log 映射至 SDR）
 	Configure…	配置…
-	Not supported in Redrob Cut yet	Redrob Cut 尚不支持
-	Redrob Cut always composites in linear light	Redrob Cut 始终在线性光中合成
+	Not supported in Redrob Film yet	Redrob Film 尚不支持
+	Redrob Film always composites in linear light	Redrob Film 始终在线性光中合成
 	Loop marked range	循环标记范围
 	Play Source	播放源
 	Source Play/Stop	源播放/停止
@@ -3530,7 +3530,7 @@
 	Delete Empty Caption Tracks	删除空字幕轨道
 
 	Redrob Website	Redrob 网站
-	Redrob Cut on redrob.io	redrob.io 上的 Redrob Cut
+	Redrob Film on redrob.io	redrob.io 上的 Redrob Film
 	An agentic, pure-Rust non-linear video editor by Redrob.	Redrob 出品的智能体驱动纯 Rust 非线性视频编辑器。
 	Links	链接
 	Connect to Redrob…	连接到 Redrob…
@@ -3551,9 +3551,9 @@
 	Connect a Redrob workspace	连接 Redrob 工作区
 	Redrob Account…	Redrob 账户…
 	Agent	智能体
-	Add Redrob Cut to Redrob Code	将 Redrob Cut 添加到 Redrob Code
+	Add Redrob Film to Redrob Code	将 Redrob Film 添加到 Redrob Code
 	Add to Redrob Code	添加到 Redrob Code
-	Added Redrob Cut to Redrob Code ({path})	已将 Redrob Cut 添加到 Redrob Code（{path}）
+	Added Redrob Film to Redrob Code ({path})	已将 Redrob Film 添加到 Redrob Code（{path}）
 	Allow {tool}?	允许 {tool}？
 	Ask Redrob Code to cut, arrange, caption or check this edit.	让 Redrob Code 剪切、排列、添加字幕或检查此剪辑。
 	Connect…	连接…

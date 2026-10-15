@@ -174,7 +174,7 @@ impl CpalOut {
                 if buf.len() > 1_048_576 || scratch.try_reserve(buf.len().saturating_sub(scratch.len())).is_err() {
                     buf.fill(T::EQUILIBRIUM);
                     if !failed.swap(true, Ordering::SeqCst) {
-                        eprintln!("redrob-cut: unable to allocate the audio conversion buffer");
+                        eprintln!("redrob-film: unable to allocate the audio conversion buffer");
                     }
                     return;
                 }
@@ -191,7 +191,7 @@ impl CpalOut {
 
 fn stream_error(failed: &AtomicBool, e: cpal::StreamError) {
     if !failed.swap(true, Ordering::SeqCst) {
-        eprintln!("redrob-cut: audio stream error: {e}");
+        eprintln!("redrob-film: audio stream error: {e}");
     }
 }
 

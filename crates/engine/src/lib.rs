@@ -1,4 +1,4 @@
-//! The Redrob Cut engine façade.
+//! The Redrob Film engine façade.
 //!
 //! Every user-visible action is a command with a stable id (`sequence.addEdit`,
 //! `timeline.trim`, `markers.markIn`…) and JSON parameters, dispatched through

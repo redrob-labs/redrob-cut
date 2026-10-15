@@ -1,4 +1,32 @@
-# FilmCraft Roadmap
+# Redrob Film Roadmap
+
+## Changes
+
+## 0.1.0
+
+The first Redrob Film release (the release workflow checks that this section exists for the tagged version).
+
+- **Renamed to Redrob Film** (from Redrob Cut): executables `redrob-film` / `redrob-film-cli`, app id
+  `ai.redrob.film`, console product `film` ([docs/console-product-id.md](docs/console-product-id.md)),
+  installers and release assets `redrob-film-<version>-…`. Upstream crate names, `FILMCRAFT_*`
+  environment variables, `.fcproj` and the MIME type are unchanged.
+- **Effects mode.** storytold/effectcraft is a git subtree under `crafts/effectcraft/` (pinned in
+  `upstream-base.json`), hosted as the second editor of the one window: Edit / Effects buttons in the
+  top bar, the Mode menu, one project bundle.
+- **Hand-offs.** Mode ▸ Send Selection to Effects (selected clips, the in/out range or the whole
+  sequence become a composition) and Place Composition on Timeline (the active composition becomes a
+  clip rendered live by the Effects renderer).
+- **Shared AI dock.** One chat with the built-in Redrob Code beside either mode, with the shell
+  commands `mode.switch`, `mode.status`, `mode.sendSelectionToEffects`,
+  `mode.placeCompositionOnTimeline` and `effects.run` next to every editor command.
+- **In-app update check** (`apps/filmcraft/src/update.rs`): GitHub `releases/latest`, SHA-256 verified
+  download, "Install and restart"; off under Redrob Launcher (its `installed.json` records the
+  install) and with `REDROB_FILM_NO_UPDATE_CHECK=1`.
+- **Release matrix cut to three targets:** Linux x86_64 (tar.gz, deb), macOS universal (dmg), Windows
+  x64 (msi, portable zip). Removed: Windows x86 / arm64, Linux aarch64, AppImage, rpm, Flatpak, the web
+  app, FreeBSD. Pull-request CI runs fmt / clippy / tests on our crates with `--profile ci`.
+
+## Premiere parity (upstream measure)
 
 **Stage: alpha** · next: beta, ~19 points of ready-for-real-work and ~400–700 h away, plus opening Premiere's `.prproj` ([why](docs/target-app-parity.md#stage); passes the [core-workflow gate](docs/roadmap.md#alpha-gate))
 
@@ -14,7 +42,7 @@ Progress toward parity with Adobe Premiere Pro. This page is the summary; the de
 | | Value | How |
 |---|---|---|
 | **Feature breadth** | **~86%** | Does each Premiere feature exist? Menus 92% (measured: label diff against Premiere 26.5.2's menu dump), effects / transitions / audio effects 100% (measured by tests), other areas estimated |
-| **Ready for real work** | **~56%** (51–61%) | How close FilmCraft is to replacing Premiere for an editor on real projects: depth, correctness, file compatibility, speed, stability, ecosystem. Estimated depth per area, combined by a [written formula](docs/target-app-parity.md#three-readiness-numbers) |
+| **Ready for real work** | **~56%** (51–61%) | How close the editor is to replacing Premiere for an editor on real projects: depth, correctness, file compatibility, speed, stability, ecosystem. Estimated depth per area, combined by a [written formula](docs/target-app-parity.md#three-readiness-numbers) |
 | **Mainstream practitioner** | **~55%** | A typical professional editor's weekly work only, discounted ×0.90 interaction, ×0.92 stability, ×0.88 file exchange with Premiere users ([method](docs/target-app-parity.md#mainstream-practitioner)) |
 | **Essentials user** | **~60%** | Import, cut, title, music, export at default settings, discounted ×0.88 launch / stability, ×0.90 discoverability, ×0.95 opening files people send ([method](docs/target-app-parity.md#essentials-user)) |
 | **To beta** | **~400–700 Opus 5.5 agent-hours** | Estimated, calibrated from this repo's PR history |
@@ -46,7 +74,7 @@ Method and calibration: [docs/target-app-parity.md](docs/target-app-parity.md#th
 | Localization | ~35% | 150–230 | [localization-parity.md](docs/localization-parity.md) |
 | Performance | ~55% | 60–120 | [performance.md](docs/performance.md) |
 | Stability | ~45% | 60–120 | [gaps.md G4](docs/gaps.md#g4-crashes-at-start-up-and-no-test-ci-on-pull-requests) |
-| Platforms (macOS, Windows, Linux, FreeBSD, web) | ~60% | 50–90 | [gaps.md G9](docs/gaps.md#g9-windows-and-linux-at-run-time) |
+| Platforms (macOS universal, Windows x64, Linux x86_64) | ~60% | 50–90 | [gaps.md G9](docs/gaps.md#g9-windows-and-linux-at-run-time) |
 | Plugins and ecosystem | ~5% | 200–400 | [gaps.md G11](docs/gaps.md#g11-no-plugin-hosting) |
 | AI features | ~25% | 150–300 | [gaps.md G12](docs/gaps.md#g12-ai-features) |
 

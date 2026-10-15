@@ -5,7 +5,7 @@
 //! project as `<name>-YYYY-MM-DD_HH-MM-SS.fcproj`, keeping at most *Maximum Project Versions* files.
 //! Optionally the project file itself is saved too.
 //!
-//! **Recovery journal** (Redrob Cut addition): while the project has unsaved changes, a snapshot is
+//! **Recovery journal** (Redrob Film addition): while the project has unsaved changes, a snapshot is
 //! written to `<data dir>/Recovery/<session>/snapshot.fcproj` shortly after each change (debounced,
 //! and at least every *N* seconds while edits keep coming). Each running app holds an OS lock on
 //! `<session>/lock`; when the process dies (crash, `kill -9`, power cut) the lock is released, so on
@@ -84,8 +84,8 @@ pub struct PlaybackPrefs {
     /// a paused frame. Off by default.
     pub draft_decode: bool,
     /// "Hardware decoding": `auto` (default: the system's hardware decoder for streams it
-    /// supports, e.g. VideoToolbox H.264 / HEVC on macOS, falling back to Redrob Cut's own decoder)
-    /// or `off` (always Redrob Cut's own decoders). Media already open keeps its decoder until it
+    /// supports, e.g. VideoToolbox H.264 / HEVC on macOS, falling back to Redrob Film's own decoder)
+    /// or `off` (always Redrob Film's own decoders). Media already open keeps its decoder until it
     /// is reopened.
     pub hardware_decoding: String,
 }
@@ -489,8 +489,8 @@ pub fn portable_data_dir(exe_dir: &Path) -> Option<PathBuf> {
 
 /// The data directory. `FILMCRAFT_DATA_DIR` overrides; a portable install ([`PORTABLE_MARKER`] next
 /// to the executable) uses `<exe dir>/data`; otherwise the per-user directory:
-/// macOS `~/Library/Application Support/Redrob Cut`, Windows `%APPDATA%\Redrob Cut`,
-/// elsewhere `$XDG_DATA_HOME/redrob-cut` or `~/.local/share/redrob-cut`. Not upstream's folders, so
+/// macOS `~/Library/Application Support/Redrob Film`, Windows `%APPDATA%\Redrob Film`,
+/// elsewhere `$XDG_DATA_HOME/redrob-film` or `~/.local/share/redrob-film`. Not upstream's folders, so
 /// an upstream install and this one never share auto-saves, presets or logs.
 pub fn default_data_dir() -> Option<PathBuf> {
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
@@ -501,12 +501,12 @@ pub fn default_data_dir() -> Option<PathBuf> {
         return Some(d);
     }
     if cfg!(target_os = "macos") {
-        return env("HOME").map(|h| h.join("Library/Application Support/Redrob Cut"));
+        return env("HOME").map(|h| h.join("Library/Application Support/Redrob Film"));
     }
     if cfg!(windows) {
-        return env("APPDATA").map(|h| h.join("Redrob Cut"));
+        return env("APPDATA").map(|h| h.join("Redrob Film"));
     }
-    env("XDG_DATA_HOME").map(|d| d.join("redrob-cut")).or_else(|| env("HOME").map(|h| h.join(".local/share/redrob-cut")))
+    env("XDG_DATA_HOME").map(|d| d.join("redrob-film")).or_else(|| env("HOME").map(|h| h.join(".local/share/redrob-film")))
 }
 
 pub fn unix_now() -> i64 {

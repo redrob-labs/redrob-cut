@@ -257,7 +257,7 @@ pub const BUILTIN_COLUMNS: [&str; 36] = [
     "Camera Angle",
 ];
 
-/// Metadata keys Redrob Cut uses for its own bookkeeping (not offered as columns).
+/// Metadata keys Redrob Film uses for its own bookkeeping (not offered as columns).
 pub const INTERNAL_KEYS: [&str; 3] = [FREEFORM_POS, FREEFORM_STACK, crate::keyboard::POSTER_FRAME_KEY];
 
 /// Freeform position, stack and arrangement keys (hidden from the Metadata panel).

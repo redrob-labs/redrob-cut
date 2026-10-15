@@ -33,7 +33,6 @@ cargo run --release -p filmcraft -- a.mp4 b.wav       # import media (or open a 
 cargo run --release -p filmcraft-cli -- commands      # list engine commands
 cargo run --release -p filmcraft-cli -- render --demo --seconds 3 --out frame.png
 cargo run --release -p filmcraft-cli -- mcp --demo    # headless MCP server on stdio
-cargo xtask web --serve 8765                          # the web app on http://127.0.0.1:8765/ (docs/web.md)
 ```
 
 | Variable | Effect |
@@ -111,8 +110,13 @@ Every commit must pass all of these:
 | Tests | `cargo test --workspace` |
 | Layering | `cargo xtask layers` |
 | Assets | `cargo xtask assets` |
-| wasm | `cargo xtask wasm` (checks every L0–L4 crate, `filmcraft-ui-egui` and `filmcraft-web` for `wasm32-unknown-unknown`) |
+| wasm | `cargo xtask wasm` (checks every L0–L4 crate and `filmcraft-ui-egui` for `wasm32-unknown-unknown`) |
 | All of the above | `cargo xtask ci` (runs clippy and tests with `--release`) |
+
+Pull-request CI (`.github/workflows/ci.yml`) runs the first three on our crates only (`-p filmcraft -p
+filmcraft-ui-egui -p filmcraft-engine`, not the effectcraft subtree) with `--profile ci`, which compiles
+every dependency at opt-level 0: `cargo clippy -p filmcraft -p filmcraft-ui-egui -p filmcraft-engine
+--all-targets --locked --profile ci -- -D warnings` reproduces it locally.
 
 Run them with `CRAFT_FONTS_DIR` set too when you change font code ([craft-fonts](#building-with-craft-fonts)).
 

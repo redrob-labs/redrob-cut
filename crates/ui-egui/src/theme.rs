@@ -471,7 +471,7 @@ fn add_craft_fonts(fonts: &mut FontDefinitions) {
 
 pub fn apply_visuals(ctx: &egui::Context, t: &Tokens) {
     let light = t.kind == ThemeKind::Light;
-    // Redrob Cut decides between light and dark itself (Settings ▸ Appearance ▸ Appearance Mode), so
+    // Redrob Film decides between light and dark itself (Settings ▸ Appearance ▸ Appearance Mode), so
     // egui must not switch to its other built-in style when the system appearance changes.
     ctx.set_theme(if light { egui::Theme::Light } else { egui::Theme::Dark });
     let mut v = if light { Visuals::light() } else { Visuals::dark() };

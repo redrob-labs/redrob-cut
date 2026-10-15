@@ -1,0 +1,99 @@
+# The one pull-request workflow. `checks` (seconds) runs the repository scripts: brand, upstream
+# boundary, packaging and the release-target matrix. `rust` runs formatting, clippy and the tests of
+# OUR crates (the shell `filmcraft`, the engine and the egui UI) with `--profile ci` (root
+# Cargo.toml: every dependency at opt-level 0, no incremental); the effectcraft subtree is compiled
+# only as a dependency, and `rust` is skipped when no Rust input changed. The release workflow does
+# not repeat any of this; PR policy is the org-wide workflow.
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: 1
+  # Our crates and the shell. Not `--workspace`: that would lint and test the effectcraft subtree too.
+  OUR_CRATES: -p filmcraft -p filmcraft-ui-egui -p filmcraft-engine
+
+jobs:
+  checks:
+    name: brand, boundary, packaging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # check_upstream_boundary.py walks back to the upstream base commit
+      - name: Repository scripts
+        run: |
+          python3 scripts/check_brand.py
+          python3 scripts/check_upstream_boundary.py
+          python3 scripts/check_no_upstream_services.py
+          python3 tools/rebrand_crafts.py --check
+      - name: Packaging
+        run: |
+          sudo apt-get install -y --no-install-recommends shellcheck desktop-file-utils libxml2-utils >/dev/null
+          shellcheck packaging/*.sh packaging/*/*.sh
+          python3 packaging/linux/test_install.py
+          xmllint --noout packaging/windows/redrob-film.wxs packaging/macos/*.plist* packaging/linux/*.xml*
+          # Windows Installer needs Icon ids ending in .ico or .exe, or shortcuts show a blank icon.
+          if grep -oE '<Icon Id="[^"]*"' packaging/windows/redrob-film.wxs | grep -vE '\.(ico|exe)"$'; then
+            echo "::error::Icon Id must end in .ico or .exe"; exit 1
+          fi
+          desktop-file-validate packaging/linux/ai.redrob.film.desktop
+      - name: Release asset matrix
+        # The three targets, and nothing else: the launcher manifest and apps/filmcraft/src/update.rs name these files.
+        run: |
+          grep -Fq -- '--arch universal' .github/workflows/release.yml
+          grep -Fq -- '-Arch x64 -SkipBuild' .github/workflows/release.yml
+          grep -Fq 'FORMATS="deb tar"' packaging/linux/package.sh
+          if grep -niE 'appimage|zsync|flatpak|\brpm\b|arm64|i686|windows-x86|ubuntu-22\.04-arm|riscv|freebsd' .github/workflows/release.yml packaging/linux/package.sh packaging/windows/package.ps1; then
+            echo "::error::a removed release target is back (see docs/releasing.md)"; exit 1
+          fi
+
+  rust:
+    name: fmt, clippy, test (profile ci)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Did any Rust input change?
+        id: rs
+        run: |
+          git fetch -q origin "${{ github.base_ref }}" --depth=1
+          if git diff --quiet "origin/${{ github.base_ref }}"...HEAD -- '*.rs' '*.toml' Cargo.lock '*.js' '*.json' '*.tsv' '*.wgsl' '*.ttf' assets .github/workflows/ci.yml; then
+            echo changed=false >> "$GITHUB_OUTPUT"; else echo changed=true >> "$GITHUB_OUTPUT"; fi
+      - name: Install the system headers winit, cpal and rfd need
+        if: steps.rs.outputs.changed == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libasound2-dev libgtk-3-dev fonts-noto-cjk
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.rs.outputs.changed == 'true'
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        if: steps.rs.outputs.changed == 'true'
+        with:
+          key: ci-profile
+      - name: Formatting
+        if: steps.rs.outputs.changed == 'true'
+        run: cargo fmt --all --check
+      - name: Clippy
+        if: steps.rs.outputs.changed == 'true'
+        run: |
+          # shellcheck disable=SC2086 # OUR_CRATES is a list of flags on purpose
+          cargo clippy $OUR_CRATES --all-targets --locked --profile ci -- -D warnings
+      - name: Tests
+        if: steps.rs.outputs.changed == 'true'
+        run: |
+          # shellcheck disable=SC2086
+          cargo test $OUR_CRATES --locked --profile ci
