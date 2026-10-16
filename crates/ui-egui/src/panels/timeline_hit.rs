@@ -18,7 +18,7 @@ use crate::state::Tool;
 pub const ROLL_PX: f32 = 2.5;
 
 /// Widest an edge zone gets (px), on each side of a clip edge.
-pub const EDGE_PX: f32 = 10.0;
+pub const EDGE_PX: f32 = 7.0;
 
 /// Half the width (px) of the playhead handle: the zone either side of the playhead line, over the
 /// whole height of the tracks, that the Selection tool grabs to move the playhead (the head on the
@@ -392,7 +392,7 @@ mod tests {
         let (seq, l, tr) = fixture(clips());
         assert_eq!(hit(&seq, &l, at(95.0)), edge_hit(tr, 1, Edge::In));
         assert_eq!(hit(&seq, &l, at(705.0)), edge_hit(tr, 3, Edge::Out));
-        assert_eq!(hit(&seq, &l, at(88.0)), Hit::Empty { track: tr });
+        assert_eq!(hit(&seq, &l, at(92.0)), Hit::Empty { track: tr });
         assert_eq!(hit(&seq, &l, at(200.0)), Hit::Clip { track: tr, clip: ClipId(1), edge: None });
     }
 

@@ -2006,10 +2006,11 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
         }
     }
     // the playhead drag: driven by the pointer itself, so it starts on the press and goes on
-    // wherever the pointer is, until the button comes up
+    // wherever the pointer is, until the button comes up. Only movement moves the playhead: a
+    // still press stays exactly where `start_scrub` put it (on a marker, #695).
     if matches!(app.tl.drag, Some(Drag::Scrub)) {
         ctx.set_cursor_icon(CursorIcon::ResizeHorizontal);
-        if ctx.input(|i| i.pointer.primary_down())
+        if ctx.input(|i| i.pointer.primary_down() && !i.pointer.primary_pressed() && i.pointer.delta() != egui::Vec2::ZERO)
             && let Some(p) = ctx.pointer_interact_pos()
         {
             scrub_to(app, seq, layout, p.x, mods);
