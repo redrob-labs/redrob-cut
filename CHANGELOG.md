@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.1 -- 2026-10-16
+
+### Fixed
+
+- Switching Edit / Effects no longer freezes the window: the merged font set is built once and no
+  longer rebuilt on every switch, and the Effects editor's system-font scan runs in the background
+  at start-up instead of on the UI thread.
+- Dragging the playhead follows the mouse: the frame already being decoded for the view is left to
+  finish instead of being cancelled by the next drag event, so scrubbing shows frames while moving.
+- Audio plays: the output-stall watchdog gives a device that filled its first buffer four seconds to
+  start consuming (devices commonly wake 1.5-2 s after the stream opens) instead of muting after one.
+- The AI dock (Mode > AI) can be resized by dragging its edge and remembers its width for the
+  session; its header no longer runs under the close button.
+- Help menu lists only live links; About > Contributors is built from this repository's history and
+  the Models tab is gone.
+
 ## 0.2.0 -- 2026-10-16
 
 ### Changed

@@ -2,6 +2,18 @@
 
 ## Changes
 
+## 0.2.1
+
+Fixes from the first Windows round.
+
+- **Edit / Effects switch is instant.** Fonts are merged once; the Effects font scan runs in the
+  background at start-up.
+- **Playhead drag follows the mouse.** The frame being decoded is left to finish instead of being
+  cancelled by every drag event.
+- **Audio plays.** The stall watchdog gives a freshly opened device four seconds to start consuming.
+- **AI dock resizes** by dragging its edge and its header no longer runs under the close button.
+- **Help menu lists only live links**; About shows this repository's contributors and no Models tab.
+
 ## 0.2.0
 
 Redrob names everywhere a user meets one; old files keep opening.

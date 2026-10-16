@@ -4878,7 +4878,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-automation"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "redrob-effects-engine",
@@ -4890,14 +4890,14 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-av1enc"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-av1",
 ]
 
 [[package]]
 name = "redrob-effects-color"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -4905,7 +4905,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-effects"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "log",
  "rayon",
@@ -4922,7 +4922,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-engine"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "exr",
  "image",
@@ -4955,7 +4955,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-export"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "gif",
  "image",
@@ -4985,7 +4985,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-expr"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "boa_engine",
  "redrob-effects-color",
@@ -5002,7 +5002,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-geom"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -5010,7 +5010,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-gpu"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "bytemuck",
  "js-sys",
@@ -5032,14 +5032,14 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-hevcenc"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-hevc",
 ]
 
 [[package]]
 name = "redrob-effects-host"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "exr",
  "gif",
@@ -5064,7 +5064,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-interchange"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-effects-color",
  "redrob-effects-keyframe",
@@ -5083,7 +5083,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-keyframe"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "redrob-effects-color",
@@ -5095,7 +5095,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-lottie"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "kurbo",
  "redrob-effects-color",
@@ -5112,7 +5112,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-media"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "exr",
  "gif",
@@ -5139,7 +5139,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-model"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "miniz_oxide 0.8.9",
@@ -5151,14 +5151,14 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-opusenc"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-opus",
 ]
 
 [[package]]
 name = "redrob-effects-path"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "kurbo",
  "linesweeper",
@@ -5170,7 +5170,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-pdf"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "kurbo",
@@ -5184,7 +5184,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-plugin"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-effects-effects",
  "redrob-effects-keyframe",
@@ -5196,7 +5196,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-project"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-effects-color",
  "redrob-effects-geom",
@@ -5209,14 +5209,14 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-psd"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "miniz_oxide 0.8.9",
 ]
 
 [[package]]
 name = "redrob-effects-raster"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-effects-color",
@@ -5225,7 +5225,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-render"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "kurbo",
  "log",
@@ -5247,7 +5247,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-script"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "boa_engine",
  "redrob-effects-engine",
@@ -5264,7 +5264,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-segment"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "miniz_oxide 0.8.9",
  "ndarray",
@@ -5273,7 +5273,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-svg"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "kurbo",
  "rayon",
@@ -5285,7 +5285,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-text"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "harfrust",
  "kurbo",
@@ -5297,7 +5297,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-time"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -5305,7 +5305,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-track"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-effects-raster",
@@ -5317,7 +5317,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-ui-egui"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "craft-ui",
  "eframe",
@@ -5349,11 +5349,11 @@ dependencies = [
 
 [[package]]
 name = "redrob-effects-vp9enc"
-version = "0.2.0"
+version = "0.2.1"
 
 [[package]]
 name = "redrob-film-aac"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5363,7 +5363,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-ac3"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
  "thiserror 2.0.21",
@@ -5371,7 +5371,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-app"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "arboard",
  "chrono",
@@ -5418,7 +5418,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-apv"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5428,14 +5428,14 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-audio-dsp"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
 ]
 
 [[package]]
 name = "redrob-film-automation"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "base64 0.22.1",
  "image",
@@ -5451,7 +5451,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-av1"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5462,14 +5462,14 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-bitstream"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
 ]
 
 [[package]]
 name = "redrob-film-captions"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "redrob-film-color",
@@ -5482,11 +5482,11 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-cfb"
-version = "0.2.0"
+version = "0.2.1"
 
 [[package]]
 name = "redrob-film-cli"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-automation",
  "redrob-film-codecs",
@@ -5507,7 +5507,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-codecs"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "log",
@@ -5541,7 +5541,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-color"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -5549,7 +5549,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-dnx"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5559,7 +5559,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-edit"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "redrob-film-geom",
@@ -5572,7 +5572,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-engine"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "log",
@@ -5604,7 +5604,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-export"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "rayon",
@@ -5634,7 +5634,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-format"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "log",
  "redrob-film-media",
@@ -5647,7 +5647,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-frame"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-color",
@@ -5657,7 +5657,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-geom"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -5665,7 +5665,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-golden"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "pollster 0.4.0",
  "redrob-film-color",
@@ -5682,7 +5682,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-gpu"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "log",
@@ -5701,7 +5701,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-h264"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5711,7 +5711,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-h264enc"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5721,7 +5721,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-hevc"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5731,7 +5731,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-interchange"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "redrob-film-cfb",
@@ -5748,7 +5748,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-isobmff"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "redrob-film-bitstream",
@@ -5759,7 +5759,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-matroska"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
  "serde_json",
@@ -5767,7 +5767,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-media"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "rayon",
@@ -5780,7 +5780,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-mpeg2v"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-testkit",
@@ -5789,7 +5789,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-mpegts"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
  "thiserror 2.0.21",
@@ -5797,28 +5797,28 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-mxf"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
 ]
 
 [[package]]
 name = "redrob-film-ogg"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
 ]
 
 [[package]]
 name = "redrob-film-opus"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
 ]
 
 [[package]]
 name = "redrob-film-platform"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "libloading",
  "log",
@@ -5844,7 +5844,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-project"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "redrob-film-color",
@@ -5858,7 +5858,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-prores"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -5868,7 +5868,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-render"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "image",
  "rayon",
@@ -5888,7 +5888,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-scopes"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-color",
  "serde",
@@ -5897,7 +5897,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-speech"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "candle-core",
  "candle-nn",
@@ -5915,14 +5915,14 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-testkit"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "png",
 ]
 
 [[package]]
 name = "redrob-film-text"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "harfrust",
  "redrob-film-color",
@@ -5934,7 +5934,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-time"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proptest",
  "serde",
@@ -5942,7 +5942,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-tts"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "candle-core",
  "candle-nn",
@@ -5956,7 +5956,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-tts-text"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "serde",
  "thiserror 2.0.21",
@@ -5964,7 +5964,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-ui-egui"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "cpu-time",
  "eframe",
@@ -6001,7 +6001,7 @@ dependencies = [
 
 [[package]]
 name = "redrob-film-vp9"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "rayon",
  "redrob-film-bitstream",
@@ -8638,7 +8638,7 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "redrob-film-testkit",
  "serde_json",
