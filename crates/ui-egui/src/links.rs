@@ -11,11 +11,8 @@ pub const GITHUB: &str = "https://github.com/redrob-labs/redrob-film";
 pub const ISSUES: &str = "https://github.com/redrob-labs/redrob-film/issues";
 
 /// (command id, label, url) for every link, in menu order.
-pub const ALL: [(&str, &str, &str); 3] = [
-    ("help.website", "Redrob Website", WEBSITE),
-    ("help.github", "Source code on GitHub", GITHUB),
-    ("help.reportIssue", "Report an Issue…", ISSUES),
-];
+pub const ALL: [(&str, &str, &str); 3] =
+    [("help.website", "Redrob Website", WEBSITE), ("help.github", "Source code on GitHub", GITHUB), ("help.reportIssue", "Report an Issue…", ISSUES)];
 
 /// The URL a `help.*` link command opens.
 pub fn url_for(command: &str) -> Option<&'static str> {
