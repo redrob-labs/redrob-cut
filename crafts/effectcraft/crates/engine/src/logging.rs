@@ -324,7 +324,7 @@ mod tests {
         assert_eq!(level_for(&f, "eframe::native"), LevelFilter::Info);
         assert_eq!(level_for(&f, "wgpu_hal::metal"), LevelFilter::Warn);
         assert_eq!(level_for(&f, "wgpu_core::device"), LevelFilter::Debug, "the longest matching target wins");
-        assert_eq!(level_for(&f, "effectcraft_ui_egui"), LevelFilter::Trace, "a bare target: every level");
+        assert_eq!(level_for(&f, "redrob_effects_ui_egui"), LevelFilter::Trace, "a bare target: every level");
         assert_eq!(f.len(), 4, "an unknown level is skipped");
         assert_eq!(level_for(&parse_filter("wgpu=debug"), "winit"), LevelFilter::Off);
         assert!(parse_filter("").is_empty());
@@ -346,7 +346,7 @@ mod tests {
     fn the_default_filter_shows_effectcraft_info_and_other_crates_warnings() {
         let f = parse_filter(DEFAULT_FILTER);
         assert_eq!(level_for(&f, "effectcraft"), LevelFilter::Info);
-        assert_eq!(level_for(&f, "effectcraft_ui_egui::app"), LevelFilter::Info);
+        assert_eq!(level_for(&f, "redrob_effects_ui_egui::app"), LevelFilter::Info);
         assert_eq!(level_for(&f, "wgpu_core::device"), LevelFilter::Warn);
         assert_eq!(level_for(&f, "naga"), LevelFilter::Warn);
     }
@@ -432,8 +432,8 @@ mod tests {
     #[test]
     fn a_line_carries_time_level_thread_target_and_message() {
         assert_eq!(
-            format_line("2026-10-08T07:59:17.728Z", log::Level::Warn, "main", "effectcraft_engine::autosave", "disk full\n"),
-            "2026-10-08T07:59:17.728Z WARN  [main] effectcraft_engine::autosave: disk full"
+            format_line("2026-10-08T07:59:17.728Z", log::Level::Warn, "main", "redrob_effects_engine::autosave", "disk full\n"),
+            "2026-10-08T07:59:17.728Z WARN  [main] redrob_effects_engine::autosave: disk full"
         );
     }
 }

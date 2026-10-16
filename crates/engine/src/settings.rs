@@ -14,8 +14,8 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use filmcraft_project::Label;
-use filmcraft_time::{FrameRate, Tick};
+use redrob_film_project::Label;
+use redrob_film_time::{FrameRate, Tick};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -368,8 +368,8 @@ impl LabelPrefs {
         self.colors.get(&label_id(l)).map(|c| c.name.trim()).filter(|n| !n.is_empty()).unwrap_or(l.name()).to_string()
     }
     /// The label a new media item of `kind` gets.
-    pub fn for_media(&self, kind: filmcraft_media::MediaKind, has_video: bool, has_audio: bool) -> Label {
-        use filmcraft_media::MediaKind as K;
+    pub fn for_media(&self, kind: redrob_film_media::MediaKind, has_video: bool, has_audio: bool) -> Label {
+        use redrob_film_media::MediaKind as K;
         match kind {
             K::AudioOnly => self.defaults.audio,
             K::Still | K::ImageSequence => self.defaults.still,
@@ -420,7 +420,7 @@ impl Default for MediaAnalysisPrefs {
             speaker_labeling: "on".into(),
             language_auto_detect: false,
             default_language: "en".into(),
-            whisper_model: filmcraft_speech::models::DEFAULT_MODEL.into(),
+            whisper_model: redrob_film_speech::models::DEFAULT_MODEL.into(),
         }
     }
 }
@@ -1265,7 +1265,7 @@ impl crate::autosave::Preferences {
     /// Settings ▸ Playback ▸ Hardware decoding as the process-wide switch the hardware decoder
     /// factories consult (new decoders only).
     pub fn apply_hardware_decoding(&self) {
-        filmcraft_codecs::hw::set_hardware_decoding(self.playback.hardware_decoding != "off");
+        redrob_film_codecs::hw::set_hardware_decoding(self.playback.hardware_decoding != "off");
     }
 
     /// Values of one category as a JSON object.
@@ -1339,9 +1339,9 @@ pub fn map_output(left: &[f32], right: &[f32], out: &mut [f32], ch: usize, map: 
 
 /// Settings ▸ Media ▸ Default Media Scaling for a clip placed in a `frame`-sized sequence. `src`
 /// is the clip's size at its display aspect in sequence pixels
-/// ([`filmcraft_project::conformed_size`]): `scaleToFrameSize` turns on Scale to Frame Size
+/// ([`redrob_film_project::conformed_size`]): `scaleToFrameSize` turns on Scale to Frame Size
 /// (rasterised at frame size), `setToFrameSize` sets Motion ▸ Scale so the picture fits the frame.
-pub fn apply_media_scaling(ti: &mut filmcraft_project::TrackItem, scaling: &str, frame: (u32, u32), src: (f64, f64)) {
+pub fn apply_media_scaling(ti: &mut redrob_film_project::TrackItem, scaling: &str, frame: (u32, u32), src: (f64, f64)) {
     if !(src.0 >= 1e-9 && src.1 >= 1e-9 && src.0.is_finite() && src.1.is_finite()) {
         return;
     }
@@ -1350,7 +1350,7 @@ pub fn apply_media_scaling(ti: &mut filmcraft_project::TrackItem, scaling: &str,
         "setToFrameSize" => {
             let fit = (frame.0 as f64 / src.0).min(frame.1 as f64 / src.1);
             if let Some(m) = ti.effects.iter_mut().find(|e| e.effect == "motion") {
-                m.params.insert("scale".into(), filmcraft_project::Param::new(filmcraft_project::ParamValue::Float((fit * 1000.0).round() / 10.0)));
+                m.params.insert("scale".into(), redrob_film_project::Param::new(redrob_film_project::ParamValue::Float((fit * 1000.0).round() / 10.0)));
             }
         }
         _ => {}

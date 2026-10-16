@@ -1,10 +1,10 @@
 //! Noise & Grain effects: film grain, median-family filters, denoising and procedural noise.
 
-use effectcraft_color::{hsl_to_rgb, luminance, rgb_to_hsl};
-use effectcraft_keyframe::Value;
-use effectcraft_project::ParamUi;
-use effectcraft_raster::{Image, Px};
 use rayon::prelude::*;
+use redrob_effects_color::{hsl_to_rgb, luminance, rgb_to_hsl};
+use redrob_effects_keyframe::Value;
+use redrob_effects_project::ParamUi;
+use redrob_effects_raster::{Image, Px};
 
 use crate::generate::value_noise;
 use crate::util::{Plane, gauss_plane, guided_filter, hash1, join, lerp, premul, smoothstep, split, unpremul};
@@ -494,7 +494,7 @@ fn grain_level(img: &Image, boxes: &[(usize, usize, usize)]) -> f32 {
 }
 
 /// Remove Grain's measured grain level for buffer `b` without Temporal Filtering (the GPU
-/// kernels' spatial pass, effectcraft-gpu `fx_noise`).
+/// kernels' spatial pass, redrob-effects-gpu `fx_noise`).
 pub fn remove_grain_level(ctx: &EffectCtx, b: &Buf) -> f32 {
     grain_level(&b.img, &sampling_boxes(ctx, &b.img, b.scale))
 }

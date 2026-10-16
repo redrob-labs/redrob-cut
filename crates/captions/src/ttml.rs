@@ -14,7 +14,7 @@
 //! (`body` / `div` begins add up), timed `<span>`s inside an untimed `<p>`, `<br/>`, whitespace
 //! collapsing, styles referenced by id (italic / bold / underline) and `ttm:agent` / `xml:id`.
 
-use filmcraft_time::{FrameRate, TICKS_PER_SECOND, Tick};
+use redrob_film_time::{FrameRate, TICKS_PER_SECOND, Tick};
 
 use crate::{Cue, Document, Error, Result, TICKS_PER_MS};
 

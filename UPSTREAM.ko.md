@@ -42,12 +42,29 @@ FilmCraft 앱 아이콘은 코드와 같은 라이선스의 원작이었고, 라
 `redrob-film-cli`, 설치 프로그램, 데이터 폴더, 로그 파일, MCP 서버 이름, 링크, 아이콘, About·홈 화면의 로크업,
 브랜드 색(redrob-ui에서 생성한 `redrob_tokens`). `scripts/check_brand.py`가 이를 지킵니다.
 
-파일에 저장되거나 식별자로 다시 읽히는 것, 또는 이름을 바꾸면 상류 동기화마다 충돌하는 것은 상류 그대로 둡니다:
+레드롭 이름으로 바꾸되, 기존 파일과 설정이 계속 동작하도록 옛 표기는 계속 **읽습니다**(그런 읽기 경로는 코드에
+`// legacy:` 표시가 있고, 표시 없는 잔존은 `scripts/check_brand.py`가 실패시킵니다):
 
-- Cargo 패키지·크레이트 이름(`filmcraft`, `filmcraft-cli`, `filmcraft_*`), 로그 타깃, 스레드 이름, `FILMCRAFT_*` 환경 변수.
-- 파일 형식: `.fcproj` 확장자와 MIME `application/x-filmcraft`, 프로젝트·프리셋·템플릿 파일의 `filmcraft.*` 형식 ID,
-  프로젝트 설정에 저장되는 렌더러 이름, 인터체인지가 다시 읽는 AAF 태그 이름과 XMP
-  `CreatorTool` 표시, MCP 리소스 URI `filmcraft://`.
+- 크레이트 이름: `filmcraft` → `redrob-film-app`, `filmcraft-*` → `redrob-film-*`, `effectcraft-*` →
+  `redrob-effects-*`(모듈 경로·로그 타깃 `redrob_film_*`/`redrob_effects_*` 포함). `tools/rename_crates.py`가
+  멱등하게 수행하며 `tools/merge_effectcraft.py`가 호출하므로 상류 동기화 뒤에도 충돌 대신 다시 이름을 바꿉니다.
+- 프로젝트 파일: `.fcproj` → `.rfilm`(이펙트 사이드카 `<이름>.rfilm.effects.json`), 이펙트 프로젝트 `.ecproj` → `.rfx`,
+  XML 사본 `.ecprojx` → `.rfxx`, XML 루트 `<EffectCraftProject>` → `<RedrobEffectsProject>`. 옛 파일은 명령줄,
+  열기 대화상자, 최근 항목, 미디어 브라우저, 감시 폴더, 가져오기, 템플릿, 복구에서 그대로 열리고, 자동 저장 회전과
+  스키마 백업도 옛 파일을 포함합니다. 옛 표기로 쓰는 곳은 없습니다.
+- MIME `application/x-redrob-film`·`application/x-redrob-effects`(macOS UTType, Linux shared-mime-info, .desktop).
+  옛 확장자도 glob으로 함께 선언합니다.
+- MCP 리소스 URI `redrob-film://document|commands`, `redrob-effects://…`. 옛 URI도 읽힙니다.
+- 환경 변수 `REDROB_FILM_*`/`REDROB_EFFECTS_*`. 사용자용 변수는 옛 이름으로 폴백합니다: `FILMCRAFT_DATA_DIR`,
+  `FILMCRAFT_CONFIG_DIR`, `FILMCRAFT_CONTROL_PORT`, `FILMCRAFT_CPU_COMPOSITE`, `EFFECTCRAFT_CONFIG_DIR`,
+  `EFFECTCRAFT_FONT_DIRS`. 테스트 전용 변수(`*_BLESS`, `*_UI_SNAPSHOT_DIR`, `*_FUZZ_*`, 모델 경로)는 이름만 바꿨습니다.
+- MKV `WritingApp`은 `redrob-film`입니다.
+
+파일에 저장되어 다시 읽을 때 비교되는 것은 상류 그대로 둡니다:
+
+- 프로젝트·프리셋·템플릿 파일의 `filmcraft.*` 형식 ID(`"format": "filmcraft.project"`), OTIO 메타데이터 네임스페이스
+  `filmcraft`, 프로젝트 설정에 저장되는 렌더러 이름, 인터체인지가 다시 읽는 AAF 태그 이름과 XMP `CreatorTool` 표시.
+  하위 크레이트의 스레드 이름과 임시 파일 접두사도 짧은 `filmcraft-` 단어를 유지합니다(크레이트 이름이 아닙니다).
 - 내장 디코더 이름(`FilmCraft H.264` 등), 하위 크레이트의 테스트 데이터와 코드 주석. 앱이 내보낸 파일에 적는 이름(MP4
   인코더 태그, MXF·AAF·OMF 식별 정보, 자막·LUT 헤더, 프로젝트 `generator`)과 사람이 읽는 메시지는 레드롭 필름의 것입니다.
 - `docs/` 아래 상류 문서(`docs/agents.md` 제외). 상류를 설명하는 문서입니다.

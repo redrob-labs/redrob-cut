@@ -1,9 +1,9 @@
 //! Sizes, frame rates and motion-blur samples stay within the project limits when a project is
 //! opened and when a command sets them (#788).
 
-use effectcraft_project::{ItemKind, limits};
-use effectcraft_render::RenderOpts;
-use effectcraft_time::{FrameRate, Tick};
+use redrob_effects_project::{ItemKind, limits};
+use redrob_effects_render::RenderOpts;
+use redrob_effects_time::{FrameRate, Tick};
 use serde_json::{Value, json};
 
 use crate::{Event, Session};
@@ -43,10 +43,10 @@ fn hostile_project() -> String {
 
 #[test]
 fn a_hostile_project_opens_within_the_limits_and_says_what_changed() {
-    let json_path = tmp("Hostile.ecproj");
+    let json_path = tmp("Hostile.rfx");
     let text = hostile_project();
     std::fs::write(&json_path, &text).unwrap();
-    let xml_path = tmp("Hostile.ecprojx");
+    let xml_path = tmp("Hostile.rfxx");
     std::fs::write(&xml_path, crate::xml_project::to_xml(&text).unwrap()).unwrap();
     for path in [json_path, xml_path] {
         let mut s = Session::default();
@@ -74,7 +74,7 @@ fn a_project_within_the_limits_opens_unchanged() {
     let mut s = Session::default();
     s.execute("comp.new", json!({"name": "Main", "width": 64, "height": 32, "frameRate": 24, "duration": 2})).unwrap();
     let text = s.project.to_file_json().unwrap();
-    let (p, notes) = effectcraft_project::Project::from_json_repaired(&text).unwrap();
+    let (p, notes) = redrob_effects_project::Project::from_json_repaired(&text).unwrap();
     assert!(notes.is_empty(), "{notes:?}");
     assert_eq!(p, *s.project);
 }

@@ -293,7 +293,7 @@ impl DisplayMode {
 }
 
 /// Monitor guide (frame pixels): `vertical` = a line at x = `position`.
-pub type Guide = filmcraft_engine::autosave::Guide;
+pub type Guide = redrob_film_engine::autosave::Guide;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default)]
@@ -415,7 +415,7 @@ pub struct KeyframeRef {
     pub param: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mask: Option<usize>,
-    pub time: filmcraft_time::Tick,
+    pub time: redrob_film_time::Tick,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -835,7 +835,7 @@ pub struct TransitionDurationDraft {
 /// The Sequence Settings dialog (Sequence ▸ Sequence Settings…), filled from the active sequence
 /// when it opens (`panels::sequence_settings::open`). `tab`: `general`, `color` or `vr`; the
 /// timebase is `fps_num`/`fps_den`; `mix`: `Stereo`, `Mono`, `5.1` or `Adaptive`; `working_space`:
-/// a [`filmcraft_color::WorkingSpace`] id. `scale_motion` is "Scale motion effects proportionally
+/// a [`redrob_film_color::WorkingSpace`] id. `scale_motion` is "Scale motion effects proportionally
 /// when changing frame size", on by default as in Premiere.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]

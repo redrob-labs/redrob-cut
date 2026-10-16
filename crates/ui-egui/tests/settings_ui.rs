@@ -3,15 +3,15 @@
 //! dropdowns, numbers, label names), OK / Cancel / Escape / Reset… semantics, and settings that
 //! change the UI right away (theme, label names in the Edit ▸ Label menu, tooltips).
 //!
-//! With `FILMCRAFT_UI_SHOTS=<dir>` the test also renders the UI with wgpu and writes
+//! With `REDROB_FILM_UI_SHOTS=<dir>` the test also renders the UI with wgpu and writes
 //! `settings-*.png`.
 
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::FilmcraftApp;
-use filmcraft_ui_egui::control::ControlRequest;
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::FilmcraftApp;
+use redrob_film_ui_egui::control::ControlRequest;
 use serde_json::{Value, json};
 
 struct Driver {
@@ -26,7 +26,7 @@ impl Driver {
         session.execute("file.openDemoProject", json!({})).expect("demo project");
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
-        let shots = std::env::var_os("FILMCRAFT_UI_SHOTS").map(std::path::PathBuf::from);
+        let shots = std::env::var_os("REDROB_FILM_UI_SHOTS").map(std::path::PathBuf::from);
         let mut b = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000);
         if shots.is_some() {
             b = b.wgpu().with_pixels_per_point(1.0);
@@ -291,7 +291,7 @@ fn appearance_labels_and_tooltips_take_effect() {
     // the header button cycles Auto, Light, Dark
     d.click("header.appearance");
     assert_eq!(d.pref("appearance.appearanceMode"), "dark");
-    assert_eq!(d.harness.state().tokens.kind, filmcraft_ui_egui::theme::ThemeKind::Medium, "the saved dark theme");
+    assert_eq!(d.harness.state().tokens.kind, redrob_film_ui_egui::theme::ThemeKind::Medium, "the saved dark theme");
     d.click("header.appearance");
     assert_eq!(d.pref("appearance.appearanceMode"), "auto");
     d.menu("view.appearanceMode.next");
@@ -321,7 +321,7 @@ fn appearance_labels_and_tooltips_take_effect() {
     assert_eq!(rose["label"], "Interview");
     let r = d.exec("file.newSequence", json!({"name": "Labelled"}));
     let seq = r["sequence"].as_u64().unwrap();
-    assert_eq!(d.harness.state().session.project.item(filmcraft_project::ItemId(seq)).unwrap().label, filmcraft_project::Label::Teal);
+    assert_eq!(d.harness.state().session.project.item(redrob_film_project::ItemId(seq)).unwrap().label, redrob_film_project::Label::Teal);
 
     // Show Tool Tips off → egui never shows them
     d.menu("app.settings.general");

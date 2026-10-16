@@ -1,10 +1,10 @@
 //! UI-side everyday-operation timings for `effectcraft-cli bench --ops` (see
-//! `effectcraft_engine::perf` for the engine side): the app's first frame, and steady frames of
+//! `redrob_effects_engine::perf` for the engine side): the app's first frame, and steady frames of
 //! the Timeline (scrolling a 5,000-layer comp) and the Project panel (300+ items), measured
 //! headless — layout, painting and tessellation, without a window or GPU upload.
 
-use effectcraft_engine::Session;
-use effectcraft_engine::perf::Measure;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::perf::Measure;
 
 use crate::EffectcraftApp;
 use crate::dock::PanelKind;
@@ -116,7 +116,7 @@ mod tests {
     fn ui_ops_runs_on_a_small_project() {
         let m = ui_ops(|| {
             let mut s = Session::default();
-            s.replace_project(effectcraft_engine::perf::large_project(&effectcraft_engine::perf::LargeSpec::small()), None);
+            s.replace_project(redrob_effects_engine::perf::large_project(&redrob_effects_engine::perf::LargeSpec::small()), None);
             s
         });
         let names: Vec<&str> = m.iter().map(|m| m.name).collect();

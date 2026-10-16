@@ -7,12 +7,12 @@
 
 use std::sync::Arc;
 
-use effectcraft_color::BlendMode;
-use effectcraft_effects::Buf;
-use effectcraft_project::{ItemId, Layer, Quality};
-use effectcraft_raster::Image;
-use effectcraft_render::{EvalCtx, Renderer, styles};
-use effectcraft_time::Tick;
+use redrob_effects_color::BlendMode;
+use redrob_effects_effects::Buf;
+use redrob_effects_project::{ItemId, Layer, Quality};
+use redrob_effects_raster::Image;
+use redrob_effects_render::{EvalCtx, Renderer, styles};
+use redrob_effects_time::Tick;
 
 use crate::context::{Enc, GpuImage};
 use crate::ops;
@@ -53,7 +53,7 @@ pub(crate) fn render<'g>(e: &mut Enc<'g>, r: &Renderer, comp_id: ItemId, t: Tick
         && let Some((lin, mode, enc)) = pipe.output_hdr()
     {
         on_cpu(e, &mut canvas, |img| {
-            effectcraft_render::color::output_hdr(img, lin, mode, enc);
+            redrob_effects_render::color::output_hdr(img, lin, mode, enc);
             pipe.quantize(img);
         })?;
     }
@@ -146,7 +146,7 @@ fn draw_3d<'a>(e: &mut Enc, r: &Renderer<'a>, ctx: &EvalCtx<'a>, run: &[&'a Laye
 /// the canvas, then each special layer (far to near) rendered alone, hidden where the main
 /// scene is nearer, matted (a 3D matte through the camera, else the 2D placement), Preserve
 /// Transparency and blended. `None` = render the run on the CPU.
-fn draw_split(e: &mut Enc, r: &Renderer, ctx: &EvalCtx, split: &effectcraft_render::three_d::adv::SplitRun, canvas: &GpuImage) -> Option<GpuImage> {
+fn draw_split(e: &mut Enc, r: &Renderer, ctx: &EvalCtx, split: &redrob_effects_render::three_d::adv::SplitRun, canvas: &GpuImage) -> Option<GpuImage> {
     let (w, h) = (canvas.width, canvas.height);
     let main_prep = split.main();
     if main_prep.out != (w, h) {

@@ -2,12 +2,12 @@
 //! its Composition panel even when it was closed (#90); adding an effect, or double-clicking one
 //! in the Timeline, brings up Effect Controls (#87).
 
-use effectcraft_engine::Session;
-use effectcraft_engine::project::ItemId;
-use effectcraft_ui_egui::EffectcraftApp;
-use effectcraft_ui_egui::dock::{DockNode, PanelKind};
 use egui::{Event, Pos2, pos2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::ItemId;
+use redrob_effects_ui_egui::EffectcraftApp;
+use redrob_effects_ui_egui::dock::{DockNode, PanelKind};
 use serde_json::json;
 
 /// Comp "Main" (open) holding a solid, and comp "Other" (not open).
@@ -53,7 +53,7 @@ fn group_of(n: &DockNode, p: PanelKind) -> Option<Vec<PanelKind>> {
 
 fn invoke(h: &mut Harness<'_, EffectcraftApp>, id: &str, params: serde_json::Value) {
     let ctx = h.ctx.clone();
-    effectcraft_ui_egui::menus::invoke(h.state_mut(), &ctx, id, params).unwrap();
+    redrob_effects_ui_egui::menus::invoke(h.state_mut(), &ctx, id, params).unwrap();
     h.run_steps(2);
 }
 
@@ -117,7 +117,7 @@ fn layer_id(h: &Harness<'_, EffectcraftApp>, name: &str) -> u64 {
 
 fn try_invoke(h: &mut Harness<'_, EffectcraftApp>, id: &str, params: serde_json::Value) -> serde_json::Value {
     let ctx = h.ctx.clone();
-    let r = effectcraft_ui_egui::menus::invoke(h.state_mut(), &ctx, id, params).unwrap();
+    let r = redrob_effects_ui_egui::menus::invoke(h.state_mut(), &ctx, id, params).unwrap();
     h.run_steps(2);
     r
 }

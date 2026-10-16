@@ -2,16 +2,16 @@
 
 use std::sync::{Arc, Mutex};
 
-use effectcraft_engine::{
+use egui_kittest::Harness;
+use redrob_effects_engine::{
     Session,
     project::LayerId,
     render::{NoFootage, Renderer},
 };
-use effectcraft_ui_egui::{
+use redrob_effects_ui_egui::{
     EffectcraftApp,
     frames::{RemoteDone, RemoteFrame, RemoteFrames, RemoteJob, to_color_image},
 };
-use egui_kittest::Harness;
 use serde_json::json;
 
 /// Hold completions explicitly: input/render ordering is deterministic, without timing sleeps.

@@ -3,7 +3,7 @@
 //! look at the UI at any time.
 //!
 //! ```text
-//! cargo run -p effectcraft-ui-egui --example snapshot -- [--out ui.png] [--size 1680x1020]
+//! cargo run -p redrob-effects-ui-egui --example snapshot -- [--out ui.png] [--size 1680x1020]
 //!     [--scale 2] [--settle 1.5] [--empty] [--script steps.jsonl | --step '<json>']...
 //! ```
 //!
@@ -15,8 +15,8 @@
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
-use effectcraft_ui_egui::{ControlRequest, EffectcraftApp};
 use egui_kittest::Harness;
+use redrob_effects_ui_egui::{ControlRequest, EffectcraftApp};
 use serde_json::{Value, json};
 
 struct Args {
@@ -94,7 +94,7 @@ fn main() {
             std::process::exit(2);
         }
     };
-    let mut session = effectcraft_host::session();
+    let mut session = redrob_effects_host::session();
     if args.demo {
         let _ = session.execute("file.openDemoProject", json!({}));
     }

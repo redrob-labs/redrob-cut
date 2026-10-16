@@ -105,7 +105,7 @@ fn coverage_report() {
     for f in common::FIXTURES {
         let Some((h264, _)) = common::ensure(f) else { return };
         let data = std::fs::read(h264).unwrap();
-        let mut dec = filmcraft_h264::Decoder::new();
+        let mut dec = redrob_film_h264::Decoder::new();
         for au in common::split_access_units(&data) {
             dec.decode(au, 0).unwrap();
         }
@@ -145,6 +145,6 @@ fn generate_fixtures() {
     let dir = common::fixtures_dir();
     for f in common::FIXTURES {
         let outs = [dir.join(format!("{}.h264", f.name)), dir.join(format!("{}.yuv", f.name))];
-        filmcraft_testkit::fixtures::generate_and_report(&format!("h264/{}", f.name), &outs, || common::ensure(f));
+        redrob_film_testkit::fixtures::generate_and_report(&format!("h264/{}", f.name), &outs, || common::ensure(f));
     }
 }

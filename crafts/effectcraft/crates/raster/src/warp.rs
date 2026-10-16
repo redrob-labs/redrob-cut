@@ -1,8 +1,8 @@
 //! Projective warps composited straight into a destination (the layer transform step).
 
-use effectcraft_color::{BlendMode, blend_pixel};
-use effectcraft_geom::{Mat3, Rect, vec2};
 use rayon::prelude::*;
+use redrob_effects_color::{BlendMode, blend_pixel};
+use redrob_effects_geom::{Mat3, Rect, vec2};
 
 use crate::{Image, Px, hash_noise};
 

@@ -9,7 +9,7 @@
 # Needs: cargo; nfpm for the deb (https://nfpm.goreleaser.com). Build on an old distro (CI: Ubuntu
 # 22.04, glibc 2.35) so the binaries run on newer ones. Optional: desktop-file-validate,
 # appstreamcli. The tar.gz is what Redrob Launcher and the in-app updater
-# (apps/filmcraft/src/update.rs) install; both look for exactly these file names.
+# (apps/redrob-film-app/src/update.rs) install; both look for exactly these file names.
 set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
@@ -38,13 +38,13 @@ case "$ARCH" in
   x86_64) DEB_ARCH=amd64 ;;
   *) echo "unsupported architecture $ARCH: the Linux release is x86_64 only" >&2; exit 2 ;;
 esac
-export FILMCRAFT_MAINTAINER="${FILMCRAFT_MAINTAINER:-Redrob (McKinley Rice, Inc.)}"
+export REDROB_FILM_MAINTAINER="${REDROB_FILM_MAINTAINER:-Redrob (McKinley Rice, Inc.)}"
 BASENAME="redrob-film-$VERSION-linux-$ARCH"
 
 echo "==> Redrob Film $VERSION for Linux $ARCH ($FORMATS)"
 
 if [ "$SKIP_BUILD" = 0 ]; then
-  (cd "$ROOT" && cargo build --release --locked -p filmcraft -p filmcraft-cli)
+  (cd "$ROOT" && cargo build --release --locked -p redrob-film-app -p redrob-film-cli)
 fi
 BIN="$CARGO_TARGET_DIR/release"
 WORK="$CARGO_TARGET_DIR/linux-package"
@@ -58,7 +58,7 @@ strip "$STAGE/usr/bin/redrob-film" "$STAGE/usr/bin/redrob-film-cli" 2>/dev/null 
 install -Dm644 "$HERE/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
 install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
 mkdir -p "$STAGE/usr/share/metainfo"
-sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$FILMCRAFT_BUILD_DATE/g" \
+sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$REDROB_FILM_BUILD_DATE/g" \
   "$HERE/$APP_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
 mkdir -p "$STAGE/usr/share/icons"
 cp -R "$ROOT/assets/app-icon/hicolor" "$STAGE/usr/share/icons/"

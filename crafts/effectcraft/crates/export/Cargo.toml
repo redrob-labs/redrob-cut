@@ -1,5 +1,5 @@
 [package]
-name = "effectcraft-export"
+name = "redrob-effects-export"
 description = "Render Queue jobs and output modules: H.264 MP4 (+AAC), ProRes and uncompressed MOV (+PCM) via Redrob Film, HEVC / AV1 MP4 (+AAC) and WebM (VP9 or AV1 + Opus) via Redrob Film encoders, PNG/JPEG/TIFF/EXR sequences, animated GIF, WAV/AIFF"
 version.workspace = true
 edition.workspace = true
@@ -10,18 +10,18 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-effectcraft-time = { workspace = true }
-effectcraft-project = { workspace = true }
-effectcraft-raster = { workspace = true }
-effectcraft-render = { workspace = true }
-filmcraft-h264enc = { workspace = true }
-filmcraft-prores = { workspace = true }
-filmcraft-aac = { workspace = true }
-filmcraft-isobmff = { workspace = true }
-effectcraft-opusenc = { workspace = true }
-effectcraft-vp9enc = { workspace = true }
-effectcraft-hevcenc = { workspace = true }
-effectcraft-av1enc = { workspace = true }
+redrob-effects-time = { workspace = true }
+redrob-effects-project = { workspace = true }
+redrob-effects-raster = { workspace = true }
+redrob-effects-render = { workspace = true }
+redrob-film-h264enc = { workspace = true }
+redrob-film-prores = { workspace = true }
+redrob-film-aac = { workspace = true }
+redrob-film-isobmff = { workspace = true }
+redrob-effects-opusenc = { workspace = true }
+redrob-effects-vp9enc = { workspace = true }
+redrob-effects-hevcenc = { workspace = true }
+redrob-effects-av1enc = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg", "tiff", "exr"] }
 gif = { workspace = true }
 rayon = { workspace = true }
@@ -30,9 +30,9 @@ thiserror = { workspace = true }
 log = { workspace = true }
 
 [dev-dependencies]
-effectcraft-media = { workspace = true }
-effectcraft-effects = { workspace = true }
-effectcraft-color = { workspace = true }
-filmcraft-opus = { workspace = true }
-filmcraft-vp9 = { workspace = true }
-effectcraft-keyframe = { workspace = true }
+redrob-effects-media = { workspace = true }
+redrob-effects-effects = { workspace = true }
+redrob-effects-color = { workspace = true }
+redrob-film-opus = { workspace = true }
+redrob-film-vp9 = { workspace = true }
+redrob-effects-keyframe = { workspace = true }

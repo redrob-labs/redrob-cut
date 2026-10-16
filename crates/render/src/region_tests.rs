@@ -4,11 +4,11 @@
 //! (the path every clip takes when no shortcut applies).
 
 use super::*;
-use filmcraft_frame::{AudioBuffer, Chroma};
-use filmcraft_media::generators::GeneratorSource;
-use filmcraft_media::{Generator, MediaInfo, MediaSource};
-use filmcraft_project::{Label, MediaClip, MediaRef, SequenceSettings, TrackKind, find_effect};
-use filmcraft_time::{FrameRate, TICKS_PER_SECOND, TimeRange};
+use redrob_film_frame::{AudioBuffer, Chroma};
+use redrob_film_media::generators::GeneratorSource;
+use redrob_film_media::{Generator, MediaInfo, MediaSource};
+use redrob_film_project::{Label, MediaClip, MediaRef, SequenceSettings, TrackKind, find_effect};
+use redrob_film_time::{FrameRate, TICKS_PER_SECOND, TimeRange};
 
 const FPS: FrameRate = FrameRate::FPS_24;
 
@@ -21,16 +21,16 @@ impl MediaSource for Still {
     fn info(&self) -> &MediaInfo {
         &self.info
     }
-    fn video_frame(&self, _req: FrameRequest) -> filmcraft_media::Result<Arc<VideoFrame>> {
+    fn video_frame(&self, _req: FrameRequest) -> redrob_film_media::Result<Arc<VideoFrame>> {
         Ok(self.frame.clone())
     }
-    fn audio(&self, _start: i64, frames: usize, sample_rate: u32) -> filmcraft_media::Result<AudioBuffer> {
+    fn audio(&self, _start: i64, frames: usize, sample_rate: u32) -> redrob_film_media::Result<AudioBuffer> {
         Ok(AudioBuffer::silence(sample_rate, 2, frames))
     }
 }
 
 fn frame(w: usize, h: usize, data: PixelData) -> Arc<VideoFrame> {
-    Arc::new(VideoFrame { width: w as u32, height: h as u32, data, color: filmcraft_color::ColorInfo::REC709, par: (1, 1), pts: Tick::ZERO })
+    Arc::new(VideoFrame { width: w as u32, height: h as u32, data, color: redrob_film_color::ColorInfo::REC709, par: (1, 1), pts: Tick::ZERO })
 }
 
 /// A camera-like picture: 8-bit 4:2:0, no alpha.

@@ -1,4 +1,4 @@
-# effectcraft-opusenc
+# redrob-effects-opusenc
 
 Clean-room, pure-Rust Opus encoder for Redrob Film's WebM export audio (layer L0, `std` only,
 no `unsafe`, builds for `wasm32-unknown-unknown`).
@@ -12,7 +12,7 @@ All three Opus modes, 20 ms packets (one frame per packet), 48 kHz float input, 
   up (8 kHz and above) in the same range-coded frame; constant packet size.
 
 ```rust
-use effectcraft_opusenc::{Application, OpusEncoder};
+use redrob_effects_opusenc::{Application, OpusEncoder};
 let mut enc = OpusEncoder::with_application(2, 48_000, Application::Voip);
 let packet = enc.encode_float(&vec![0.0; OpusEncoder::FRAME_SIZE * 2]);
 // enc.mode(), enc.bandwidth(), enc.pre_skip(), enc.opus_head() ...
@@ -129,7 +129,7 @@ stage-1/2 codebooks and prediction weights, gain, pitch, contour, LTP and pulse 
 weights) and the decoder-side normative arithmetic the encoder must reproduce bit-exactly (CELT
 allocation; SILK NLSF dequantisation and stabilisation, NLSF → LPC conversion, `log2lin`, the
 fixed-point division/inverse helpers and the LPC analysis filter) are mirrored from Redrob Film's
-first-party, spec-derived `filmcraft-opus` decoder (MIT OR Apache-2.0), which is also the
+first-party, spec-derived `redrob-film-opus` decoder (MIT OR Apache-2.0), which is also the
 round-trip oracle in `tests/` and `crates/export/tests/opus_roundtrip.rs` (ffmpeg is a second,
 external oracle when installed). All encoder-side analysis and search (pitch, LPC, NLSF and
 LTP search, noise feedback, rate control, stereo prediction, the decimator) is our own design.

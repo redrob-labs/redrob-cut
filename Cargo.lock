@@ -1587,481 +1587,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "effectcraft-automation"
-version = "0.1.0"
-dependencies = [
- "effectcraft-engine",
- "effectcraft-host",
- "effectcraft-script",
- "image",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "effectcraft-av1enc"
-version = "0.1.0"
-dependencies = [
- "filmcraft-av1",
-]
-
-[[package]]
-name = "effectcraft-color"
-version = "0.1.0"
-dependencies = [
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "effectcraft-effects"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-geom",
- "effectcraft-keyframe",
- "effectcraft-project",
- "effectcraft-raster",
- "effectcraft-segment",
- "effectcraft-track",
- "log",
- "rayon",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "effectcraft-engine"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-effects",
- "effectcraft-geom",
- "effectcraft-interchange",
- "effectcraft-keyframe",
- "effectcraft-lottie",
- "effectcraft-model",
- "effectcraft-path",
- "effectcraft-pdf",
- "effectcraft-project",
- "effectcraft-psd",
- "effectcraft-raster",
- "effectcraft-render",
- "effectcraft-segment",
- "effectcraft-svg",
- "effectcraft-text",
- "effectcraft-time",
- "effectcraft-track",
- "exr",
- "image",
- "kurbo",
- "log",
- "rayon",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "effectcraft-export"
-version = "0.1.0"
-dependencies = [
- "effectcraft-av1enc",
- "effectcraft-color",
- "effectcraft-effects",
- "effectcraft-hevcenc",
- "effectcraft-keyframe",
- "effectcraft-media",
- "effectcraft-opusenc",
- "effectcraft-project",
- "effectcraft-raster",
- "effectcraft-render",
- "effectcraft-time",
- "effectcraft-vp9enc",
- "filmcraft-aac",
- "filmcraft-h264enc",
- "filmcraft-isobmff",
- "filmcraft-opus",
- "filmcraft-prores",
- "filmcraft-vp9",
- "gif",
- "image",
- "log",
- "rayon",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "effectcraft-expr"
-version = "0.1.0"
-dependencies = [
- "boa_engine",
- "effectcraft-color",
- "effectcraft-effects",
- "effectcraft-geom",
- "effectcraft-keyframe",
- "effectcraft-path",
- "effectcraft-project",
- "effectcraft-render",
- "effectcraft-text",
- "effectcraft-time",
- "serde_json",
-]
-
-[[package]]
-name = "effectcraft-geom"
-version = "0.1.0"
-dependencies = [
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "effectcraft-gpu"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "effectcraft-color",
- "effectcraft-effects",
- "effectcraft-geom",
- "effectcraft-keyframe",
- "effectcraft-project",
- "effectcraft-raster",
- "effectcraft-render",
- "effectcraft-text",
- "effectcraft-time",
- "js-sys",
- "log",
- "pollster 0.4.0",
- "wasm-bindgen",
- "web-time",
- "wgpu",
-]
-
-[[package]]
-name = "effectcraft-hevcenc"
-version = "0.1.0"
-dependencies = [
- "filmcraft-hevc",
-]
-
-[[package]]
-name = "effectcraft-host"
-version = "0.1.0"
-dependencies = [
- "effectcraft-engine",
- "effectcraft-export",
- "effectcraft-expr",
- "effectcraft-interchange",
- "effectcraft-media",
- "effectcraft-pdf",
- "effectcraft-plugin",
- "effectcraft-project",
- "effectcraft-psd",
- "effectcraft-raster",
- "effectcraft-script",
- "effectcraft-svg",
- "effectcraft-time",
- "exr",
- "gif",
- "image",
- "log",
- "rayon",
- "serde_json",
-]
-
-[[package]]
-name = "effectcraft-interchange"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-keyframe",
- "effectcraft-project",
- "effectcraft-time",
- "filmcraft-color",
- "filmcraft-geom",
- "filmcraft-interchange",
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-time",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "effectcraft-keyframe"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-geom",
- "effectcraft-time",
- "proptest",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "effectcraft-lottie"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-effects",
- "effectcraft-keyframe",
- "effectcraft-path",
- "effectcraft-project",
- "effectcraft-render",
- "effectcraft-text",
- "effectcraft-time",
- "kurbo",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "effectcraft-media"
-version = "0.1.0"
-dependencies = [
- "effectcraft-model",
- "effectcraft-pdf",
- "effectcraft-project",
- "effectcraft-psd",
- "effectcraft-raster",
- "effectcraft-render",
- "effectcraft-svg",
- "effectcraft-time",
- "exr",
- "filmcraft-codecs",
- "filmcraft-color",
- "filmcraft-frame",
- "filmcraft-isobmff",
- "filmcraft-media",
- "filmcraft-time",
- "gif",
- "image",
- "log",
- "rayon",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "effectcraft-model"
-version = "0.1.0"
-dependencies = [
- "effectcraft-geom",
- "image",
- "miniz_oxide 0.8.9",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "effectcraft-opusenc"
-version = "0.1.0"
-dependencies = [
- "filmcraft-opus",
-]
-
-[[package]]
-name = "effectcraft-path"
-version = "0.1.0"
-dependencies = [
- "effectcraft-geom",
- "effectcraft-keyframe",
- "effectcraft-raster",
- "kurbo",
- "linesweeper",
- "tiny-skia",
-]
-
-[[package]]
-name = "effectcraft-pdf"
-version = "0.1.0"
-dependencies = [
- "effectcraft-raster",
- "effectcraft-svg",
- "effectcraft-text",
- "image",
- "kurbo",
- "miniz_oxide 0.8.9",
- "skrifa",
- "zune-jpeg",
-]
-
-[[package]]
-name = "effectcraft-plugin"
-version = "0.1.0"
-dependencies = [
- "effectcraft-effects",
- "effectcraft-keyframe",
- "effectcraft-project",
- "effectcraft-raster",
- "serde_json",
- "wasmi",
-]
-
-[[package]]
-name = "effectcraft-project"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-geom",
- "effectcraft-keyframe",
- "effectcraft-time",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "effectcraft-psd"
-version = "0.1.0"
-dependencies = [
- "miniz_oxide 0.8.9",
-]
-
-[[package]]
-name = "effectcraft-raster"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-geom",
- "rayon",
-]
-
-[[package]]
-name = "effectcraft-render"
-version = "0.1.0"
-dependencies = [
- "effectcraft-color",
- "effectcraft-effects",
- "effectcraft-geom",
- "effectcraft-keyframe",
- "effectcraft-model",
- "effectcraft-path",
- "effectcraft-project",
- "effectcraft-raster",
- "effectcraft-text",
- "effectcraft-time",
- "kurbo",
- "log",
- "lz4_flex",
- "rayon",
- "serde",
- "web-time",
-]
-
-[[package]]
-name = "effectcraft-script"
-version = "0.1.0"
-dependencies = [
- "boa_engine",
- "effectcraft-engine",
- "effectcraft-expr",
- "effectcraft-keyframe",
- "effectcraft-path",
- "effectcraft-project",
- "effectcraft-psd",
- "effectcraft-render",
- "effectcraft-time",
- "serde_json",
- "web-time",
-]
-
-[[package]]
-name = "effectcraft-segment"
-version = "0.1.0"
-dependencies = [
- "miniz_oxide 0.8.9",
- "ndarray",
- "rayon",
-]
-
-[[package]]
-name = "effectcraft-svg"
-version = "0.1.0"
-dependencies = [
- "effectcraft-geom",
- "effectcraft-path",
- "effectcraft-raster",
- "kurbo",
- "rayon",
- "roxmltree",
-]
-
-[[package]]
-name = "effectcraft-text"
-version = "0.1.0"
-dependencies = [
- "effectcraft-keyframe",
- "harfrust",
- "kurbo",
- "skrifa",
- "unicode-bidi",
- "unicode-linebreak",
-]
-
-[[package]]
-name = "effectcraft-time"
-version = "0.1.0"
-dependencies = [
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "effectcraft-track"
-version = "0.1.0"
-dependencies = [
- "effectcraft-raster",
- "effectcraft-segment",
- "rayon",
- "serde",
- "serde_json",
- "web-time",
-]
-
-[[package]]
-name = "effectcraft-ui-egui"
-version = "0.1.0"
-dependencies = [
- "craft-ui",
- "effectcraft-color",
- "effectcraft-engine",
- "effectcraft-geom",
- "effectcraft-gpu",
- "effectcraft-host",
- "effectcraft-keyframe",
- "effectcraft-path",
- "effectcraft-project",
- "effectcraft-render",
- "effectcraft-text",
- "effectcraft-time",
- "eframe",
- "egui",
- "egui_kittest",
- "exr",
- "image",
- "kurbo",
- "log",
- "pollster 0.4.0",
- "rayon",
- "serde",
- "serde_json",
- "sys-locale",
- "toml 1.1.8+spec-1.1.0",
- "web-time",
-]
-
-[[package]]
-name = "effectcraft-vp9enc"
-version = "0.1.0"
-
-[[package]]
 name = "eframe"
 version = "0.36.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2460,662 +1985,6 @@ checksum = "38e2275cc4e4fc009b0669731a1e5ab7ebf11f469eaede2bab9309a5b4d6057f"
 dependencies = [
  "memoffset",
  "rustc_version",
-]
-
-[[package]]
-name = "filmcraft"
-version = "0.1.0"
-dependencies = [
- "arboard",
- "chrono",
- "cpal",
- "effectcraft-color",
- "effectcraft-engine",
- "effectcraft-host",
- "effectcraft-project",
- "effectcraft-render",
- "effectcraft-time",
- "effectcraft-ui-egui",
- "eframe",
- "egui",
- "filmcraft-automation",
- "filmcraft-color",
- "filmcraft-engine",
- "filmcraft-export",
- "filmcraft-frame",
- "filmcraft-gpu",
- "filmcraft-media",
- "filmcraft-platform",
- "filmcraft-project",
- "filmcraft-render",
- "filmcraft-time",
- "filmcraft-ui-egui",
- "glob",
- "log",
- "muda",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-foundation 0.3.2",
- "open",
- "rfd",
- "serde_json",
- "sha2",
- "sys-locale",
- "tokio",
- "ureq",
- "winit",
- "winresource",
- "zbus",
-]
-
-[[package]]
-name = "filmcraft-aac"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-ac3"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-apv"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-audio-dsp"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
-]
-
-[[package]]
-name = "filmcraft-automation"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "filmcraft-engine",
- "filmcraft-time",
- "image",
- "rmcp",
- "schemars",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "filmcraft-av1"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "rustix 1.1.5",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-bitstream"
-version = "0.1.0"
-dependencies = [
- "proptest",
-]
-
-[[package]]
-name = "filmcraft-captions"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "filmcraft-project",
- "filmcraft-text",
- "filmcraft-time",
- "proptest",
- "roxmltree",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-cfb"
-version = "0.1.0"
-
-[[package]]
-name = "filmcraft-cli"
-version = "0.1.0"
-dependencies = [
- "filmcraft-automation",
- "filmcraft-codecs",
- "filmcraft-engine",
- "filmcraft-export",
- "filmcraft-gpu",
- "filmcraft-media",
- "filmcraft-mpegts",
- "filmcraft-mxf",
- "filmcraft-ogg",
- "filmcraft-platform",
- "filmcraft-project",
- "filmcraft-render",
- "filmcraft-time",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "filmcraft-codecs"
-version = "0.1.0"
-dependencies = [
- "filmcraft-aac",
- "filmcraft-ac3",
- "filmcraft-apv",
- "filmcraft-av1",
- "filmcraft-bitstream",
- "filmcraft-color",
- "filmcraft-dnx",
- "filmcraft-frame",
- "filmcraft-h264",
- "filmcraft-hevc",
- "filmcraft-isobmff",
- "filmcraft-matroska",
- "filmcraft-media",
- "filmcraft-mpeg2v",
- "filmcraft-mpegts",
- "filmcraft-mxf",
- "filmcraft-ogg",
- "filmcraft-opus",
- "filmcraft-prores",
- "filmcraft-testkit",
- "filmcraft-time",
- "filmcraft-vp9",
- "image",
- "log",
- "serde_json",
- "symphonia",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "filmcraft-color"
-version = "0.1.0"
-dependencies = [
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "filmcraft-dnx"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-edit"
-version = "0.1.0"
-dependencies = [
- "filmcraft-geom",
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-time",
- "proptest",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-engine"
-version = "0.1.0"
-dependencies = [
- "filmcraft-audio-dsp",
- "filmcraft-captions",
- "filmcraft-codecs",
- "filmcraft-color",
- "filmcraft-edit",
- "filmcraft-export",
- "filmcraft-format",
- "filmcraft-frame",
- "filmcraft-geom",
- "filmcraft-interchange",
- "filmcraft-media",
- "filmcraft-mxf",
- "filmcraft-project",
- "filmcraft-render",
- "filmcraft-scopes",
- "filmcraft-speech",
- "filmcraft-testkit",
- "filmcraft-text",
- "filmcraft-time",
- "filmcraft-tts",
- "image",
- "log",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "filmcraft-export"
-version = "0.1.0"
-dependencies = [
- "filmcraft-aac",
- "filmcraft-apv",
- "filmcraft-audio-dsp",
- "filmcraft-codecs",
- "filmcraft-color",
- "filmcraft-dnx",
- "filmcraft-frame",
- "filmcraft-geom",
- "filmcraft-h264enc",
- "filmcraft-isobmff",
- "filmcraft-media",
- "filmcraft-mxf",
- "filmcraft-project",
- "filmcraft-prores",
- "filmcraft-render",
- "filmcraft-testkit",
- "filmcraft-text",
- "filmcraft-time",
- "image",
- "rayon",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "web-time",
-]
-
-[[package]]
-name = "filmcraft-format"
-version = "0.1.0"
-dependencies = [
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-time",
- "log",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-frame"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "filmcraft-time",
- "rayon",
- "serde",
-]
-
-[[package]]
-name = "filmcraft-geom"
-version = "0.1.0"
-dependencies = [
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "filmcraft-golden"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "filmcraft-frame",
- "filmcraft-geom",
- "filmcraft-gpu",
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-render",
- "filmcraft-testkit",
- "filmcraft-time",
- "pollster 0.4.0",
- "wgpu",
-]
-
-[[package]]
-name = "filmcraft-gpu"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "filmcraft-export",
- "filmcraft-frame",
- "filmcraft-geom",
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-render",
- "filmcraft-time",
- "image",
- "log",
- "pollster 0.4.0",
- "rayon",
- "wgpu",
-]
-
-[[package]]
-name = "filmcraft-h264"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-h264enc"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-hevc"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-interchange"
-version = "0.1.0"
-dependencies = [
- "filmcraft-cfb",
- "filmcraft-color",
- "filmcraft-geom",
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-time",
- "proptest",
- "roxmltree",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-isobmff"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "proptest",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-matroska"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
- "serde_json",
-]
-
-[[package]]
-name = "filmcraft-media"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "filmcraft-frame",
- "filmcraft-time",
- "image",
- "rayon",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-mpeg2v"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-mpegts"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-mxf"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
-]
-
-[[package]]
-name = "filmcraft-ogg"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
-]
-
-[[package]]
-name = "filmcraft-opus"
-version = "0.1.0"
-dependencies = [
- "filmcraft-testkit",
-]
-
-[[package]]
-name = "filmcraft-platform"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-codecs",
- "filmcraft-color",
- "filmcraft-export",
- "filmcraft-frame",
- "filmcraft-h264",
- "filmcraft-hevc",
- "filmcraft-isobmff",
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-render",
- "filmcraft-testkit",
- "filmcraft-time",
- "libloading",
- "log",
- "objc2-core-foundation",
- "objc2-core-media",
- "objc2-core-video",
- "objc2-video-toolbox",
- "windows 0.62.2",
-]
-
-[[package]]
-name = "filmcraft-project"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "filmcraft-geom",
- "filmcraft-media",
- "filmcraft-time",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-prores"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "filmcraft-testkit",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-render"
-version = "0.1.0"
-dependencies = [
- "filmcraft-audio-dsp",
- "filmcraft-captions",
- "filmcraft-color",
- "filmcraft-frame",
- "filmcraft-geom",
- "filmcraft-media",
- "filmcraft-project",
- "filmcraft-text",
- "filmcraft-time",
- "image",
- "rayon",
- "rustix 1.1.5",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "filmcraft-scopes"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "filmcraft-speech"
-version = "0.1.0"
-dependencies = [
- "candle-core",
- "candle-nn",
- "filmcraft-project",
- "filmcraft-time",
- "rayon",
- "rustls",
- "rustls-rustcrypto",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.21",
- "ureq",
-]
-
-[[package]]
-name = "filmcraft-testkit"
-version = "0.1.0"
-dependencies = [
- "png",
-]
-
-[[package]]
-name = "filmcraft-text"
-version = "0.1.0"
-dependencies = [
- "filmcraft-color",
- "harfrust",
- "skrifa",
- "unicode-bidi",
- "unicode-linebreak",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "filmcraft-time"
-version = "0.1.0"
-dependencies = [
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "filmcraft-tts"
-version = "0.1.0"
-dependencies = [
- "candle-core",
- "candle-nn",
- "filmcraft-audio-dsp",
- "filmcraft-tts-text",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "zip",
-]
-
-[[package]]
-name = "filmcraft-tts-text"
-version = "0.1.0"
-dependencies = [
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "filmcraft-ui-egui"
-version = "0.1.0"
-dependencies = [
- "cpu-time",
- "eframe",
- "egui",
- "egui_kittest",
- "filmcraft-audio-dsp",
- "filmcraft-codecs",
- "filmcraft-color",
- "filmcraft-edit",
- "filmcraft-engine",
- "filmcraft-export",
- "filmcraft-frame",
- "filmcraft-geom",
- "filmcraft-gpu",
- "filmcraft-interchange",
- "filmcraft-media",
- "filmcraft-platform",
- "filmcraft-project",
- "filmcraft-render",
- "filmcraft-scopes",
- "filmcraft-text",
- "filmcraft-time",
- "filmcraft-tts",
- "image",
- "log",
- "pollster 0.4.0",
- "rayon",
- "rustix 1.1.5",
- "serde",
- "serde_json",
- "toml 1.1.8+spec-1.1.0",
- "web-time",
-]
-
-[[package]]
-name = "filmcraft-vp9"
-version = "0.1.0"
-dependencies = [
- "filmcraft-bitstream",
- "rayon",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -6008,6 +4877,1137 @@ dependencies = [
 ]
 
 [[package]]
+name = "redrob-effects-automation"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "redrob-effects-engine",
+ "redrob-effects-host",
+ "redrob-effects-script",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-effects-av1enc"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-av1",
+]
+
+[[package]]
+name = "redrob-effects-color"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "redrob-effects-effects"
+version = "0.2.0"
+dependencies = [
+ "log",
+ "rayon",
+ "redrob-effects-color",
+ "redrob-effects-geom",
+ "redrob-effects-keyframe",
+ "redrob-effects-project",
+ "redrob-effects-raster",
+ "redrob-effects-segment",
+ "redrob-effects-track",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "redrob-effects-engine"
+version = "0.2.0"
+dependencies = [
+ "exr",
+ "image",
+ "kurbo",
+ "log",
+ "rayon",
+ "redrob-effects-color",
+ "redrob-effects-effects",
+ "redrob-effects-geom",
+ "redrob-effects-interchange",
+ "redrob-effects-keyframe",
+ "redrob-effects-lottie",
+ "redrob-effects-model",
+ "redrob-effects-path",
+ "redrob-effects-pdf",
+ "redrob-effects-project",
+ "redrob-effects-psd",
+ "redrob-effects-raster",
+ "redrob-effects-render",
+ "redrob-effects-segment",
+ "redrob-effects-svg",
+ "redrob-effects-text",
+ "redrob-effects-time",
+ "redrob-effects-track",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-effects-export"
+version = "0.2.0"
+dependencies = [
+ "gif",
+ "image",
+ "log",
+ "rayon",
+ "redrob-effects-av1enc",
+ "redrob-effects-color",
+ "redrob-effects-effects",
+ "redrob-effects-hevcenc",
+ "redrob-effects-keyframe",
+ "redrob-effects-media",
+ "redrob-effects-opusenc",
+ "redrob-effects-project",
+ "redrob-effects-raster",
+ "redrob-effects-render",
+ "redrob-effects-time",
+ "redrob-effects-vp9enc",
+ "redrob-film-aac",
+ "redrob-film-h264enc",
+ "redrob-film-isobmff",
+ "redrob-film-opus",
+ "redrob-film-prores",
+ "redrob-film-vp9",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-effects-expr"
+version = "0.2.0"
+dependencies = [
+ "boa_engine",
+ "redrob-effects-color",
+ "redrob-effects-effects",
+ "redrob-effects-geom",
+ "redrob-effects-keyframe",
+ "redrob-effects-path",
+ "redrob-effects-project",
+ "redrob-effects-render",
+ "redrob-effects-text",
+ "redrob-effects-time",
+ "serde_json",
+]
+
+[[package]]
+name = "redrob-effects-geom"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "redrob-effects-gpu"
+version = "0.2.0"
+dependencies = [
+ "bytemuck",
+ "js-sys",
+ "log",
+ "pollster 0.4.0",
+ "redrob-effects-color",
+ "redrob-effects-effects",
+ "redrob-effects-geom",
+ "redrob-effects-keyframe",
+ "redrob-effects-project",
+ "redrob-effects-raster",
+ "redrob-effects-render",
+ "redrob-effects-text",
+ "redrob-effects-time",
+ "wasm-bindgen",
+ "web-time",
+ "wgpu",
+]
+
+[[package]]
+name = "redrob-effects-hevcenc"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-hevc",
+]
+
+[[package]]
+name = "redrob-effects-host"
+version = "0.2.0"
+dependencies = [
+ "exr",
+ "gif",
+ "image",
+ "log",
+ "rayon",
+ "redrob-effects-engine",
+ "redrob-effects-export",
+ "redrob-effects-expr",
+ "redrob-effects-interchange",
+ "redrob-effects-media",
+ "redrob-effects-pdf",
+ "redrob-effects-plugin",
+ "redrob-effects-project",
+ "redrob-effects-psd",
+ "redrob-effects-raster",
+ "redrob-effects-script",
+ "redrob-effects-svg",
+ "redrob-effects-time",
+ "serde_json",
+]
+
+[[package]]
+name = "redrob-effects-interchange"
+version = "0.2.0"
+dependencies = [
+ "redrob-effects-color",
+ "redrob-effects-keyframe",
+ "redrob-effects-project",
+ "redrob-effects-time",
+ "redrob-film-color",
+ "redrob-film-geom",
+ "redrob-film-interchange",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-effects-keyframe"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "redrob-effects-color",
+ "redrob-effects-geom",
+ "redrob-effects-time",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "redrob-effects-lottie"
+version = "0.2.0"
+dependencies = [
+ "kurbo",
+ "redrob-effects-color",
+ "redrob-effects-effects",
+ "redrob-effects-keyframe",
+ "redrob-effects-path",
+ "redrob-effects-project",
+ "redrob-effects-render",
+ "redrob-effects-text",
+ "redrob-effects-time",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-effects-media"
+version = "0.2.0"
+dependencies = [
+ "exr",
+ "gif",
+ "image",
+ "log",
+ "rayon",
+ "redrob-effects-model",
+ "redrob-effects-pdf",
+ "redrob-effects-project",
+ "redrob-effects-psd",
+ "redrob-effects-raster",
+ "redrob-effects-render",
+ "redrob-effects-svg",
+ "redrob-effects-time",
+ "redrob-film-codecs",
+ "redrob-film-color",
+ "redrob-film-frame",
+ "redrob-film-isobmff",
+ "redrob-film-media",
+ "redrob-film-time",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-effects-model"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "miniz_oxide 0.8.9",
+ "redrob-effects-geom",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-effects-opusenc"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-opus",
+]
+
+[[package]]
+name = "redrob-effects-path"
+version = "0.2.0"
+dependencies = [
+ "kurbo",
+ "linesweeper",
+ "redrob-effects-geom",
+ "redrob-effects-keyframe",
+ "redrob-effects-raster",
+ "tiny-skia",
+]
+
+[[package]]
+name = "redrob-effects-pdf"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "kurbo",
+ "miniz_oxide 0.8.9",
+ "redrob-effects-raster",
+ "redrob-effects-svg",
+ "redrob-effects-text",
+ "skrifa",
+ "zune-jpeg",
+]
+
+[[package]]
+name = "redrob-effects-plugin"
+version = "0.2.0"
+dependencies = [
+ "redrob-effects-effects",
+ "redrob-effects-keyframe",
+ "redrob-effects-project",
+ "redrob-effects-raster",
+ "serde_json",
+ "wasmi",
+]
+
+[[package]]
+name = "redrob-effects-project"
+version = "0.2.0"
+dependencies = [
+ "redrob-effects-color",
+ "redrob-effects-geom",
+ "redrob-effects-keyframe",
+ "redrob-effects-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-effects-psd"
+version = "0.2.0"
+dependencies = [
+ "miniz_oxide 0.8.9",
+]
+
+[[package]]
+name = "redrob-effects-raster"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-effects-color",
+ "redrob-effects-geom",
+]
+
+[[package]]
+name = "redrob-effects-render"
+version = "0.2.0"
+dependencies = [
+ "kurbo",
+ "log",
+ "lz4_flex",
+ "rayon",
+ "redrob-effects-color",
+ "redrob-effects-effects",
+ "redrob-effects-geom",
+ "redrob-effects-keyframe",
+ "redrob-effects-model",
+ "redrob-effects-path",
+ "redrob-effects-project",
+ "redrob-effects-raster",
+ "redrob-effects-text",
+ "redrob-effects-time",
+ "serde",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-effects-script"
+version = "0.2.0"
+dependencies = [
+ "boa_engine",
+ "redrob-effects-engine",
+ "redrob-effects-expr",
+ "redrob-effects-keyframe",
+ "redrob-effects-path",
+ "redrob-effects-project",
+ "redrob-effects-psd",
+ "redrob-effects-render",
+ "redrob-effects-time",
+ "serde_json",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-effects-segment"
+version = "0.2.0"
+dependencies = [
+ "miniz_oxide 0.8.9",
+ "ndarray",
+ "rayon",
+]
+
+[[package]]
+name = "redrob-effects-svg"
+version = "0.2.0"
+dependencies = [
+ "kurbo",
+ "rayon",
+ "redrob-effects-geom",
+ "redrob-effects-path",
+ "redrob-effects-raster",
+ "roxmltree",
+]
+
+[[package]]
+name = "redrob-effects-text"
+version = "0.2.0"
+dependencies = [
+ "harfrust",
+ "kurbo",
+ "redrob-effects-keyframe",
+ "skrifa",
+ "unicode-bidi",
+ "unicode-linebreak",
+]
+
+[[package]]
+name = "redrob-effects-time"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "redrob-effects-track"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-effects-raster",
+ "redrob-effects-segment",
+ "serde",
+ "serde_json",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-effects-ui-egui"
+version = "0.2.0"
+dependencies = [
+ "craft-ui",
+ "eframe",
+ "egui",
+ "egui_kittest",
+ "exr",
+ "image",
+ "kurbo",
+ "log",
+ "pollster 0.4.0",
+ "rayon",
+ "redrob-effects-color",
+ "redrob-effects-engine",
+ "redrob-effects-geom",
+ "redrob-effects-gpu",
+ "redrob-effects-host",
+ "redrob-effects-keyframe",
+ "redrob-effects-path",
+ "redrob-effects-project",
+ "redrob-effects-render",
+ "redrob-effects-text",
+ "redrob-effects-time",
+ "serde",
+ "serde_json",
+ "sys-locale",
+ "toml 1.1.8+spec-1.1.0",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-effects-vp9enc"
+version = "0.2.0"
+
+[[package]]
+name = "redrob-film-aac"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-ac3"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-app"
+version = "0.2.0"
+dependencies = [
+ "arboard",
+ "chrono",
+ "cpal",
+ "eframe",
+ "egui",
+ "glob",
+ "log",
+ "muda",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-foundation 0.3.2",
+ "open",
+ "redrob-effects-color",
+ "redrob-effects-engine",
+ "redrob-effects-host",
+ "redrob-effects-project",
+ "redrob-effects-render",
+ "redrob-effects-time",
+ "redrob-effects-ui-egui",
+ "redrob-film-automation",
+ "redrob-film-color",
+ "redrob-film-engine",
+ "redrob-film-export",
+ "redrob-film-frame",
+ "redrob-film-gpu",
+ "redrob-film-media",
+ "redrob-film-platform",
+ "redrob-film-project",
+ "redrob-film-render",
+ "redrob-film-time",
+ "redrob-film-ui-egui",
+ "rfd",
+ "serde_json",
+ "sha2",
+ "sys-locale",
+ "tokio",
+ "ureq",
+ "winit",
+ "winresource",
+ "zbus",
+]
+
+[[package]]
+name = "redrob-film-apv"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-audio-dsp"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-testkit",
+]
+
+[[package]]
+name = "redrob-film-automation"
+version = "0.2.0"
+dependencies = [
+ "base64 0.22.1",
+ "image",
+ "redrob-film-engine",
+ "redrob-film-time",
+ "rmcp",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "redrob-film-av1"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "rustix 1.1.5",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-bitstream"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+]
+
+[[package]]
+name = "redrob-film-captions"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "redrob-film-color",
+ "redrob-film-project",
+ "redrob-film-text",
+ "redrob-film-time",
+ "roxmltree",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-cfb"
+version = "0.2.0"
+
+[[package]]
+name = "redrob-film-cli"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-automation",
+ "redrob-film-codecs",
+ "redrob-film-engine",
+ "redrob-film-export",
+ "redrob-film-gpu",
+ "redrob-film-media",
+ "redrob-film-mpegts",
+ "redrob-film-mxf",
+ "redrob-film-ogg",
+ "redrob-film-platform",
+ "redrob-film-project",
+ "redrob-film-render",
+ "redrob-film-time",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "redrob-film-codecs"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "log",
+ "redrob-film-aac",
+ "redrob-film-ac3",
+ "redrob-film-apv",
+ "redrob-film-av1",
+ "redrob-film-bitstream",
+ "redrob-film-color",
+ "redrob-film-dnx",
+ "redrob-film-frame",
+ "redrob-film-h264",
+ "redrob-film-hevc",
+ "redrob-film-isobmff",
+ "redrob-film-matroska",
+ "redrob-film-media",
+ "redrob-film-mpeg2v",
+ "redrob-film-mpegts",
+ "redrob-film-mxf",
+ "redrob-film-ogg",
+ "redrob-film-opus",
+ "redrob-film-prores",
+ "redrob-film-testkit",
+ "redrob-film-time",
+ "redrob-film-vp9",
+ "serde_json",
+ "symphonia",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-film-color"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "redrob-film-dnx"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-edit"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "redrob-film-geom",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-time",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-engine"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "log",
+ "redrob-film-audio-dsp",
+ "redrob-film-captions",
+ "redrob-film-codecs",
+ "redrob-film-color",
+ "redrob-film-edit",
+ "redrob-film-export",
+ "redrob-film-format",
+ "redrob-film-frame",
+ "redrob-film-geom",
+ "redrob-film-interchange",
+ "redrob-film-media",
+ "redrob-film-mxf",
+ "redrob-film-project",
+ "redrob-film-render",
+ "redrob-film-scopes",
+ "redrob-film-speech",
+ "redrob-film-testkit",
+ "redrob-film-text",
+ "redrob-film-time",
+ "redrob-film-tts",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-film-export"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "rayon",
+ "redrob-film-aac",
+ "redrob-film-apv",
+ "redrob-film-audio-dsp",
+ "redrob-film-codecs",
+ "redrob-film-color",
+ "redrob-film-dnx",
+ "redrob-film-frame",
+ "redrob-film-geom",
+ "redrob-film-h264enc",
+ "redrob-film-isobmff",
+ "redrob-film-media",
+ "redrob-film-mxf",
+ "redrob-film-project",
+ "redrob-film-prores",
+ "redrob-film-render",
+ "redrob-film-testkit",
+ "redrob-film-text",
+ "redrob-film-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-film-format"
+version = "0.2.0"
+dependencies = [
+ "log",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-frame"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-color",
+ "redrob-film-time",
+ "serde",
+]
+
+[[package]]
+name = "redrob-film-geom"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "redrob-film-golden"
+version = "0.2.0"
+dependencies = [
+ "pollster 0.4.0",
+ "redrob-film-color",
+ "redrob-film-frame",
+ "redrob-film-geom",
+ "redrob-film-gpu",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-render",
+ "redrob-film-testkit",
+ "redrob-film-time",
+ "wgpu",
+]
+
+[[package]]
+name = "redrob-film-gpu"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "log",
+ "pollster 0.4.0",
+ "rayon",
+ "redrob-film-color",
+ "redrob-film-export",
+ "redrob-film-frame",
+ "redrob-film-geom",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-render",
+ "redrob-film-time",
+ "wgpu",
+]
+
+[[package]]
+name = "redrob-film-h264"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-h264enc"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-hevc"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-interchange"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "redrob-film-cfb",
+ "redrob-film-color",
+ "redrob-film-geom",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-time",
+ "roxmltree",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-isobmff"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-matroska"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-testkit",
+ "serde_json",
+]
+
+[[package]]
+name = "redrob-film-media"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "rayon",
+ "redrob-film-color",
+ "redrob-film-frame",
+ "redrob-film-time",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-mpeg2v"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-mpegts"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-mxf"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-testkit",
+]
+
+[[package]]
+name = "redrob-film-ogg"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-testkit",
+]
+
+[[package]]
+name = "redrob-film-opus"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-testkit",
+]
+
+[[package]]
+name = "redrob-film-platform"
+version = "0.2.0"
+dependencies = [
+ "libloading",
+ "log",
+ "objc2-core-foundation",
+ "objc2-core-media",
+ "objc2-core-video",
+ "objc2-video-toolbox",
+ "redrob-film-bitstream",
+ "redrob-film-codecs",
+ "redrob-film-color",
+ "redrob-film-export",
+ "redrob-film-frame",
+ "redrob-film-h264",
+ "redrob-film-hevc",
+ "redrob-film-isobmff",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-render",
+ "redrob-film-testkit",
+ "redrob-film-time",
+ "windows 0.62.2",
+]
+
+[[package]]
+name = "redrob-film-project"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "redrob-film-color",
+ "redrob-film-geom",
+ "redrob-film-media",
+ "redrob-film-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-prores"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "redrob-film-testkit",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-render"
+version = "0.2.0"
+dependencies = [
+ "image",
+ "rayon",
+ "redrob-film-audio-dsp",
+ "redrob-film-captions",
+ "redrob-film-color",
+ "redrob-film-frame",
+ "redrob-film-geom",
+ "redrob-film-media",
+ "redrob-film-project",
+ "redrob-film-text",
+ "redrob-film-time",
+ "rustix 1.1.5",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "redrob-film-scopes"
+version = "0.2.0"
+dependencies = [
+ "redrob-film-color",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "redrob-film-speech"
+version = "0.2.0"
+dependencies = [
+ "candle-core",
+ "candle-nn",
+ "rayon",
+ "redrob-film-project",
+ "redrob-film-time",
+ "rustls",
+ "rustls-rustcrypto",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.21",
+ "ureq",
+]
+
+[[package]]
+name = "redrob-film-testkit"
+version = "0.2.0"
+dependencies = [
+ "png",
+]
+
+[[package]]
+name = "redrob-film-text"
+version = "0.2.0"
+dependencies = [
+ "harfrust",
+ "redrob-film-color",
+ "skrifa",
+ "unicode-bidi",
+ "unicode-linebreak",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "redrob-film-time"
+version = "0.2.0"
+dependencies = [
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "redrob-film-tts"
+version = "0.2.0"
+dependencies = [
+ "candle-core",
+ "candle-nn",
+ "redrob-film-audio-dsp",
+ "redrob-film-tts-text",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zip",
+]
+
+[[package]]
+name = "redrob-film-tts-text"
+version = "0.2.0"
+dependencies = [
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "redrob-film-ui-egui"
+version = "0.2.0"
+dependencies = [
+ "cpu-time",
+ "eframe",
+ "egui",
+ "egui_kittest",
+ "image",
+ "log",
+ "pollster 0.4.0",
+ "rayon",
+ "redrob-film-audio-dsp",
+ "redrob-film-codecs",
+ "redrob-film-color",
+ "redrob-film-edit",
+ "redrob-film-engine",
+ "redrob-film-export",
+ "redrob-film-frame",
+ "redrob-film-geom",
+ "redrob-film-gpu",
+ "redrob-film-interchange",
+ "redrob-film-media",
+ "redrob-film-platform",
+ "redrob-film-project",
+ "redrob-film-render",
+ "redrob-film-scopes",
+ "redrob-film-text",
+ "redrob-film-time",
+ "redrob-film-tts",
+ "rustix 1.1.5",
+ "serde",
+ "serde_json",
+ "toml 1.1.8+spec-1.1.0",
+ "web-time",
+]
+
+[[package]]
+name = "redrob-film-vp9"
+version = "0.2.0"
+dependencies = [
+ "rayon",
+ "redrob-film-bitstream",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "ref-cast"
 version = "1.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8637,9 +8637,9 @@ checksum = "e450f9b2ed1dff33c94c12589a87338689467b9c4f5d8a5710bd09a847d2c8a7"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
- "filmcraft-testkit",
+ "redrob-film-testkit",
  "serde_json",
 ]
 

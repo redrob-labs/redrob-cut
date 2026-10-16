@@ -3,9 +3,9 @@
 //! ids) at positions within tolerance, from scratch and when advancing / seeking from GPU
 //! checkpoints.
 
-use effectcraft_effects::psim::{ParticleSim, SimParticle};
-use effectcraft_effects::{EffectCtx, EffectEnv, EffectHost, LayerPixels, Params};
-use effectcraft_keyframe::Value;
+use redrob_effects_effects::psim::{ParticleSim, SimParticle};
+use redrob_effects_effects::{EffectCtx, EffectEnv, EffectHost, LayerPixels, Params};
+use redrob_effects_keyframe::Value;
 
 use crate::Gpu;
 use crate::tests::{gpu, n};
@@ -25,9 +25,9 @@ impl EffectHost for Host {
 }
 
 pub(crate) fn params(id: &str, vals: &[(&str, Value)]) -> Params {
-    let spec = effectcraft_effects::find(id).unwrap();
+    let spec = redrob_effects_effects::find(id).unwrap();
     let size = [320.0, 240.0];
-    let mut p = Params { values: spec.params.iter().map(|ps| (ps.id.to_string(), effectcraft_effects::default_value(ps, size))).collect() };
+    let mut p = Params { values: spec.params.iter().map(|ps| (ps.id.to_string(), redrob_effects_effects::default_value(ps, size))).collect() };
     for (k, v) in vals {
         assert!(p.values.contains_key(*k), "{id}: no {k}");
         p.values.insert(k.to_string(), v.clone());
@@ -38,8 +38,9 @@ pub(crate) fn params(id: &str, vals: &[(&str, Value)]) -> Params {
 /// (CPU, GPU) particles of effect `id` at layer time `t`.
 fn states(id: &str, p: &Params, t: f64, host: &Host) -> (Vec<SimParticle>, Vec<SimParticle>) {
     let ctx = |env| EffectCtx { params: p, time: t, layer_size: [320.0, 240.0], seed: 5, adjustment: false, env };
-    let run =
-        |c: &EffectCtx| if id == "ec.sim.particleplayground" { effectcraft_effects::playground_state(c) } else { effectcraft_effects::particle_state(id, c) };
+    let run = |c: &EffectCtx| {
+        if id == "ec.sim.particleplayground" { redrob_effects_effects::playground_state(c) } else { redrob_effects_effects::particle_state(id, c) }
+    };
     let cpu = run(&ctx(EffectEnv::default())).expect("cpu state");
     let gpu = run(&ctx(EffectEnv { host: Some(host), ..Default::default() })).expect("gpu state");
     (cpu, gpu)
@@ -135,8 +136,8 @@ fn playground_cannon_matches_the_cpu_and_checkpoints_reuse() {
 /// the composited frames agree with the CPU render.
 #[test]
 fn particle_effects_render_like_the_cpu() {
-    use effectcraft_project::BitDepth;
-    use effectcraft_time::Tick;
+    use redrob_effects_project::BitDepth;
+    use redrob_effects_time::Tick;
 
     use crate::tests::{Scene, check, compare_at, opts};
     for (id, vals) in [

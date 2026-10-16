@@ -18,7 +18,7 @@
 //! without strokes the effect passes its input through.
 //!
 //! *Version*: 1.0 is the classic graph-cut engine; 2.0 and 3.0 also use the trained model chosen
-//! in Settings ▸ Roto Brush ([`set_model`], an `effectcraft_segment::MaskModel` such as
+//! in Settings ▸ Roto Brush ([`set_model`], an `redrob_effects_segment::MaskModel` such as
 //! MobileSAM), falling back to the classic engine when none is installed. The model's id is part
 //! of the chain seed, so choosing another recomputes the mattes. *Quality ▸ Best* segments at a
 //! higher working resolution with more iterations.
@@ -26,19 +26,19 @@
 use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::sync::{Arc, Mutex, OnceLock, RwLock, Weak};
 
-use effectcraft_keyframe::Value;
-use effectcraft_project::ParamUi;
-use effectcraft_raster::Image;
-use effectcraft_segment::MaskModel;
-use effectcraft_track::roto::refine::{self, MatteParams};
-use effectcraft_track::roto::{self as rb, RotoData, SegOpts, rle};
 use rayon::prelude::*;
+use redrob_effects_keyframe::Value;
+use redrob_effects_project::ParamUi;
+use redrob_effects_raster::Image;
+use redrob_effects_segment::MaskModel;
+use redrob_effects_track::roto::refine::{self, MatteParams};
+use redrob_effects_track::roto::{self as rb, RotoData, SegOpts, rle};
 use serde::{Deserialize, Serialize};
 
 use crate::warp_stab::param;
 use crate::{Buf, EffectCtx, EffectSpec, Params, num, p, popup, slider};
 
-pub use effectcraft_track::roto::{FrameSeg, Stroke, StrokeKind};
+pub use redrob_effects_track::roto::{FrameSeg, Stroke, StrokeKind};
 
 /// The effect's id.
 pub const ID: &str = "ec.matte.rotobrush";
@@ -221,7 +221,7 @@ pub fn seed(params: &Params, layer_size: [f64; 2], fps: f64) -> u64 {
         fnv(&mut h, &v.to_bits().to_le_bytes());
     }
     fnv(&mut h, &[e(params, "quality") as u8, e(params, "version") as u8]);
-    fnv(&mut h, model_for(params).map_or(effectcraft_segment::CLASSICAL, |m| m.info().id).as_bytes());
+    fnv(&mut h, model_for(params).map_or(redrob_effects_segment::CLASSICAL, |m| m.info().id).as_bytes());
     h
 }
 
@@ -776,13 +776,13 @@ mod tests {
     /// blur / decontamination their nested ones) load with their values in the new places.
     #[test]
     fn old_group_layout_is_migrated_on_load() {
-        use effectcraft_project::build::Ids;
+        use redrob_effects_project::build::Ids;
         let spec = crate::find(ID).unwrap();
         let mut next = 1;
         let mut ids = Ids(&mut next);
         // The old layout: everything under Roto Brush Matte / Refine Edge Matte.
         let mut g = ids.group(ID, "Roto Brush & Refine Edge");
-        g.kind = effectcraft_project::GroupKind::Effect { effect: ID.into() };
+        g.kind = redrob_effects_project::GroupKind::Effect { effect: ID.into() };
         let mut rb = ids.group("rotoBrushMatte", "Roto Brush Matte");
         rb.children.push(ids.prop("searchRadius", "Search Radius", Value::Scalar(33.0)).into());
         rb.children.push(ids.prop("feather", "Feather", Value::Scalar(2.0)).into());

@@ -43,7 +43,7 @@ Other agents (Claude Code, Codex, any MCP client) connect as before, through `re
 
 | Mode | Command | What it drives |
 |---|---|---|
-| Headless | `redrob-film-cli mcp --demo` or `--project p.fcproj` (neither = empty project) | an in-process engine session, no window |
+| Headless | `redrob-film-cli mcp --demo` or `--project p.rfilm` (neither = empty project) | an in-process engine session, no window |
 | Bridge | `redrob-film-cli mcp --bridge 127.0.0.1:9876` | the running desktop app started with `redrob-film --control 9876` |
 
 Headless mode also takes `--data-dir DIR` (user presets). Any other option is rejected (exit 2):
@@ -54,7 +54,7 @@ and write wherever the user can.
 `filmcraft-headless` = demo). Both point at `target/release/redrob-film-cli`, so build it first:
 
 ```sh
-cargo build --release -p filmcraft-cli -p filmcraft
+cargo build --release -p redrob-film-cli -p redrob-film-app
 ./target/release/redrob-film --control 9876 &      # only for the bridge server
 claude                                           # approve the project MCP servers when asked
 ```
@@ -130,8 +130,8 @@ driven one app can drive the others.
 - **Errors.** A failing command is an `isError` result with the engine's message. A line that is not
   JSON gets a `-32700` parse error (id `null`) and the server keeps serving. A command that panics is
   reported as `internal error: …`, and the session stays usable.
-- **Resources.** `filmcraft://document` (the project tree and active sequence, as `doc_inspect`) and
-  `filmcraft://commands` (the command catalog, as `command_list`), both `application/json`. For MCP
+- **Resources.** `redrob-film://document` (the project tree and active sequence, as `doc_inspect`) and
+  `redrob-film://commands` (the command catalog, as `command_list`), both `application/json`. For MCP
   2026-07-28 clients such as current Claude Code, list and read results carry the `ttlMs` and
   `cacheScope` hints that revision requires.
 
@@ -162,7 +162,7 @@ progress and stop it:
 
 ## 2. Control channel
 
-`redrob-film --control 9876` (or `FILMCRAFT_CONTROL_PORT=9876`) listens on `127.0.0.1` only. Send one
+`redrob-film --control 9876` (or `REDROB_FILM_CONTROL_PORT=9876`) listens on `127.0.0.1` only. Send one
 JSON request per line and get one JSON reply per line. Full method table:
 [control-protocol.md](control-protocol.md).
 
@@ -229,15 +229,15 @@ failures; any other stdout write error is reported and makes the status 1.
 redrob-film-cli commands razor                     # find ids (add --json for machine output)
 redrob-film-cli describe timeline.razor            # one command: menu, shortcut, params, enabled now
 redrob-film-cli --demo inspect sequence            # project / sequence as JSON
-redrob-film-cli --project p.fcproj --save exec timeline.razor seconds=3.5
-redrob-film-cli --project p.fcproj exec effects.apply '{"effect":"Gaussian Blur"}'
-redrob-film-cli --project p.fcproj exec markers.exportCsv path=review.csv
-redrob-film-cli --project p.fcproj --save import a.mov b.wav
-redrob-film-cli --project p.fcproj export out.mp4  # format from the extension; waits for the job
-redrob-film-cli --project p.fcproj export out --preset "YouTube 1080p Full HD" --start 0 --end 10
+redrob-film-cli --project p.rfilm --save exec timeline.razor seconds=3.5
+redrob-film-cli --project p.rfilm exec effects.apply '{"effect":"Gaussian Blur"}'
+redrob-film-cli --project p.rfilm exec markers.exportCsv path=review.csv
+redrob-film-cli --project p.rfilm --save import a.mov b.wav
+redrob-film-cli --project p.rfilm export out.mp4  # format from the extension; waits for the job
+redrob-film-cli --project p.rfilm export out --preset "YouTube 1080p Full HD" --start 0 --end 10
 redrob-film-cli export --list-presets prores       # built-in + user presets (--data-dir for another library)
-redrob-film-cli --project p.fcproj exec export.queue.add preset="Apple ProRes 422 HQ" path=renders/ start=true wait=true
-echo '{"id":"file.newBin","params":{"name":"Selects"}}' | redrob-film-cli --project p.fcproj --save run -
+redrob-film-cli --project p.rfilm exec export.queue.add preset="Apple ProRes 422 HQ" path=renders/ start=true wait=true
+echo '{"id":"file.newBin","params":{"name":"Selects"}}' | redrob-film-cli --project p.rfilm --save run -
 redrob-film-cli --bridge 127.0.0.1:9876 exec window.workspace.color   # the running app
 ```
 
@@ -266,7 +266,7 @@ failed write reports an error. The menu opens the normal save dialog; cancelling
 
 For any UI change, look at the result:
 
-1. `cargo run --release -p filmcraft -- --control 9876`
+1. `cargo run --release -p redrob-film-app -- --control 9876`
 2. Drive the feature through the control channel or the MCP bridge: commands, then clicks and drags
    by automation id.
 3. Assert on `ui.inspect`, `ui.elements` and `sequence.inspect`.

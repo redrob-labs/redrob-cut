@@ -2,12 +2,12 @@
 //! staggers the layers in selection order, onto subframes, as one undo step; a plain drag still
 //! moves them together and Alt alone still scales a key group.
 
-use effectcraft_engine::Session;
-use effectcraft_engine::project::LayerId;
-use effectcraft_engine::time::Tick;
-use effectcraft_ui_egui::EffectcraftApp;
 use egui::{Event, Modifiers, Pos2, pos2, vec2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::LayerId;
+use redrob_effects_engine::time::Tick;
+use redrob_effects_ui_egui::EffectcraftApp;
 use serde_json::json;
 
 /// One frame at 30 fps.
@@ -30,7 +30,7 @@ fn harness() -> (Harness<'static, EffectcraftApp>, Vec<u64>) {
     let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).build_eframe(|_| EffectcraftApp::new(s));
     h.run_steps(3);
     let ctx = h.ctx.clone();
-    effectcraft_ui_egui::menus::invoke(h.state_mut(), &ctx, "timeline.reveal.opacity", json!({})).unwrap();
+    redrob_effects_ui_egui::menus::invoke(h.state_mut(), &ctx, "timeline.reveal.opacity", json!({})).unwrap();
     h.run_steps(4);
     (h, ids)
 }

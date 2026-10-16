@@ -3,10 +3,10 @@
 //! comp of seeded-random effects: particles, grain, noise, wiggle expressions, Shatter) twice
 //! on one thread and on several, and compares every float of every pixel.
 
-use effectcraft_engine::Session;
-use effectcraft_engine::project::{ItemId, Project};
-use effectcraft_engine::render::{RenderOpts, Renderer};
-use effectcraft_engine::time::Tick;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::project::{ItemId, Project};
+use redrob_effects_engine::render::{RenderOpts, Renderer};
+use redrob_effects_engine::time::Tick;
 use serde_json::json;
 
 fn render(s: &Session, p: &Project, comp: ItemId, t: f64) -> Vec<u32> {
@@ -46,8 +46,8 @@ fn random_comp(s: &mut Session) -> ItemId {
 
 #[test]
 fn renders_are_bit_identical_across_runs_and_thread_counts() {
-    let mut s = effectcraft_host::session();
-    s.replace_project(effectcraft_engine::demo::demo_project(), None);
+    let mut s = redrob_effects_host::session();
+    s.replace_project(redrob_effects_engine::demo::demo_project(), None);
     let random = random_comp(&mut s);
     let p = (*s.project).clone();
     let mut comps: Vec<(ItemId, f64)> = p.comps().map(|(id, c)| (*id, c.duration.seconds())).collect();

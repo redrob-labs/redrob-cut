@@ -1,7 +1,7 @@
-use effectcraft_engine::Session;
-use effectcraft_ui_egui::{EffectcraftApp, dock::PanelKind};
 use egui::{Event, Modifiers, PointerButton, pos2, vec2};
 use egui_kittest::Harness;
+use redrob_effects_engine::Session;
+use redrob_effects_ui_egui::{EffectcraftApp, dock::PanelKind};
 use serde_json::json;
 
 fn setup() -> (EffectcraftApp, u64, u64, u64) {

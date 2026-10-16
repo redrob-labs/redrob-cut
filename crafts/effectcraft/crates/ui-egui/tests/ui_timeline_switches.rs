@@ -3,13 +3,13 @@
 //! in After Effects (#227); stopwatches the same way (#284). Also the label swatch's menu and the
 //! layer bar past its source (#290).
 
-use effectcraft_engine::Session;
-use effectcraft_engine::color::Label;
-use effectcraft_engine::project::LayerId;
-use effectcraft_ui_egui::EffectcraftApp;
 use egui::{Color32, Event, Modifiers, Pos2, Rect, pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::color::Label;
+use redrob_effects_engine::project::LayerId;
+use redrob_effects_ui_egui::EffectcraftApp;
 use serde_json::json;
 
 /// Comp "Main" with solids A (top) to D (bottom); returns their ids top to bottom.
@@ -47,16 +47,16 @@ fn drag(h: &mut Harness<'_, EffectcraftApp>, from: Pos2, to: Pos2, steps: u32) {
 }
 
 /// Each layer's switch, top to bottom.
-fn states(h: &Harness<'_, EffectcraftApp>, ids: &[u64], f: fn(&effectcraft_engine::project::Layer) -> bool) -> Vec<bool> {
+fn states(h: &Harness<'_, EffectcraftApp>, ids: &[u64], f: fn(&redrob_effects_engine::project::Layer) -> bool) -> Vec<bool> {
     let comp = h.state().session.active_comp().unwrap();
     ids.iter().map(|id| f(comp.layer(LayerId(*id)).unwrap())).collect()
 }
 
-fn video(l: &effectcraft_engine::project::Layer) -> bool {
+fn video(l: &redrob_effects_engine::project::Layer) -> bool {
     l.switches.video
 }
 
-fn motion_blur(l: &effectcraft_engine::project::Layer) -> bool {
+fn motion_blur(l: &redrob_effects_engine::project::Layer) -> bool {
     l.switches.motion_blur
 }
 

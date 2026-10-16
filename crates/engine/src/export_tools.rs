@@ -1,7 +1,7 @@
 //! Export mode for every client: export presets (built-in + the user's), building
 //! [`ExportSettings`] from a preset plus overrides, the export queue and Quick Export.
 //!
-//! - **Presets.** Built-ins come from [`filmcraft_export::presets`]; user presets and favourites
+//! - **Presets.** Built-ins come from [`redrob_film_export::presets`]; user presets and favourites
 //!   persist in `<data dir>/export-presets.json`
 //!   (`{"format": "filmcraft.export-presets", "version": 1, "presets": […], "favorites": […]}`); the
 //!   same format is used to import / export preset files. A user preset shadows a built-in of the
@@ -25,10 +25,10 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
-use filmcraft_export::presets::{DEFAULT_PRESET, preset_key};
-use filmcraft_export::{BitrateMode, ExportPreset, ExportSettings, Format, GpuRendering, HardwareEncoding};
-use filmcraft_project::{ItemId, Project};
-use filmcraft_time::{FrameRate, Tick, TimeRange};
+use redrob_film_export::presets::{DEFAULT_PRESET, preset_key};
+use redrob_film_export::{BitrateMode, ExportPreset, ExportSettings, Format, GpuRendering, HardwareEncoding};
+use redrob_film_project::{ItemId, Project};
+use redrob_film_time::{FrameRate, Tick, TimeRange};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -84,20 +84,20 @@ impl ExportPresetLibrary {
     fn persist(&self) -> std::result::Result<(), String> {
         let Some(d) = &self.dir else { return Ok(()) };
         let _ = std::fs::create_dir_all(d);
-        filmcraft_format::atomic_write(&d.join(LIBRARY_FILE), &file_bytes(&self.user, &self.favorites)).map_err(|e| e.to_string())
+        redrob_film_format::atomic_write(&d.join(LIBRARY_FILE), &file_bytes(&self.user, &self.favorites)).map_err(|e| e.to_string())
     }
 
     /// Built-in and user presets (user presets shadow built-ins of the same name).
     pub fn all(&self) -> Vec<ExportPreset> {
         let mut v: Vec<ExportPreset> =
-            filmcraft_export::builtin_presets().into_iter().filter(|b| !self.user.iter().any(|u| preset_key(&u.name) == preset_key(&b.name))).collect();
+            redrob_film_export::builtin_presets().into_iter().filter(|b| !self.user.iter().any(|u| preset_key(&u.name) == preset_key(&b.name))).collect();
         v.extend(self.user.iter().cloned());
         v
     }
 
     pub fn find(&self, name: &str) -> Option<ExportPreset> {
         let k = preset_key(name);
-        self.user.iter().find(|p| preset_key(&p.name) == k).cloned().or_else(|| filmcraft_export::presets::find_builtin(name))
+        self.user.iter().find(|p| preset_key(&p.name) == k).cloned().or_else(|| redrob_film_export::presets::find_builtin(name))
     }
 
     pub fn is_favorite(&self, name: &str) -> bool {
@@ -316,7 +316,7 @@ pub fn range_param(s: &Session, project: &Project, seq: ItemId, v: Option<&Value
     };
     let range = match mode.as_str() {
         "entire" | "entiresequence" | "sequence" | "all" => whole,
-        "inout" | "sequenceinout" => filmcraft_export::export_range(project, seq, &ExportSettings::default()).map_err(|e| bad(cmd, e.to_string()))?,
+        "inout" | "sequenceinout" => redrob_film_export::export_range(project, seq, &ExportSettings::default()).map_err(|e| bad(cmd, e.to_string()))?,
         "workarea" => q.work_area.ok_or_else(|| bad(cmd, "the sequence has no work area"))?,
         "custom" => {
             let a = time_p(s, p, "start").ok_or_else(|| bad(cmd, "custom range: need start (startTime / startSeconds / startFrame / startTimecode)"))?;
@@ -329,7 +329,7 @@ pub fn range_param(s: &Session, project: &Project, seq: ItemId, v: Option<&Value
         }
         other => return Err(bad(cmd, format!("range `{other}`: entire | inOut | workArea | custom"))),
     };
-    filmcraft_export::validate_range(range).map_err(|e| bad(cmd, e.to_string()))?;
+    redrob_film_export::validate_range(range).map_err(|e| bad(cmd, e.to_string()))?;
     Ok(Some(range))
 }
 
@@ -412,12 +412,12 @@ fn write_sidecar(s: &Session, project: &Project, seq: ItemId, settings: &ExportS
     let Some(kind) = settings.caption_sidecar.as_deref() else { return Ok(None) };
     let q = project.sequence(seq).ok_or(EngineError::NoSequence)?;
     let Some(track) = q.caption_tracks.first() else { return Ok(None) };
-    let format = filmcraft_captions::Format::from_name(kind).ok_or_else(|| bad("export", format!("caption sidecar `{kind}`: srt | vtt")))?;
-    let range = filmcraft_export::export_range(project, seq, settings).map_err(|e| EngineError::Other(e.to_string()))?;
-    let doc = filmcraft_captions::document_from_track(track, range.start);
+    let format = redrob_film_captions::Format::from_name(kind).ok_or_else(|| bad("export", format!("caption sidecar `{kind}`: srt | vtt")))?;
+    let range = redrob_film_export::export_range(project, seq, settings).map_err(|e| EngineError::Other(e.to_string()))?;
+    let doc = redrob_film_captions::document_from_track(track, range.start);
     let bytes =
-        filmcraft_captions::write(&doc, format, filmcraft_captions::WriteOptions { drop_frame: q.settings.drop_frame, rate: Some(q.settings.frame_rate) });
-    let ext = if format == filmcraft_captions::Format::WebVtt { "vtt" } else { kind };
+        redrob_film_captions::write(&doc, format, redrob_film_captions::WriteOptions { drop_frame: q.settings.drop_frame, rate: Some(q.settings.frame_rate) });
+    let ext = if format == redrob_film_captions::Format::WebVtt { "vtt" } else { kind };
     let path = format!("{}.{ext}", settings.path.rsplit_once('.').map_or(settings.path.as_str(), |x| x.0));
     s.services.write_file(&path, &bytes).map_err(|e| EngineError::Other(format!("{path}: {e}")))?;
     Ok(Some(path))
@@ -426,12 +426,12 @@ fn write_sidecar(s: &Session, project: &Project, seq: ItemId, settings: &ExportS
 /// Run an export of `seq` in `project` as a background job (or now, with `wait`); returns the job id.
 pub fn spawn_export(s: &mut Session, project: Arc<Project>, seq: ItemId, mut settings: ExportSettings, label: String, wait: bool) -> Result<u64> {
     let format = settings.format;
-    if !filmcraft_export::available(format) {
+    if !redrob_film_export::available(format) {
         return Err(EngineError::Other(format!("{} export is not available (no encoder registered)", format.label())));
     }
     if s.services.export_in_memory() {
         let services = s.services.clone();
-        settings.sink = Some(filmcraft_export::OutputSink(Arc::new(move |path: &str, data: Vec<u8>| services.write_file(path, &data))));
+        settings.sink = Some(redrob_film_export::OutputSink(Arc::new(move |path: &str, data: Vec<u8>| services.write_file(path, &data))));
     }
     if let Some(dir) = Path::new(&settings.path).parent().filter(|d| !d.as_os_str().is_empty() && !s.services.export_in_memory()) {
         let _ = std::fs::create_dir_all(dir);
@@ -442,16 +442,16 @@ pub fn spawn_export(s: &mut Session, project: Arc<Project>, seq: ItemId, mut set
     // Export always renders full-resolution media, whatever the proxy toggle says.
     let provider = s.media.full_res_provider(project.clone(), s.services.clone());
     let (prog, res) = (job.progress.clone(), job.result.clone());
-    if cfg!(target_arch = "wasm32") && !wait && filmcraft_export::stepped(format) {
+    if cfg!(target_arch = "wasm32") && !wait && redrob_film_export::stepped(format) {
         // No threads: the host advances the export between UI frames (`Session::pump_jobs`).
-        let mut exporter = filmcraft_export::Exporter::new(project, seq, &settings, &prog).map_err(|e| EngineError::Other(e.to_string()))?;
+        let mut exporter = redrob_film_export::Exporter::new(project, seq, &settings, &prog).map_err(|e| EngineError::Other(e.to_string()))?;
         exporter.set_batch(1);
         s.jobs.push(job);
         s.stepped.push(crate::SteppedJob { job: id, exporter, provider, progress: prog, result: res });
         return Ok(id);
     }
     let run = move || {
-        let r = filmcraft_export::export(&project, seq, &settings, &provider, &prog).map_err(|e| e.to_string());
+        let r = redrob_film_export::export(&project, seq, &settings, &provider, &prog).map_err(|e| e.to_string());
         if let Err(e) = &r {
             *prog.error.lock().unwrap_or_else(|x| x.into_inner()) = Some(e.clone());
             prog.finished.store(true, Ordering::Relaxed);
@@ -463,7 +463,7 @@ pub fn spawn_export(s: &mut Session, project: Arc<Project>, seq: ItemId, mut set
     if wait || cfg!(target_arch = "wasm32") {
         run();
     } else {
-        std::thread::Builder::new().name("filmcraft-export".into()).spawn(run).map_err(|e| EngineError::Other(e.to_string()))?;
+        std::thread::Builder::new().name("redrob-film-export".into()).spawn(run).map_err(|e| EngineError::Other(e.to_string()))?;
     }
     Ok(id)
 }
@@ -472,8 +472,8 @@ pub fn spawn_export(s: &mut Session, project: Arc<Project>, seq: ItemId, mut set
 /// job failed with an error instead of killing its thread and leaving the job "running" forever.
 /// The panic hook has already logged where it happened.
 pub(crate) fn guard_job(
-    progress: Arc<filmcraft_export::Progress>,
-    result: Arc<std::sync::Mutex<Option<std::result::Result<filmcraft_export::Report, String>>>>,
+    progress: Arc<redrob_film_export::Progress>,
+    result: Arc<std::sync::Mutex<Option<std::result::Result<redrob_film_export::Report, String>>>>,
     run: impl FnOnce() + Send + 'static,
 ) -> impl FnOnce() + Send + 'static {
     move || {
@@ -863,10 +863,10 @@ fn resolve(s: &mut Session, p: &Value) -> Result<Value> {
     settings.range = range_param(s, &project, seq, p.get("range"), p, cmd)?;
     settings.path = output_path(s, p, seq, &settings, None);
     let q = project.sequence(seq).ok_or(EngineError::NoSequence)?;
-    let range = filmcraft_export::export_range(&project, seq, &settings).map_err(|e| EngineError::Other(e.to_string()))?;
+    let range = redrob_film_export::export_range(&project, seq, &settings).map_err(|e| EngineError::Other(e.to_string()))?;
     let (w, h, rate, sr) = (q.settings.width, q.settings.height, q.settings.frame_rate, q.settings.sample_rate);
     let r = settings.resolve(w, h, rate, sr);
-    let (f0, f1) = filmcraft_export::frame_span(r.rate, range);
+    let (f0, f1) = redrob_film_export::frame_span(r.rate, range);
     let summary = settings.summary(w, h, rate, sr, range.duration);
     Ok(json!({
         "preset": preset.map(|x| x.name),
@@ -930,7 +930,7 @@ fn presets_get(s: &mut Session, p: &Value) -> Result<Value> {
 fn presets_save(s: &mut Session, p: &Value) -> Result<Value> {
     let cmd = "export.presets.save";
     let name = str_p(p, "name").map(str::trim).filter(|n| !n.is_empty()).ok_or_else(|| bad(cmd, "need a `name`"))?.to_string();
-    if filmcraft_export::presets::find_builtin(&name).is_some() {
+    if redrob_film_export::presets::find_builtin(&name).is_some() {
         return Err(bad(cmd, format!("`{name}` is a built-in preset; choose another name")));
     }
     // the settings: `settings` (over `from`, a preset to start from), plus flat overrides
@@ -972,7 +972,7 @@ fn presets_delete(s: &mut Session, p: &Value) -> Result<Value> {
     if s.export_presets.user.len() == n {
         return Err(bad(
             cmd,
-            if filmcraft_export::presets::find_builtin(name).is_some() {
+            if redrob_film_export::presets::find_builtin(name).is_some() {
                 format!("`{name}` is built in and cannot be deleted")
             } else {
                 format!("no user preset named `{name}`")
@@ -1005,7 +1005,7 @@ fn presets_import(s: &mut Session, p: &Value) -> Result<Value> {
     let f = parse_file(&bytes).map_err(|e| EngineError::Other(format!("{path}: {e}")))?;
     let mut names = Vec::new();
     for mut pr in f.presets {
-        if filmcraft_export::presets::find_builtin(&pr.name).is_some() {
+        if redrob_film_export::presets::find_builtin(&pr.name).is_some() {
             pr.name = format!("{} (imported)", pr.name);
         }
         pr.builtin = false;
@@ -1041,7 +1041,7 @@ fn formats(_: &mut Session, _: &Value) -> Result<Value> {
             .map(|f| {
                 let st = ExportSettings { format: *f, ..Default::default() };
                 json!({"id": f.id(), "label": f.label(), "extension": f.extension(), "video": st.has_video(), "audio": st.has_audio() || !st.has_video(),
-                       "imageSequence": st.is_image_sequence(), "available": filmcraft_export::available(*f)})
+                       "imageSequence": st.is_image_sequence(), "available": redrob_film_export::available(*f)})
             })
             .collect(),
     ))
@@ -1105,8 +1105,8 @@ mod guard_tests {
     /// A panicking job body must leave the job finished with an error, not "running" forever.
     #[test]
     fn panicking_job_is_reported_as_failed() {
-        let progress: Arc<filmcraft_export::Progress> = Arc::default();
-        let result: Arc<std::sync::Mutex<Option<std::result::Result<filmcraft_export::Report, String>>>> = Arc::default();
+        let progress: Arc<redrob_film_export::Progress> = Arc::default();
+        let result: Arc<std::sync::Mutex<Option<std::result::Result<redrob_film_export::Report, String>>>> = Arc::default();
         let run = guard_job(progress.clone(), result.clone(), || panic!("job bug"));
         std::thread::spawn(run).join().expect("the guard catches the panic");
         assert!(progress.finished.load(Ordering::Relaxed));

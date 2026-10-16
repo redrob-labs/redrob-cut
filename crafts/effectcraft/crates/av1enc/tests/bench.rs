@@ -1,5 +1,5 @@
 //! Speed / efficiency measurements on ffmpeg-generated test sources (ignored by default):
-//! `cargo test -p effectcraft-av1enc --test bench -- --ignored --nocapture`.
+//! `cargo test -p redrob-effects-av1enc --test bench -- --ignored --nocapture`.
 
 mod common;
 
@@ -7,7 +7,7 @@ use std::process::Command;
 use std::time::Instant;
 
 use common::*;
-use effectcraft_av1enc::{Encoder, EncoderConfig, RateControl};
+use redrob_effects_av1enc::{Encoder, EncoderConfig, RateControl};
 
 /// Raw 8-bit 4:2:0 frames of an ffmpeg lavfi source, or None without ffmpeg.
 fn lavfi(src: &str, w: usize, h: usize, frames: usize) -> Option<Vec<Pic>> {

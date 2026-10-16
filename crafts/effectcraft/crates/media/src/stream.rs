@@ -9,7 +9,7 @@
 
 use std::path::Path;
 
-use filmcraft_media::SharedSource;
+use redrob_film_media::SharedSource;
 
 use crate::Result;
 
@@ -34,7 +34,7 @@ impl FileReader {
 }
 
 #[cfg(any(unix, windows))]
-impl filmcraft_media::ByteReader for FileReader {
+impl redrob_film_media::ByteReader for FileReader {
     fn len(&self) -> u64 {
         self.len
     }
@@ -75,8 +75,8 @@ fn name_of(path: &Path) -> String {
 #[cfg(any(unix, windows))]
 pub(crate) fn open_source(path: &Path) -> Option<Result<SharedSource>> {
     let reader = FileReader::open(path).ok()?;
-    let reader: filmcraft_media::SharedReader = std::sync::Arc::new(reader);
-    let opened = filmcraft_media::reader::open_reader(&name_of(path), reader, &filmcraft_codecs::reader_openers(), &filmcraft_codecs::openers());
+    let reader: redrob_film_media::SharedReader = std::sync::Arc::new(reader);
+    let opened = redrob_film_media::reader::open_reader(&name_of(path), reader, &redrob_film_codecs::reader_openers(), &redrob_film_codecs::openers());
     Some(opened.map_err(Into::into))
 }
 
@@ -146,14 +146,14 @@ pub(crate) fn probe_source(path: &Path) -> Option<Result<SharedSource>> {
         return None;
     }
     let reader = FileReader::open(path).ok()?;
-    let reader: filmcraft_media::SharedReader = std::sync::Arc::new(reader);
-    let head = filmcraft_media::reader::read_range(&*reader, 0, filmcraft_media::reader::HEAD_LEN).ok()?;
+    let reader: redrob_film_media::SharedReader = std::sync::Arc::new(reader);
+    let head = redrob_film_media::reader::read_range(&*reader, 0, redrob_film_media::reader::HEAD_LEN).ok()?;
     let name = path.to_string_lossy();
     if crate::layered::sniff(&name, &head) || image::guess_format(&head).is_ok() {
         return None;
     }
     let name = name_of(path);
-    filmcraft_codecs::reader_openers().into_iter().find_map(|open| open(&name, &head, &reader)).map(|r| r.map_err(Into::into))
+    redrob_film_codecs::reader_openers().into_iter().find_map(|open| open(&name, &head, &reader)).map(|r| r.map_err(Into::into))
 }
 
 #[cfg(not(any(unix, windows)))]

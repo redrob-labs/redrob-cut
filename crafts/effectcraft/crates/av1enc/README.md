@@ -1,11 +1,11 @@
-# effectcraft-av1enc
+# redrob-effects-av1enc
 
 Clean-room, pure-Rust AV1 encoder for Redrob Film's MP4 / WebM export (layer L0, `std` only,
 no `unsafe`, builds for `wasm32-unknown-unknown`).
 
 Output is decoded **bit-exactly** by libdav1d (`ffmpeg -c:v libdav1d`, checked in
 `tests/ffmpeg_oracle.rs` when ffmpeg is installed) and by Redrob Film's spec-derived
-`filmcraft-av1` decoder (`tests/roundtrip.rs`): every decoded frame equals the encoder's own
+`redrob-film-av1` decoder (`tests/roundtrip.rs`): every decoded frame equals the encoder's own
 reconstruction, so prediction never drifts.
 
 ## What is implemented
@@ -69,6 +69,6 @@ The constant tables (default CDFs, scan orders, quantizer lookup tables, interpo
 taps, smooth weights, block / transform size tables, ...) and the decoder-side processes the
 encoder must reproduce exactly (inverse transforms, intra and inter prediction rounding, context
 derivations, motion vector prediction) are mirrored from Redrob Film's first-party, spec-derived
-`filmcraft-av1` decoder (MIT OR Apache-2.0), which is also the round-trip oracle. No source of
+`redrob-film-av1` decoder (MIT OR Apache-2.0), which is also the round-trip oracle. No source of
 libaom, dav1d, rav1e, SVT-AV1, ffmpeg or any other third-party encoder or decoder was consulted;
 ffmpeg / libdav1d is used only as an external test oracle.

@@ -4,8 +4,8 @@
 //! effects can process them, and restores them afterwards (Expand Range) with the same Gain and
 //! Gamma; the two modes are exact inverses.
 
-use effectcraft_keyframe::Value;
 use rayon::prelude::*;
+use redrob_effects_keyframe::Value;
 
 use crate::util::{premul, unpremul};
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};
@@ -50,7 +50,7 @@ pub fn specs() -> Vec<EffectSpec> {
 mod tests {
     use super::*;
     use crate::{EffectEnv, run_fx};
-    use effectcraft_raster::Image;
+    use redrob_effects_raster::Image;
 
     fn hdr() -> Image {
         crate::util::gen_image(8, 4, |x, y| {

@@ -3,8 +3,8 @@ use crate::{
     FilmcraftApp,
     icons::{self, Icon},
 };
-use filmcraft_engine::keyboard::StillFormat;
-use filmcraft_engine::keyboard::{FrameExportTarget, frame_export_target};
+use redrob_film_engine::keyboard::StillFormat;
+use redrob_film_engine::keyboard::{FrameExportTarget, frame_export_target};
 use serde_json::{Value, json};
 
 #[derive(Clone)]
@@ -28,13 +28,13 @@ fn clean(name: &str) -> String {
 pub fn open(app: &mut FilmcraftApp, ctx: &egui::Context, params: &Value) -> Result<Value, String> {
     let target = frame_export_target(&app.session, params).map_err(|e| e.to_string())?;
     let (rate, drop_frame) = if target.source {
-        let view = filmcraft_engine::clip_ops::source_view(&app.session, target.item).ok_or("Source clip is unavailable")?;
+        let view = redrob_film_engine::clip_ops::source_view(&app.session, target.item).ok_or("Source clip is unavailable")?;
         (view.rate, false)
     } else {
         let sequence = app.session.project.sequence(target.item).ok_or("Program sequence is unavailable")?;
         (sequence.settings.frame_rate, sequence.settings.drop_frame)
     };
-    let timecode = filmcraft_time::format_time(target.time, rate, drop_frame, filmcraft_time::TimeDisplay::Timecode, 48000);
+    let timecode = redrob_film_time::format_time(target.time, rate, drop_frame, redrob_film_time::TimeDisplay::Timecode, 48000);
     if target.source {
         app.stop_source();
     } else if app.playback.playing {
@@ -210,7 +210,7 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
     }
     close |= ctx.input(|i| i.key_pressed(egui::Key::Escape));
     if browse && !close {
-        let folder = filmcraft_engine::export_tools::expand_home(d.folder.trim());
+        let folder = redrob_film_engine::export_tools::expand_home(d.folder.trim());
         let picked = match app.hooks.pick_folder_at.as_mut() {
             Some(pick) => pick(&folder),
             None => app.hooks.pick_folder.as_mut().and_then(|pick| pick()),
@@ -232,7 +232,7 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
         let ext = d.format.extension();
         let suffix = format!(".{ext}");
         let name = if stem.to_ascii_lowercase().ends_with(&suffix) { stem } else { format!("{stem}{suffix}") };
-        let folder = filmcraft_engine::export_tools::expand_home(d.folder.trim());
+        let folder = redrob_film_engine::export_tools::expand_home(d.folder.trim());
         let path = std::path::Path::new(&folder).join(name).to_string_lossy().into_owned();
         let allowed = match app.session.services.file_size(&path) {
             Ok(_) => replace && d.replace.as_deref() == Some(path.as_str()),

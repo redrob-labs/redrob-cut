@@ -1,4 +1,4 @@
-//! MXF media source (`filmcraft-mxf` demux, GOP-aware video via [`crate::gop`]).
+//! MXF media source (`redrob-film-mxf` demux, GOP-aware video via [`crate::gop`]).
 //!
 //! - Video: H.264 / AVC-Intra (Annex B byte stream, our decoder), MPEG-2 (D-10 / IMX, XDCAM HD /
 //!   HD422; our decoder), VC-3 (DNxHD/DNxHR) and ProRes through the decoder factories. Other
@@ -12,17 +12,17 @@
 
 use std::sync::Arc;
 
-use filmcraft_frame::{AudioBuffer, VideoFrame};
-use filmcraft_isobmff::{FourCc, SampleEntry};
-use filmcraft_media::{AudioStreamInfo, FrameRequest, MediaError, MediaInfo, MediaKind, MediaSource, SharedSource, VideoStreamInfo};
-use filmcraft_mxf::{Codec, MxfFile, Timecode, TrackKind};
-use filmcraft_time::{FrameRate, Tick};
+use redrob_film_frame::{AudioBuffer, VideoFrame};
+use redrob_film_isobmff::{FourCc, SampleEntry};
+use redrob_film_media::{AudioStreamInfo, FrameRequest, MediaError, MediaInfo, MediaKind, MediaSource, SharedSource, VideoStreamInfo};
+use redrob_film_mxf::{Codec, MxfFile, Timecode, TrackKind};
+use redrob_film_time::{FrameRate, Tick};
 
 use crate::gop::{GopCache, VideoSamples};
 use crate::video::VideoDecoder;
 use crate::{CodecError, make_video_decoder};
 
-impl filmcraft_mxf::ByteSource for crate::Src {
+impl redrob_film_mxf::ByteSource for crate::Src {
     fn len(&self) -> u64 {
         self.0.len()
     }
@@ -32,7 +32,7 @@ impl filmcraft_mxf::ByteSource for crate::Src {
 }
 
 pub fn sniff(head: &[u8]) -> bool {
-    filmcraft_mxf::sniff(head)
+    redrob_film_mxf::sniff(head)
 }
 
 pub struct MxfSource {
@@ -63,9 +63,9 @@ pub struct MxfSource {
 /// positions: the rank of (IDR period, POC) (8.2.1.1, picture order count type 0; types 1 and 2
 /// never reorder for the streams written by AVC encoders we have seen, so they keep stored order).
 pub fn avc_presentation_order(heads: &[Vec<u8>]) -> Option<Vec<i64>> {
-    use filmcraft_bitstream::{annexb_nals, unescape_rbsp};
-    use filmcraft_h264::params::{Pps, Sps};
-    use filmcraft_h264::slice::{NalHeader, SliceHeader};
+    use redrob_film_bitstream::{annexb_nals, unescape_rbsp};
+    use redrob_film_h264::params::{Pps, Sps};
+    use redrob_film_h264::slice::{NalHeader, SliceHeader};
     let mut spss: Vec<Option<Sps>> = vec![None; 32];
     let mut ppss: Vec<Option<Pps>> = vec![None; 256];
     let (mut prev_msb, mut prev_lsb) = (0i64, 0i64);
@@ -90,8 +90,8 @@ pub fn avc_presentation_order(heads: &[Vec<u8>]) -> Option<Vec<i64>> {
                 1 | 5 => {
                     let mut sps_of = None;
                     let (sh, _, _) = SliceHeader::parse(&rbsp, hdr, |id| {
-                        let pps = ppss.get(id as usize).and_then(Option::as_ref).ok_or(filmcraft_h264::Error::MissingParameterSet("PPS".into()))?;
-                        let sps = spss.get(pps.sps_id as usize).and_then(Option::as_ref).ok_or(filmcraft_h264::Error::MissingParameterSet("SPS".into()))?;
+                        let pps = ppss.get(id as usize).and_then(Option::as_ref).ok_or(redrob_film_h264::Error::MissingParameterSet("PPS".into()))?;
+                        let sps = spss.get(pps.sps_id as usize).and_then(Option::as_ref).ok_or(redrob_film_h264::Error::MissingParameterSet("SPS".into()))?;
                         sps_of = Some(sps);
                         Ok((pps, sps))
                     })
@@ -193,14 +193,14 @@ fn start_frames(tc: &Timecode, rate: FrameRate) -> i64 {
 
 impl MxfSource {
     pub fn open(name: &str, bytes: Arc<[u8]>) -> crate::Result<Self> {
-        Self::open_reader(name, Arc::new(filmcraft_media::reader::MemReader(bytes)))
+        Self::open_reader(name, Arc::new(redrob_film_media::reader::MemReader(bytes)))
     }
 
     /// Open from a random-access reader: only the KLV headers, metadata and index are read now.
-    pub fn open_reader(name: &str, reader: filmcraft_media::SharedReader) -> crate::Result<Self> {
+    pub fn open_reader(name: &str, reader: redrob_film_media::SharedReader) -> crate::Result<Self> {
         let bytes = crate::Src(reader);
-        let file = filmcraft_mxf::open(&bytes).map_err(|e| match e {
-            filmcraft_mxf::Error::Unsupported(s) => CodecError::Unsupported(format!("MXF: {s}")),
+        let file = redrob_film_mxf::open(&bytes).map_err(|e| match e {
+            redrob_film_mxf::Error::Unsupported(s) => CodecError::Unsupported(format!("MXF: {s}")),
             other => CodecError::Container(other.to_string()),
         })?;
         for w in &file.warnings {
@@ -211,7 +211,7 @@ impl MxfSource {
             .tracks
             .iter()
             .enumerate()
-            .filter(|(_, t)| t.kind == TrackKind::Sound && !t.chunks.is_empty() && t.sound_format != filmcraft_mxf::SoundFormat::Other)
+            .filter(|(_, t)| t.kind == TrackKind::Sound && !t.chunks.is_empty() && t.sound_format != redrob_film_mxf::SoundFormat::Other)
             .map(|(i, _)| i)
             .collect();
         if vtrack.is_none() && atracks.is_empty() {
@@ -232,7 +232,7 @@ impl MxfSource {
                 let heads: Vec<Vec<u8>> = (0..t.samples.len())
                     .map(|i| {
                         let s = t.samples[i];
-                        filmcraft_media::reader::read_range(&*bytes.0, s.offset, (s.size as usize).min(16 << 10)).unwrap_or_default()
+                        redrob_film_media::reader::read_range(&*bytes.0, s.offset, (s.size as usize).min(16 << 10)).unwrap_or_default()
                     })
                     .collect();
                 match avc_presentation_order(&heads) {
@@ -254,7 +254,7 @@ impl MxfSource {
             let mpeg = (t.codec == Codec::Mpeg2)
                 .then(|| file.read_sample(&bytes, vi, 0).ok())
                 .flatten()
-                .and_then(|s| Some((filmcraft_mpeg2v::probe(&s)?, filmcraft_mpeg2v::scan_access_unit(&s), crate::video::mpeg2_sequence_header(&s)?)));
+                .and_then(|s| Some((redrob_film_mpeg2v::probe(&s)?, redrob_film_mpeg2v::scan_access_unit(&s), crate::video::mpeg2_sequence_header(&s)?)));
             let (w, h) = match &mpeg {
                 Some((info, _, _)) => (info.width, info.height),
                 None => (p.frame_width(), p.frame_height()),
@@ -271,8 +271,8 @@ impl MxfSource {
                 Codec::Vc3 => file
                     .read_sample(&bytes, vi, 0)
                     .ok()
-                    .and_then(|f| filmcraft_dnx::probe(&f).ok())
-                    .map(|h| filmcraft_dnx::cid_name(h.cid))
+                    .and_then(|f| redrob_film_dnx::probe(&f).ok())
+                    .map(|h| redrob_film_dnx::cid_name(h.cid))
                     .unwrap_or_else(|| "DNxHD/DNxHR".into()),
                 Codec::ProRes { profile } => prores_name(profile).into(),
                 c @ Codec::Avc { .. } => c.name().into(),
@@ -295,17 +295,17 @@ impl MxfSource {
                     let pce = pce.as_ref()?;
                     let _ = ph;
                     (!pce.progressive_frame).then_some(if pce.picture_structure == 2 || (pce.picture_structure == 3 && !pce.top_field_first) {
-                        filmcraft_mpeg2v::FieldOrder::BottomFirst
+                        redrob_film_mpeg2v::FieldOrder::BottomFirst
                     } else {
-                        filmcraft_mpeg2v::FieldOrder::TopFirst
+                        redrob_film_mpeg2v::FieldOrder::TopFirst
                     })
                 });
                 pixel_format = crate::video::mpeg2_pixel_format(info, fo);
                 mpeg2_header = header.clone();
             }
-            let mut color = filmcraft_color::ColorInfo { matrix: filmcraft_frame::default_matrix(w, h), ..filmcraft_color::ColorInfo::REC709 };
+            let mut color = redrob_film_color::ColorInfo { matrix: redrob_film_frame::default_matrix(w, h), ..redrob_film_color::ColorInfo::REC709 };
             if p.full_range() {
-                color.range = filmcraft_color::Range::Full;
+                color.range = redrob_film_color::Range::Full;
                 explicit_color = Some(color);
             }
             let secs = vcount as f64 / rate.as_f64().max(1e-9);
@@ -451,7 +451,7 @@ impl MediaSource for MxfSource {
         }
         let rate = self.info.frame_rate();
         let f = rate.frame_at(req.time.max(Tick::ZERO)).clamp(0, self.vcount - 1);
-        let late = filmcraft_media::cancel::catch_up().map(|m| self.vfirst + rate.frame_at(req.time - m));
+        let late = redrob_film_media::cancel::catch_up().map(|m| self.vfirst + rate.frame_at(req.time - m));
         let frame = self.video.frame_late(&MxfVideo { src: self, track: ti }, self.vfirst + f, late)?;
         Ok(frame)
     }
@@ -508,8 +508,8 @@ pub fn opener(name: &str, bytes: Arc<[u8]>) -> Option<Result<SharedSource, Media
     Some(MxfSource::open(name, bytes).map(|s| Arc::new(s) as SharedSource).map_err(Into::into))
 }
 
-/// [`filmcraft_media::ReaderOpener`] for MXF.
-pub fn reader_opener(name: &str, head: &[u8], reader: &filmcraft_media::SharedReader) -> Option<Result<SharedSource, MediaError>> {
+/// [`redrob_film_media::ReaderOpener`] for MXF.
+pub fn reader_opener(name: &str, head: &[u8], reader: &redrob_film_media::SharedReader) -> Option<Result<SharedSource, MediaError>> {
     if !sniff(head) {
         return None;
     }

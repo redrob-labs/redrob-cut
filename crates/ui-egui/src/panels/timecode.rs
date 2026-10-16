@@ -9,8 +9,8 @@
 //! State: `ui.panels.timecode`.
 
 use egui::{Align2, Rect, Sense, pos2, vec2};
-use filmcraft_project::ItemKind;
-use filmcraft_time::{FrameRate, Tick, TimeDisplay, format_time};
+use redrob_film_project::ItemKind;
+use redrob_film_time::{FrameRate, Tick, TimeDisplay, format_time};
 
 use crate::FilmcraftApp;
 use crate::dock::PanelKind;

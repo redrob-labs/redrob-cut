@@ -282,7 +282,7 @@ mod tests {
 
     fn app_with(account: Option<Account>) -> (FilmcraftApp, Rc<RefCell<Vec<&'static str>>>) {
         let calls = Rc::new(RefCell::new(Vec::new()));
-        let mut app = FilmcraftApp::new(filmcraft_engine::Session::default());
+        let mut app = FilmcraftApp::new(redrob_film_engine::Session::default());
         app.account = Some(Box::new(Fake { account, state: ConnectState::Idle, calls: calls.clone() }));
         (app, calls)
     }
@@ -299,7 +299,7 @@ mod tests {
         assert_eq!(app.dialog, None);
 
         // No service at all (web, headless): never connected, and the dialog still explains itself.
-        let mut app = FilmcraftApp::new(filmcraft_engine::Session::default());
+        let mut app = FilmcraftApp::new(redrob_film_engine::Session::default());
         assert!(!connected(&app));
         assert!(!require(&mut app, "Redrob Code"));
     }
@@ -327,7 +327,7 @@ mod tests {
         assert_eq!(s["connected"], json!(false));
         assert_eq!(*calls.borrow(), vec!["disconnect"]);
 
-        let mut app = FilmcraftApp::new(filmcraft_engine::Session::default());
+        let mut app = FilmcraftApp::new(redrob_film_engine::Session::default());
         assert_eq!(route(&mut app, "account.status").unwrap().unwrap(), json!({"connected": false, "available": false, "state": "unavailable"}));
     }
 }

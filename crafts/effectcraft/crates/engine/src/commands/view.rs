@@ -1,7 +1,7 @@
 //! View menu commands that change the project (guides, each comp's Resolution) or
 //! headless-relevant editor state (the region of interest).
 
-use effectcraft_project::{Guide, Resolution};
+use redrob_effects_project::{Guide, Resolution};
 use serde_json::{Value, json};
 
 use super::{CommandSpec, always, bad, comp_id, f_p, has_comp, str_p};

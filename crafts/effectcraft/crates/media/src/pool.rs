@@ -4,12 +4,12 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Condvar, Mutex, OnceLock};
 
-use effectcraft_project::{AlphaMode, Footage, FootageKind, ItemId};
-use effectcraft_raster::{Image, Px};
-use effectcraft_render::{FloatCurve, FootageSource};
-use effectcraft_time::{FrameRate, TICKS_PER_SECOND, Tick};
-use filmcraft_media::{FrameRequest, SharedSource};
 use image::metadata::Orientation;
+use redrob_effects_project::{AlphaMode, Footage, FootageKind, ItemId};
+use redrob_effects_raster::{Image, Px};
+use redrob_effects_render::{FloatCurve, FootageSource};
+use redrob_effects_time::{FrameRate, TICKS_PER_SECOND, Tick};
+use redrob_film_media::{FrameRequest, SharedSource};
 
 use crate::convert::{AlphaOp, dynamic_to_image, frame_to_image_in, frame_to_image_scaled, turned};
 use crate::gif_anim::{self, Anim};
@@ -187,7 +187,7 @@ struct Inner {
     /// In-memory files registered with `add_bytes` (web builds, tests).
     files: Mutex<HashMap<String, Arc<[u8]>>>,
     /// Parsed 3D models by path (`None`: failed to load; not retried until `forget`).
-    models: Mutex<HashMap<String, Option<Arc<effectcraft_model::Model>>>>,
+    models: Mutex<HashMap<String, Option<Arc<redrob_effects_model::Model>>>>,
     /// Decoded animated GIFs and WebPs by path, loaded by the first caller while the others wait (an
     /// `Err` is not retried until `forget`).
     gifs: Mutex<HashMap<Arc<str>, GifSlot>>,
@@ -542,7 +542,7 @@ impl MediaPool {
             return Ok((*img).clone());
         }
         let (tw, th) = (((w as f64 * s).round() as u32).max(1), ((h as f64 * s).round() as u32).max(1));
-        Ok(effectcraft_raster::resample(&img, tw, th))
+        Ok(redrob_effects_raster::resample(&img, tw, th))
     }
 }
 
@@ -552,7 +552,7 @@ impl Inner {
     }
 
     /// A 3D model file and its sibling resources (buffers, textures, MTL files), parsed once.
-    fn model(&self, path: &str) -> Option<Arc<effectcraft_model::Model>> {
+    fn model(&self, path: &str) -> Option<Arc<redrob_effects_model::Model>> {
         if let Some(m) = lock(&self.models).get(path) {
             return m.clone();
         }
@@ -562,7 +562,7 @@ impl Inner {
                 let p = dir.join(uri);
                 self.read(&p.to_string_lossy()).ok().map(|b| b.to_vec())
             };
-            effectcraft_model::load(path, &bytes, &resolve).map_err(|e| e.to_string())
+            redrob_effects_model::load(path, &bytes, &resolve).map_err(|e| e.to_string())
         });
         let m = match loaded {
             Ok(m) => Some(Arc::new(m)),
@@ -608,7 +608,7 @@ impl Inner {
                 self.read(path).and_then(|bytes| {
                     let name = std::path::Path::new(&**path).file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
                     let turn = crate::probe::video_turn(&bytes);
-                    filmcraft_codecs::open_bytes(&name, bytes).map(|src| (src, turn)).map_err(MediaError::from)
+                    redrob_film_codecs::open_bytes(&name, bytes).map(|src| (src, turn)).map_err(MediaError::from)
                 })
             });
             match opened {
@@ -809,7 +809,7 @@ impl Inner {
             Some(mt) => {
                 let (src, turn) = self.opened(path).ok_or_else(|| MediaError::Io(format!("{path}: cannot open")))?;
                 let vf = src
-                    .video_frame(FrameRequest::full(filmcraft_time::Tick(mt.0)))
+                    .video_frame(FrameRequest::full(redrob_film_time::Tick(mt.0)))
                     .map_err(MediaError::from)
                     .inspect_err(|e| self.note_problem(path, &footage.codec, e))?;
                 // A movie shown turned a quarter (a phone held upright): the footage's size and
@@ -835,7 +835,7 @@ impl FootageSource for MediaPool {
     fn set_conform_folder(&self, folder: Option<std::path::PathBuf>) {
         MediaPool::set_conform_folder(self, folder);
     }
-    fn model(&self, _item: ItemId, footage: &Footage) -> Option<Arc<effectcraft_model::Model>> {
+    fn model(&self, _item: ItemId, footage: &Footage) -> Option<Arc<redrob_effects_model::Model>> {
         if footage.missing || footage.kind != FootageKind::Model {
             return None;
         }
@@ -857,7 +857,7 @@ impl FootageSource for MediaPool {
     /// forward from the keyframe) once `cancel` is set: a scrub's superseded frames no longer
     /// hold the decoder the frame under the pointer waits for (#329).
     fn cancellable(&self, cancel: &Arc<AtomicBool>, f: &mut dyn FnMut()) {
-        filmcraft_media::cancel::with_cancel(cancel, f)
+        redrob_film_media::cancel::with_cancel(cancel, f)
     }
     fn frame(&self, item: ItemId, footage: &Footage, t: Tick) -> Option<Arc<Image>> {
         self.frame_sized(item, footage, t, None, FloatCurve::Srgb)
@@ -877,14 +877,14 @@ impl FootageSource for MediaPool {
     }
 
     fn vector_frame(&self, _item: ItemId, footage: &Footage, scale: f64) -> Option<Arc<Image>> {
-        if footage.missing || !effectcraft_render::is_vector_footage(footage) {
+        if footage.missing || !redrob_effects_render::is_vector_footage(footage) {
             return None;
         }
         let bytes = self.inner.read(&footage.path).ok()?;
         crate::layered::rasterize_vector(&footage.path, &bytes, footage.layer.as_ref(), footage.page, scale).map(Arc::new)
     }
 
-    fn aux(&self, _item: ItemId, footage: &Footage, t: Tick) -> Option<Arc<effectcraft_raster::AuxChannels>> {
+    fn aux(&self, _item: ItemId, footage: &Footage, t: Tick) -> Option<Arc<redrob_effects_raster::AuxChannels>> {
         if footage.missing || !footage.has_video {
             return None;
         }

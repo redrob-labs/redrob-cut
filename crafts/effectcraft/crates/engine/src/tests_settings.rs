@@ -34,7 +34,7 @@ fn prefs_round_trip_through_json() {
     p.set("labels.2.name", json!("Teal")).unwrap();
     p.set("autoSave.location", json!("custom")).unwrap();
     p.set("appearance.brightness", json!(0.25)).unwrap();
-    p.push_recent("/a/b.ecproj");
+    p.push_recent("/a/b.rfx");
     let back = Prefs::from_json(&p.to_json());
     assert_eq!(back, p);
     assert_eq!(Prefs::from_json(&Prefs::default().to_json()), Prefs::default());
@@ -282,11 +282,11 @@ fn renamed_labels_show_in_the_label_menu_and_apply_by_name() {
     s.execute("prefs.set", json!({"key": "labels.0.color", "value": "#102030"})).unwrap();
     let red = crate::menus::entries().into_iter().find(|(_, e)| e.command == "edit.label" && e.params["label"] == "Red").unwrap().1;
     assert_eq!(crate::menus::entry_label(&s, red), "Hot Sauce");
-    assert_eq!(s.prefs.label_rgb(effectcraft_color::Label::Red), [0x10, 0x20, 0x30]);
+    assert_eq!(s.prefs.label_rgb(redrob_effects_color::Label::Red), [0x10, 0x20, 0x30]);
     s.execute("edit.label", json!({"label": "Yellow"})).unwrap();
     s.execute("edit.label", json!({"label": "hot sauce"})).unwrap();
     let l = &s.active_comp().unwrap().layers[0];
-    assert_eq!(l.label, effectcraft_color::Label::Red);
+    assert_eq!(l.label, redrob_effects_color::Label::Red);
 }
 
 #[test]
@@ -295,8 +295,13 @@ fn cache_budgets_are_applied() {
     s.execute("prefs.set", json!({"key": "memory.layerCacheMb", "value": 128})).unwrap();
     assert_eq!(s.layer_cache.budget(), 128 << 20);
     struct Src(std::sync::Mutex<usize>);
-    impl effectcraft_render::FootageSource for Src {
-        fn frame(&self, _: effectcraft_project::ItemId, _: &effectcraft_project::Footage, _: effectcraft_time::Tick) -> Option<Arc<effectcraft_raster::Image>> {
+    impl redrob_effects_render::FootageSource for Src {
+        fn frame(
+            &self,
+            _: redrob_effects_project::ItemId,
+            _: &redrob_effects_project::Footage,
+            _: redrob_effects_time::Tick,
+        ) -> Option<Arc<redrob_effects_raster::Image>> {
             None
         }
         fn set_cache_budget(&self, b: usize) {
@@ -313,9 +318,9 @@ fn cache_budgets_are_applied() {
 fn new_layers_start_at_the_current_time_when_asked() {
     let mut s = session_with_comp();
     let nested = s.execute("comp.new", json!({"name": "Nested", "open": false})).unwrap()["comp"].as_u64().unwrap();
-    s.set_time(effectcraft_time::Tick::from_seconds_f64(2.0));
+    s.set_time(redrob_effects_time::Tick::from_seconds_f64(2.0));
     s.execute("layer.addItem", json!({"item": nested})).unwrap();
-    assert_eq!(s.active_comp().unwrap().layers[0].start_time, effectcraft_time::Tick::ZERO);
+    assert_eq!(s.active_comp().unwrap().layers[0].start_time, redrob_effects_time::Tick::ZERO);
     s.execute("prefs.set", json!({"key": "general.createLayersAtCompStart", "value": false})).unwrap();
     s.execute("layer.addItem", json!({"item": nested})).unwrap();
     assert_eq!(s.active_comp().unwrap().layers[0].start_time.seconds().round(), 2.0);
@@ -339,7 +344,7 @@ fn default_spatial_interpolation_linear() {
 #[test]
 fn new_project_template_and_default_renderer() {
     let d = tmp("template");
-    let tpl = d.join("tpl.ecproj");
+    let tpl = d.join("tpl.rfx");
     let mut a = session_with_comp();
     a.execute("file.saveAs", json!({"path": tpl.to_string_lossy()})).unwrap();
     let mut s = Session::default();
@@ -349,7 +354,7 @@ fn new_project_template_and_default_renderer() {
     assert!(s.path.is_none(), "a template opens untitled");
     s.execute("prefs.set", json!({"key": "threeD.defaultRenderer", "value": "advanced"})).unwrap();
     s.execute("comp.new", json!({})).unwrap();
-    assert_eq!(s.active_comp().unwrap().renderer, effectcraft_project::Renderer::Advanced3D);
+    assert_eq!(s.active_comp().unwrap().renderer, redrob_effects_project::Renderer::Advanced3D);
     let _ = std::fs::remove_dir_all(d);
 }
 
@@ -561,7 +566,7 @@ fn atomic_write_overwrites_a_long_valid_filename() {
     let d = tmp("atomic-long-name");
     // The old `<name>.tmp` fits a 255-byte component limit for this 251-byte project name.
     // Including the full name plus a process id and counter made an otherwise valid save fail.
-    let name = format!("{}.ecproj", "x".repeat(244));
+    let name = format!("{}.rfx", "x".repeat(244));
     assert_eq!(name.len(), 251);
     let f = d.join(&name);
     std::fs::write(&f, b"original project").unwrap();
@@ -577,7 +582,7 @@ fn concurrent_atomic_writes_each_publish_a_whole_file() {
     // Writers of the same file used to share one `.tmp`: they truncated each other's data and
     // the later rename failed once the first had moved it away (#1233).
     let d = tmp("atomic-concurrent");
-    let f = d.join("shared.ecproj");
+    let f = d.join("shared.rfx");
     for round in 0..10 {
         let contents: Vec<Vec<u8>> = (0..8u8).map(|w| vec![b'a' + w; 256 * 1024 + usize::from(w) * 1000]).collect();
         std::thread::scope(|sc| {
@@ -588,7 +593,7 @@ fn concurrent_atomic_writes_each_publish_a_whole_file() {
         });
         let got = std::fs::read(&f).unwrap();
         assert!(contents.contains(&got), "round {round}: the file is one writer's whole data ({} bytes)", got.len());
-        assert_eq!(names(&d), ["shared.ecproj"], "round {round}: no temporary file is left");
+        assert_eq!(names(&d), ["shared.rfx"], "round {round}: no temporary file is left");
     }
     let _ = std::fs::remove_dir_all(d);
 }
@@ -597,11 +602,11 @@ fn concurrent_atomic_writes_each_publish_a_whole_file() {
 #[test]
 fn atomic_write_does_not_follow_a_link_at_the_old_temp_name() {
     let d = tmp("atomic-link");
-    let f = d.join("p.ecproj");
+    let f = d.join("p.rfx");
     let victim = d.join("victim.txt");
     std::fs::write(&victim, b"keep").unwrap();
     // The temporary name used to be `<name>.tmp`, opened with File::create (following links).
-    std::os::unix::fs::symlink(&victim, d.join("p.ecproj.tmp")).unwrap();
+    std::os::unix::fs::symlink(&victim, d.join("p.rfx.tmp")).unwrap();
     atomic_write(&f, b"new project").unwrap();
     assert_eq!(std::fs::read(&victim).unwrap(), b"keep", "the link's target is untouched");
     assert_eq!(std::fs::read(&f).unwrap(), b"new project");
@@ -611,7 +616,7 @@ fn atomic_write_does_not_follow_a_link_at_the_old_temp_name() {
 #[test]
 fn atomic_write_survives_a_crash_mid_write() {
     let d = tmp("atomic");
-    let f = d.join("p.ecproj");
+    let f = d.join("p.rfx");
     atomic_write(&f, b"version 1").unwrap();
     // The writer dies halfway through the temporary file.
     let r = atomic_write_with(&f, b"version 2 is much longer", |tmp, data| {
@@ -620,9 +625,9 @@ fn atomic_write_survives_a_crash_mid_write() {
     });
     assert!(r.is_err());
     assert_eq!(std::fs::read(&f).unwrap(), b"version 1");
-    assert_eq!(names(&d), ["p.ecproj"], "the partial temp file is cleaned up");
+    assert_eq!(names(&d), ["p.rfx"], "the partial temp file is cleaned up");
     // A temp file left by a hard kill doesn't count as an auto-save.
-    std::fs::write(d.join("p auto-save 1.ecproj.tmp"), b"junk").unwrap();
+    std::fs::write(d.join("p auto-save 1.rfx.tmp"), b"junk").unwrap();
     assert!(autosave::existing(&d, "p").is_empty());
     atomic_write(&f, b"version 3").unwrap();
     assert_eq!(std::fs::read(&f).unwrap(), b"version 3");
@@ -632,7 +637,7 @@ fn atomic_write_survives_a_crash_mid_write() {
 #[test]
 fn autosave_rotates_through_max_versions() {
     let d = tmp("rotate");
-    let proj = d.join("Intro.ecproj");
+    let proj = d.join("Intro.rfx");
     let mut s = session_with_comp();
     s.execute("file.saveAs", json!({"path": proj.to_string_lossy()})).unwrap();
     s.execute("prefs.set", json!({"key": "autoSave.maxVersions", "value": 3})).unwrap();
@@ -643,13 +648,10 @@ fn autosave_rotates_through_max_versions() {
         written.push(s.autosave_now().unwrap());
     }
     let names: Vec<String> = written.iter().map(|p| PathBuf::from(p).file_name().unwrap().to_string_lossy().to_string()).collect();
-    assert_eq!(
-        names,
-        ["Intro auto-save 1.ecproj", "Intro auto-save 2.ecproj", "Intro auto-save 3.ecproj", "Intro auto-save 1.ecproj", "Intro auto-save 2.ecproj"]
-    );
+    assert_eq!(names, ["Intro auto-save 1.rfx", "Intro auto-save 2.rfx", "Intro auto-save 3.rfx", "Intro auto-save 1.rfx", "Intro auto-save 2.rfx"]);
     let have: Vec<u32> = autosave::existing(&folder, "Intro").iter().map(|e| e.0).collect();
     assert_eq!(have, [1, 2, 3]);
-    let slot2 = std::fs::read_to_string(folder.join("Intro auto-save 2.ecproj")).unwrap();
+    let slot2 = std::fs::read_to_string(folder.join("Intro auto-save 2.rfx")).unwrap();
     assert!(slot2.contains("save4"), "slot 2 holds the newest save");
     // The project file itself is untouched and still dirty.
     assert!(s.is_dirty());
@@ -670,7 +672,7 @@ fn autosave_rotates_through_max_versions() {
 fn autosave_tick_waits_for_the_interval_and_changes() {
     let d = tmp("tick");
     let mut s = session_with_comp();
-    s.execute("file.saveAs", json!({"path": d.join("T.ecproj").to_string_lossy()})).unwrap();
+    s.execute("file.saveAs", json!({"path": d.join("T.rfx").to_string_lossy()})).unwrap();
     s.execute(
         "prefs.set",
         json!({"values": {"autoSave.intervalMinutes": 1, "autoSave.location": "custom", "autoSave.folder": d.join("custom").to_string_lossy()}}),
@@ -680,7 +682,7 @@ fn autosave_tick_waits_for_the_interval_and_changes() {
     s.execute("layer.newNull", json!({})).unwrap();
     assert!(s.autosave_tick(1030.0).is_none(), "interval not reached");
     let p = s.autosave_tick(1061.0).unwrap().unwrap();
-    assert!(p.contains("custom") && p.ends_with("T auto-save 1.ecproj"), "{p}");
+    assert!(p.contains("custom") && p.ends_with("T auto-save 1.rfx"), "{p}");
     assert!(s.autosave_tick(1200.0).is_none(), "nothing changed since");
     s.execute("prefs.set", json!({"key": "autoSave.enabled", "value": false})).unwrap();
     s.execute("layer.newNull", json!({})).unwrap();
@@ -696,7 +698,7 @@ fn crash_recovery_detects_an_unclean_exit() {
     let mut s = session_with_comp();
     s.config = Some(store.clone());
     assert!(s.begin_recovery().is_none(), "first launch is clean");
-    let proj = d.join("Crash.ecproj");
+    let proj = d.join("Crash.rfx");
     s.execute("file.saveAs", json!({"path": proj.to_string_lossy()})).unwrap();
     s.execute("layer.newNull", json!({"name": "unsaved work"})).unwrap();
     let auto = s.autosave_now().unwrap();
@@ -722,25 +724,25 @@ fn crash_recovery_detects_an_unclean_exit() {
 #[test]
 fn open_recent_increment_and_revert() {
     let d = tmp("recent");
-    let a = d.join("A.ecproj");
+    let a = d.join("A.rfx");
     let mut s = session_with_comp();
     s.execute("file.saveAs", json!({"path": a.to_string_lossy()})).unwrap();
     let r = s.execute("file.incrementAndSave", json!({})).unwrap();
-    assert!(r["path"].as_str().unwrap().ends_with("A 2.ecproj"));
+    assert!(r["path"].as_str().unwrap().ends_with("A 2.rfx"));
     let r = s.execute("file.incrementAndSave", json!({})).unwrap();
-    assert!(r["path"].as_str().unwrap().ends_with("A 3.ecproj"));
-    assert!(s.prefs.recent_projects[0].ends_with("A 3.ecproj"));
-    assert!(s.prefs.recent_projects[2].ends_with("A.ecproj"));
+    assert!(r["path"].as_str().unwrap().ends_with("A 3.rfx"));
+    assert!(s.prefs.recent_projects[0].ends_with("A 3.rfx"));
+    assert!(s.prefs.recent_projects[2].ends_with("A.rfx"));
     s.execute("layer.newNull", json!({})).unwrap();
     s.execute("file.revert", json!({})).unwrap();
     assert_eq!(s.active_comp().unwrap().layers.len(), 0);
     s.execute("file.openRecent", json!({"index": 2})).unwrap();
-    assert!(s.path.as_deref().unwrap().ends_with("A.ecproj"));
-    assert!(s.prefs.recent_projects[0].ends_with("A.ecproj"));
+    assert!(s.path.as_deref().unwrap().ends_with("A.rfx"));
+    assert!(s.prefs.recent_projects[0].ends_with("A.rfx"));
     s.execute("file.clearRecent", json!({})).unwrap();
     assert!(!s.is_enabled("file.openRecent"));
-    assert_eq!(std::path::PathBuf::from(autosave::increment_path("/x/Intro 9.ecproj", |_| false)), std::path::PathBuf::from("/x/Intro 10.ecproj"));
-    assert_eq!(std::path::PathBuf::from(autosave::increment_path("/x/v1.ecproj", |p| p.ends_with("v1 2.ecproj"))), std::path::PathBuf::from("/x/v1 3.ecproj"));
+    assert_eq!(std::path::PathBuf::from(autosave::increment_path("/x/Intro 9.rfx", |_| false)), std::path::PathBuf::from("/x/Intro 10.rfx"));
+    assert_eq!(std::path::PathBuf::from(autosave::increment_path("/x/v1.rfx", |p| p.ends_with("v1 2.rfx"))), std::path::PathBuf::from("/x/v1 3.rfx"));
     let _ = std::fs::remove_dir_all(d);
 }
 
@@ -839,7 +841,7 @@ fn interface_language_is_validated_persisted_and_backward_compatible() {
 
 #[test]
 fn unicode_label_colors_fall_back_without_panicking() {
-    use effectcraft_color::Label;
+    use redrob_effects_color::Label;
     let mut s = Session::default();
     let default = s.prefs.label_rgb(Label::Red);
     for color in ["#€abc", "#a€bc", "#abc€"] {
@@ -867,20 +869,20 @@ fn render_backend_says_why_it_renders_on_the_cpu() {
 #[test]
 fn gpu_summary_names_the_adapter_or_says_why_there_is_none() {
     use crate::sysinfo::gpu_summary;
-    use effectcraft_render::{Accelerator, FxStep, Renderer};
+    use redrob_effects_render::{Accelerator, FxStep, Renderer};
 
     struct Named;
     impl Accelerator for Named {
         fn name(&self) -> String {
             "NVIDIA GeForce RTX 4070 (Vulkan)".into()
         }
-        fn comp_frame(&self, _: &Renderer, _: crate::project::ItemId, _: effectcraft_time::Tick) -> Option<effectcraft_raster::Image> {
+        fn comp_frame(&self, _: &Renderer, _: crate::project::ItemId, _: redrob_effects_time::Tick) -> Option<redrob_effects_raster::Image> {
             None
         }
         fn supports_effect(&self, _: &str) -> bool {
             false
         }
-        fn effects(&self, _: &[FxStep], _: &effectcraft_effects::Buf, _: Option<f32>) -> Option<effectcraft_effects::Buf> {
+        fn effects(&self, _: &[FxStep], _: &redrob_effects_effects::Buf, _: Option<f32>) -> Option<redrob_effects_effects::Buf> {
             None
         }
     }

@@ -27,11 +27,11 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use effectcraft_color::ColorSpace;
-use effectcraft_color::space::{invert, mul, mul_vec, rgb_to_xyz};
-use effectcraft_keyframe::Value;
-use effectcraft_project::ParamUi;
 use rayon::prelude::*;
+use redrob_effects_color::ColorSpace;
+use redrob_effects_color::space::{invert, mul, mul_vec, rgb_to_xyz};
+use redrob_effects_keyframe::Value;
+use redrob_effects_project::ParamUi;
 
 use crate::util::unpremul;
 use crate::utility::{Lut, parse_cube};

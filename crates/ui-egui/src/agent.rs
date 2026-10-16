@@ -2,7 +2,7 @@
 //! tools (the same `command_*`, `sequence_inspect`, `ui_*` tools any MCP client gets).
 //!
 //! Redrob Code is the built-in agent and the one the panel starts; other agents (Claude Code,
-//! Codex, ...) connect from outside through `filmcraft-cli mcp` as before (`docs/agents.md`).
+//! Codex, ...) connect from outside through `redrob-film-cli mcp` as before (`docs/agents.md`).
 //!
 //! The UI crate stays platform-neutral (it also runs in the browser): the agent process and its
 //! protocol live behind [`AgentHost`], supplied by the desktop app through
@@ -533,7 +533,7 @@ mod tests {
     }
 
     fn app_with(connected: bool, sent: Rc<RefCell<Vec<String>>>) -> FilmcraftApp {
-        let mut app = FilmcraftApp::new(filmcraft_engine::Session::default());
+        let mut app = FilmcraftApp::new(redrob_film_engine::Session::default());
         app.account = Some(Box::new(Account(connected)));
         app.agent_services.factory = Some(Box::new(move || Ok(Box::new(Echo(sent.clone())) as Box<dyn AgentHost>)));
         app
@@ -566,7 +566,7 @@ mod tests {
 
     #[test]
     fn add_to_redrob_code_needs_the_desktop() {
-        let mut app = FilmcraftApp::new(filmcraft_engine::Session::default());
+        let mut app = FilmcraftApp::new(redrob_film_engine::Session::default());
         assert!(route(&mut app, "agent.addToRedrobCode", &json!({})).unwrap().is_err());
         app.agent_services.add_to_redrob_code = Some(Box::new(|| Ok("/x/redrob.json".into())));
         assert_eq!(route(&mut app, "agent.addToRedrobCode", &json!({})).unwrap(), Ok(json!({"path": "/x/redrob.json"})));

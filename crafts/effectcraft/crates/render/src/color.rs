@@ -19,10 +19,10 @@
 //!   and for float footage (OpenEXR, float TIFF), whose linear values are encoded once
 //!   ([`Pipe::float_curve`]).
 
-use effectcraft_color::{ColorSpace, Conversion};
-use effectcraft_project::{Footage, HdrMode, ProjectSettings};
-use effectcraft_raster::Image;
 use rayon::prelude::*;
+use redrob_effects_color::{ColorSpace, Conversion};
+use redrob_effects_project::{Footage, HdrMode, ProjectSettings};
+use redrob_effects_raster::Image;
 
 /// The colour pipeline of a project (see the module docs).
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -275,7 +275,7 @@ pub fn compand(v: f32) -> f32 {
 /// Extended Reinhard tone mapping of luminance with white at `W` (linear light).
 pub fn tone_map(c: [f32; 3]) -> [f32; 3] {
     const W: f32 = 4.0;
-    let l = effectcraft_color::luminance(c[0], c[1], c[2]);
+    let l = redrob_effects_color::luminance(c[0], c[1], c[2]);
     if l <= 0.0 {
         return c;
     }

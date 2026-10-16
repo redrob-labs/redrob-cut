@@ -66,7 +66,7 @@ pub fn push_recent(recent: &mut Vec<String>, id: &str) {
 }
 
 /// Does the contents-menu depth filter (`all`, `32`, `gpu`) keep effect `e`?
-pub fn depth_keeps(depth: &str, e: &effectcraft_engine::effects::EffectSpec) -> bool {
+pub fn depth_keeps(depth: &str, e: &redrob_effects_engine::effects::EffectSpec) -> bool {
     match depth {
         "32" => e.float,
         "gpu" => e.gpu,
@@ -166,7 +166,7 @@ fn effect_row(
     lp: &egui::Painter,
     list: Rect,
     y: &mut f32,
-    e: &'static effectcraft_engine::effects::EffectSpec,
+    e: &'static redrob_effects_engine::effects::EffectSpec,
     indent: f32,
     query: &str,
     auto_prefix: &str,
@@ -354,10 +354,10 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
     let searching = !query.is_empty();
     let mut y = list.min.y - scroll.offset;
     let mut apply: Option<Apply> = None;
-    let reg = effectcraft_engine::effects::all();
-    let keep = |e: &effectcraft_engine::effects::EffectSpec| {
+    let reg = redrob_effects_engine::effects::all();
+    let keep = |e: &redrob_effects_engine::effects::EffectSpec| {
         depth_keeps(&view.depth, e)
-            && (query.is_empty() || effectcraft_engine::effects::name_matches(e, &query) || crate::i18n::effects::matches(e.id, e.name, &query))
+            && (query.is_empty() || redrob_effects_engine::effects::name_matches(e, &query) || crate::i18n::effects::matches(e.id, e.name, &query))
     };
     let lookup = |id: &str| reg.iter().find(|e| e.id == id);
 
@@ -380,9 +380,9 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
     // * Animation Presets: our own presets (Text, Transitions…) and the user's .ecpreset files.
     if view.presets {
         let text: Vec<(String, String)> =
-            effectcraft_engine::text_presets().into_iter().filter(|(_, n)| query.is_empty() || n.to_lowercase().contains(&query)).collect();
+            redrob_effects_engine::text_presets().into_iter().filter(|(_, n)| query.is_empty() || n.to_lowercase().contains(&query)).collect();
         let builtin: Vec<(String, String, String)> =
-            effectcraft_engine::animation_presets().into_iter().filter(|(_, n, _)| query.is_empty() || n.to_lowercase().contains(&query)).collect();
+            redrob_effects_engine::animation_presets().into_iter().filter(|(_, n, _)| query.is_empty() || n.to_lowercase().contains(&query)).collect();
         let mut categories: Vec<&str> = Vec::new();
         for (_, _, c) in &builtin {
             if !categories.contains(&c.as_str()) {
@@ -433,7 +433,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
             effect_row(app, ui, &lp, list, &mut y, e, -16.0, &query, "effects.item", &mut apply);
         }
     } else {
-        let mut cats: Vec<&str> = effectcraft_engine::effects::categories();
+        let mut cats: Vec<&str> = redrob_effects_engine::effects::categories();
         cats.retain(|c| reg.iter().any(|e| e.category == *c));
         for cat in cats {
             let items: Vec<_> = reg.iter().filter(|e| e.category == cat && keep(e)).collect();
@@ -458,7 +458,7 @@ pub fn show(app: &mut EffectcraftApp, ui: &mut egui::Ui, rect: Rect) {
     if let Some(DragPayload::Effect(id)) = egui::DragAndDrop::payload::<DragPayload>(&ctx).as_deref()
         && let Some(pos) = ctx.pointer_hover_pos()
     {
-        let name = effectcraft_engine::effects::find(id).map(|e| crate::i18n::effects::name(e.id, e.name)).unwrap_or_default();
+        let name = redrob_effects_engine::effects::find(id).map(|e| crate::i18n::effects::name(e.id, e.name)).unwrap_or_default();
         let painter = ctx.layer_painter(egui::LayerId::new(egui::Order::Tooltip, egui::Id::new("dnd-fx")));
         let g = painter.layout_no_wrap(name, Tokens::ui(12.0), t.text);
         let r = Rect::from_min_size(pos + vec2(12.0, 8.0), g.size() + vec2(16.0, 8.0));
@@ -518,7 +518,7 @@ mod tests {
 
     #[test]
     fn depth_filter() {
-        let reg = effectcraft_engine::effects::registry();
+        let reg = redrob_effects_engine::effects::registry();
         let all = reg.iter().filter(|e| depth_keeps("all", e)).count();
         let f32s = reg.iter().filter(|e| depth_keeps("32", e)).count();
         assert_eq!(all, reg.len());

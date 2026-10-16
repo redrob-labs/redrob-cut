@@ -16,7 +16,7 @@
 mod psy;
 mod quant;
 
-use filmcraft_bitstream::BitWriter;
+use redrob_film_bitstream::BitWriter;
 
 use crate::config::{AdtsHeader, AudioSpecificConfig, ElementType, ProgramConfig, config_layout};
 use crate::ics::{IcsInfo, WindowSequence};

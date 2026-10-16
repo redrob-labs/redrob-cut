@@ -2,7 +2,7 @@
 //! decode the reference) is used only as an external process.
 #![allow(dead_code)]
 
-use filmcraft_av1::{Decoder, Picture};
+use redrob_film_av1::{Decoder, Picture};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -18,11 +18,11 @@ pub fn ffmpeg_dav1d() -> Option<PathBuf> {
 
 /// Builds such as the Windows "essentials" ones lack these libraries; skip rather than fail.
 fn ffmpeg_with(needs: &[(&str, &str)]) -> Option<PathBuf> {
-    let ff = filmcraft_testkit::ffmpeg_or_skip("av1 oracle")?;
+    let ff = redrob_film_testkit::ffmpeg_or_skip("av1 oracle")?;
     for &(list, lib) in needs {
         let out = Command::new(&ff).args(["-hide_banner", list]).output().map(|o| String::from_utf8_lossy(&o.stdout).into_owned()).unwrap_or_default();
         if !out.contains(lib) {
-            filmcraft_testkit::skip("av1 oracle", &format!("ffmpeg has no {lib} (see `ffmpeg {list}`)"));
+            redrob_film_testkit::skip("av1 oracle", &format!("ffmpeg has no {lib} (see `ffmpeg {list}`)"));
             return None;
         }
     }
@@ -30,7 +30,7 @@ fn ffmpeg_with(needs: &[(&str, &str)]) -> Option<PathBuf> {
 }
 
 pub fn fixture_dir() -> PathBuf {
-    filmcraft_testkit::fixtures_dir("av1")
+    redrob_film_testkit::fixtures_dir("av1")
 }
 
 pub fn run(ff: &Path, args: &[&str]) {
@@ -57,7 +57,7 @@ impl Spec {
 pub fn make(ff: &Path, spec: &Spec) -> PathBuf {
     let path = fixture_dir().join(format!("{}.ivf", spec.name));
     if !path.exists() {
-        let tmp = filmcraft_testkit::temp_path(&path);
+        let tmp = redrob_film_testkit::temp_path(&path);
         let frames = spec.frames.to_string();
         let t = tmp.to_str().unwrap().to_string();
         let mut args: Vec<&str> = vec!["-f", "lavfi", "-i", spec.lavfi.as_str(), "-frames:v", frames.as_str(), "-pix_fmt", spec.pix_fmt, "-c:v", "libsvtav1"];
@@ -221,12 +221,12 @@ pub fn test_vector(name: &str) -> Option<PathBuf> {
     if path.exists() {
         return Some(path);
     }
-    let tmp = filmcraft_testkit::temp_path(&path);
+    let tmp = redrob_film_testkit::temp_path(&path);
     let url = format!("https://storage.googleapis.com/aom-test-data/{name}");
     let ok = Command::new("curl").args(["-sfL", "--max-time", "120", "-o"]).arg(&tmp).arg(&url).status().map(|s| s.success()).unwrap_or(false);
     if !ok {
         let _ = std::fs::remove_file(&tmp);
-        filmcraft_testkit::skip("av1 conformance", &format!("could not download {url}"));
+        redrob_film_testkit::skip("av1 conformance", &format!("could not download {url}"));
         return None;
     }
     std::fs::rename(&tmp, &path).ok()?;

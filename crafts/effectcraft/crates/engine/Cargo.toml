@@ -1,5 +1,5 @@
 [package]
-name = "effectcraft-engine"
+name = "redrob-effects-engine"
 description = "The Redrob Film engine: session, undo history, editor state and the command registry every frontend (UI, CLI, control channel, MCP) dispatches through"
 version.workspace = true
 edition.workspace = true
@@ -10,25 +10,25 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-effectcraft-time = { workspace = true }
-effectcraft-geom = { workspace = true }
-effectcraft-color = { workspace = true }
-effectcraft-keyframe = { workspace = true }
-effectcraft-project = { workspace = true }
-effectcraft-raster = { workspace = true }
-effectcraft-path = { workspace = true }
-effectcraft-text = { workspace = true }
-effectcraft-effects = { workspace = true }
-effectcraft-render = { workspace = true }
-effectcraft-segment = { workspace = true }
-effectcraft-track = { workspace = true }
-effectcraft-model = { workspace = true }
-effectcraft-lottie = { workspace = true }
-effectcraft-interchange = { workspace = true }
-effectcraft-psd = { workspace = true }
+redrob-effects-time = { workspace = true }
+redrob-effects-geom = { workspace = true }
+redrob-effects-color = { workspace = true }
+redrob-effects-keyframe = { workspace = true }
+redrob-effects-project = { workspace = true }
+redrob-effects-raster = { workspace = true }
+redrob-effects-path = { workspace = true }
+redrob-effects-text = { workspace = true }
+redrob-effects-effects = { workspace = true }
+redrob-effects-render = { workspace = true }
+redrob-effects-segment = { workspace = true }
+redrob-effects-track = { workspace = true }
+redrob-effects-model = { workspace = true }
+redrob-effects-lottie = { workspace = true }
+redrob-effects-interchange = { workspace = true }
+redrob-effects-psd = { workspace = true }
 kurbo = { workspace = true }
-effectcraft-svg = { workspace = true }
-effectcraft-pdf = { workspace = true }
+redrob-effects-svg = { workspace = true }
+redrob-effects-pdf = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

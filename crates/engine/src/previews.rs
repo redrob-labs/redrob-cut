@@ -2,7 +2,7 @@
 //! Delete Render Files…) and the timeline render bar.
 //!
 //! Segments, content hashes and the yellow/red cost estimate come from
-//! [`filmcraft_render::preview`]. A rendered segment is a ProRes 422 QuickTime file named
+//! [`redrob_film_render::preview`]. A rendered segment is a ProRes 422 QuickTime file named
 //! `<hash>.mov` in the project's preview cache directory, and a rendered part of a segment (In/Out
 //! inside it: Render In to Out renders only In to Out, like Premiere) is `<hash>-<off>-<len>.mov`,
 //! frames `off..off + len` counted from the segment start. Because the offsets are relative to the
@@ -11,7 +11,7 @@
 //!
 //! The folder:
 //!
-//! * saved project `/path/Film.fcproj` → `/path/Redrob Film Previews/Film/`;
+//! * saved project `/path/Film.rfilm` → `/path/Redrob Film Previews/Film/`;
 //! * unsaved project → a per-process folder in the system temp dir; its files move into the
 //!   project's folder on the first save.
 //!
@@ -23,18 +23,18 @@
 //! Playback asks [`PreviewStore::frame`] first: when the frame lies in a segment with a preview, the
 //! decoded preview frame replaces the live render.
 
-use filmcraft_audio_dsp::channels::{Layout, Mixdown};
-use filmcraft_render::audio::to_layout;
+use redrob_film_audio_dsp::channels::{Layout, Mixdown};
+use redrob_film_render::audio::to_layout;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, RwLock};
 
-use filmcraft_frame::{AudioBuffer, VideoFrame};
-use filmcraft_media::{FrameRequest, SharedSource};
-use filmcraft_project::{ItemId, Project};
-use filmcraft_render::preview::{AudioSegment, Need, Segment, segment_at, video_segments};
-use filmcraft_time::{FrameRate, Tick, TimeRange};
+use redrob_film_frame::{AudioBuffer, VideoFrame};
+use redrob_film_media::{FrameRequest, SharedSource};
+use redrob_film_project::{ItemId, Project};
+use redrob_film_render::preview::{AudioSegment, Need, Segment, segment_at, video_segments};
+use redrob_film_time::{FrameRate, Tick, TimeRange};
 use serde::Serialize;
 use serde_json::{Value, json};
 
@@ -92,7 +92,7 @@ pub struct PreviewStore {
     /// Bumped whenever the set of preview files changes.
     pub generation: AtomicU64,
     /// Live mixer state shared with playback: held controls, meters, newest project snapshot.
-    pub live: Arc<filmcraft_render::mixer::LiveMix>,
+    pub live: Arc<redrob_film_render::mixer::LiveMix>,
 }
 
 fn video_name(hash: &str) -> String {
@@ -355,7 +355,7 @@ impl PreviewStore {
         if let Some((_, _, s)) = memo.iter().find(|(p, q, _)| Arc::ptr_eq(p, project) && *q == seq) {
             return s.clone();
         }
-        let segs = Arc::new(filmcraft_render::preview::audio_segments(project, seq));
+        let segs = Arc::new(redrob_film_render::preview::audio_segments(project, seq));
         memo.push((project.clone(), seq, segs.clone()));
         if memo.len() > 4 {
             memo.remove(0);
@@ -385,7 +385,7 @@ impl PreviewStore {
 
     /// Sequence audio for playback and meters, as stereo (a 5.1 Mix folded with the BS.775
     /// downmix): rendered audio previews where they are valid, the live mix everywhere else.
-    pub fn mix(&self, project: &Arc<Project>, seq: ItemId, start: i64, frames: usize, sources: &dyn filmcraft_render::SourceProvider) -> AudioBuffer {
+    pub fn mix(&self, project: &Arc<Project>, seq: ItemId, start: i64, frames: usize, sources: &dyn redrob_film_render::SourceProvider) -> AudioBuffer {
         self.mix_layout(project, seq, start, frames, sources, Layout::Stereo, Mixdown::FrontRear)
     }
 
@@ -400,18 +400,18 @@ impl PreviewStore {
         seq: ItemId,
         start: i64,
         frames: usize,
-        sources: &dyn filmcraft_render::SourceProvider,
+        sources: &dyn redrob_film_render::SourceProvider,
         layout: Layout,
         mixdown: Mixdown,
     ) -> AudioBuffer {
         let Some(q) = project.sequence(seq) else { return AudioBuffer::silence(48_000, layout.channels(), frames) };
         let live = Some(&*self.live);
         let has_audio = self.files.read().unwrap_or_else(|e| e.into_inner()).iter().any(|n| n.ends_with(".wav"));
-        let surround = q.settings.audio_master == filmcraft_project::AudioChannels::Surround51;
+        let surround = q.settings.audio_master == redrob_film_project::AudioChannels::Surround51;
         let previews_ok = layout == Layout::Stereo && (!surround || mixdown == Mixdown::FrontRear);
         // held mixer controls are heard live (rendered previews don't know them)
         if !has_audio || self.live.is_active() || !previews_ok {
-            return to_layout(filmcraft_render::mixer::mix_graph(project, q, start, frames, sources, live), layout, mixdown);
+            return to_layout(redrob_film_render::mixer::mix_graph(project, q, start, frames, sources, live), layout, mixdown);
         }
         let segs = self.audio_segments(project, seq);
         let mut out = AudioBuffer::silence(q.settings.sample_rate, 2, frames);
@@ -436,7 +436,7 @@ impl PreviewStore {
                     }
                 }
                 _ => {
-                    let b = to_layout(filmcraft_render::mixer::mix_graph(project, q, pos, n, sources, live), Layout::Stereo, mixdown);
+                    let b = to_layout(redrob_film_render::mixer::mix_graph(project, q, pos, n, sources, live), Layout::Stereo, mixdown);
                     for c in 0..2 {
                         out.channels[c][off..off + n].copy_from_slice(&b.channels[c.min(b.channels.len() - 1)][..n]);
                     }
@@ -654,8 +654,8 @@ pub fn render(s: &mut Session, mode: RenderMode, p: &Value) -> Result<Value> {
             let name = part_name(&t.seg.hash, t.off, t.len, t.seg.frames);
             let part = dir.join(format!("{name}.part"));
             let first = t.seg.first_frame.saturating_add(t.off);
-            let settings = filmcraft_export::ExportSettings {
-                format: filmcraft_export::Format::ProRes,
+            let settings = redrob_film_export::ExportSettings {
+                format: redrob_film_export::Format::ProRes,
                 path: part.to_string_lossy().to_string(),
                 range: Some(TimeRange::from_bounds(rate.tick_of(first), rate.tick_of(first.saturating_add(t.len)))),
                 scale: 1.0,
@@ -669,7 +669,7 @@ pub fn render(s: &mut Session, mode: RenderMode, p: &Value) -> Result<Value> {
                 sdr: true,
                 ..Default::default()
             };
-            match filmcraft_export::export(&project, seq, &settings, &provider, &prog) {
+            match redrob_film_export::export(&project, seq, &settings, &provider, &prog) {
                 Ok(r) => {
                     bytes += r.bytes;
                     done_frames += r.frames;
@@ -690,7 +690,7 @@ pub fn render(s: &mut Session, mode: RenderMode, p: &Value) -> Result<Value> {
             }
         }
         let secs = t0.elapsed().as_secs_f64();
-        let r = outcome.map(|_| filmcraft_export::Report {
+        let r = outcome.map(|_| redrob_film_export::Report {
             path: dir.to_string_lossy().to_string(),
             frames: done_frames,
             seconds: secs,
@@ -757,7 +757,7 @@ pub fn render_audio(s: &mut Session, p: &Value) -> Result<Value> {
                     break 'segs;
                 }
                 let n = (g.first_sample + g.samples - pos).min(sr) as usize;
-                let buf = filmcraft_render::audio::mix_sequence(&project, q, pos, n, &provider);
+                let buf = redrob_film_render::audio::mix_sequence(&project, q, pos, n, &provider);
                 for i in 0..n {
                     inter.push(buf.channels[0][i]);
                     inter.push(buf.channels[buf.channels.len().min(2) - 1][i]);
@@ -777,7 +777,7 @@ pub fn render_audio(s: &mut Session, p: &Value) -> Result<Value> {
             store.add_audio(&g.hash);
         }
         let secs = t0.elapsed().as_secs_f64();
-        let r = outcome.map(|_| filmcraft_export::Report {
+        let r = outcome.map(|_| redrob_film_export::Report {
             path: dir.to_string_lossy().to_string(),
             frames: 0,
             seconds: secs,
@@ -892,7 +892,7 @@ pub fn bar_json(s: &Session) -> Result<Value> {
             "state": s.previews.state_of(g),
             "renderedFrames": s.previews.coverage(g).iter().map(|(a, b)| b - a).sum::<i64>(),
             "costMs": (g.cost_ms * 10.0).round() / 10.0,
-            "budgetMs": (rate.frame_duration().seconds() * 1000.0 * filmcraft_render::preview::REALTIME_BUDGET * 10.0).round() / 10.0,
+            "budgetMs": (rate.frame_duration().seconds() * 1000.0 * redrob_film_render::preview::REALTIME_BUDGET * 10.0).round() / 10.0,
             "hash": g.hash,
         })).collect::<Vec<_>>(),
     }))

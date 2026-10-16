@@ -9,7 +9,7 @@
 
 use std::sync::{Arc, Mutex, PoisonError};
 
-use filmcraft_time::Tick;
+use redrob_film_time::Tick;
 
 use crate::FilmcraftApp;
 
@@ -191,7 +191,7 @@ mod tests {
     }
 
     fn app(scrub_audio: bool) -> (FilmcraftApp, Arc<Mutex<Option<Fill>>>) {
-        let mut s = filmcraft_engine::Session::default();
+        let mut s = redrob_film_engine::Session::default();
         s.execute("file.openDemoProject", serde_json::json!({})).unwrap();
         s.prefs.audio.scrub_audio = scrub_audio;
         let mut app = FilmcraftApp::new(s);

@@ -6,9 +6,9 @@ use std::rc::Rc;
 use std::sync::mpsc::{Sender, channel};
 
 use egui_kittest::Harness;
-use filmcraft_engine::Session;
-use filmcraft_ui_egui::control::ControlRequest;
-use filmcraft_ui_egui::{ClipboardMedia, FilmcraftApp};
+use redrob_film_engine::Session;
+use redrob_film_ui_egui::control::ControlRequest;
+use redrob_film_ui_egui::{ClipboardMedia, FilmcraftApp};
 use serde_json::{Value, json};
 
 struct Driver {
@@ -25,7 +25,7 @@ impl Driver {
         std::fs::create_dir_all(&dir).unwrap();
         let mut session = Session::default();
         session.execute("file.openDemoProject", json!({})).expect("demo project");
-        session.path = Some(dir.join("film.fcproj").to_string_lossy().into_owned());
+        session.path = Some(dir.join("film.rfilm").to_string_lossy().into_owned());
         let (tx, rx) = channel();
         let app = FilmcraftApp::new(session).with_control(rx);
         let harness = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).with_max_steps(10_000).build_eframe(move |_cc| app);

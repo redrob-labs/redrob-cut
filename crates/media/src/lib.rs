@@ -24,9 +24,9 @@ pub mod wav;
 use std::path::Path;
 use std::sync::Arc;
 
-use filmcraft_color::ColorInfo;
-use filmcraft_frame::{AudioBuffer, VideoFrame};
-use filmcraft_time::{FrameRate, Tick};
+use redrob_film_color::ColorInfo;
+use redrob_film_frame::{AudioBuffer, VideoFrame};
+use redrob_film_time::{FrameRate, Tick};
 use serde::{Deserialize, Serialize};
 
 pub use cache::FrameCache;
@@ -76,7 +76,7 @@ pub struct VideoStreamInfo {
     pub bitrate: Option<u64>,
     /// HDR static metadata (mastering display, content light level) when the file carries it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hdr: Option<filmcraft_color::HdrMetadata>,
+    pub hdr: Option<redrob_film_color::HdrMetadata>,
 }
 
 /// Most audio streams a source reports (the count comes from the file: never trusted).

@@ -9,7 +9,7 @@
 pub type Entry = (&'static str, &'static str, &'static str);
 
 /// Redrob Film additions to the per-command defaults: panel-specific shortcuts.
-pub const FILMCRAFT_PANEL: &[Entry] = &[
+pub const REDROB_FILM_PANEL: &[Entry] = &[
     ("project.delete", "Backspace", "Project"),
     // the forward-delete key (Delete on Windows and Linux keyboards) clears timeline clips too;
     // application-wide it is Project ▸ Clear (#243)

@@ -1,7 +1,7 @@
 //! Where tools run: an in-process session, or the desktop app over its control channel.
 
-use effectcraft_engine::Session;
-use effectcraft_engine::time::Tick;
+use redrob_effects_engine::Session;
+use redrob_effects_engine::time::Tick;
 use serde_json::{Value, json};
 
 use crate::confine::Confinement;

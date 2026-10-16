@@ -13,10 +13,10 @@ When a Cut glyph is added to the design system's `assets/Products/`, replace the
 | File | What |
 |---|---|
 | `hicolor/<size>/apps/ai.redrob.film.png`, `hicolor/scalable/apps/ai.redrob.film.svg` | Linux icon theme, used by `packaging/linux/ai.redrob.film.desktop` |
-| `redrob-film-256.png` | runtime window icon on Windows and Linux (embedded by `apps/filmcraft/src/main.rs`) |
+| `redrob-film-256.png` | runtime window icon on Windows and Linux (embedded by `apps/redrob-film-app/src/main.rs`) |
 | `redrob-film-512.png` | runtime Dock icon on macOS |
 | `redrob-film.icns` | macOS bundle icon (`CFBundleIconFile`) |
-| `redrob-film.ico` | Windows icon, 16-256 px (embedded in the exe by `apps/filmcraft/build.rs`) |
+| `redrob-film.ico` | Windows icon, 16-256 px (embedded in the exe by `apps/redrob-film-app/build.rs`) |
 
 ## Rules
 

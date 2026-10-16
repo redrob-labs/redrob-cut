@@ -8,14 +8,14 @@
 //!   property edit of the master property); Push to Comp writes the override into the source
 //!   comp, Revert drops it.
 //! - **Templates**: `essential.exportTemplate` writes an open `.ectemplate` (a ZIP holding
-//!   `manifest.json` with the exposed controls, `project.ecproj` with the comp and everything it
+//!   `manifest.json` with the exposed controls, `project.rfx` with the comp and everything it
 //!   uses, the media files and a poster frame); `essential.importTemplate` merges one into the
 //!   project and adds an instance to the active comp.
 
-use effectcraft_keyframe::Value as KV;
-use effectcraft_project::essential::{self, ControlType, EgControl, EgKind, EssentialGraphics};
-use effectcraft_project::{GroupKind, ItemId, ItemKind, LayerId, LayerSource, ParamUi, Project, Uid};
-use effectcraft_time::Tick;
+use redrob_effects_keyframe::Value as KV;
+use redrob_effects_project::essential::{self, ControlType, EgControl, EgKind, EssentialGraphics};
+use redrob_effects_project::{GroupKind, ItemId, ItemKind, LayerId, LayerSource, ParamUi, Project, Uid};
+use redrob_effects_time::Tick;
 use serde_json::{Value, json};
 
 use super::{CommandSpec, b_p, bad, comp_id, has_comp, layer_p, selected_leaf_props, str_p};
@@ -243,7 +243,7 @@ fn unlink_property(s: &mut Session, p: &Value) -> Result<Value> {
     Ok(json!({"control": id, "layer": lid.0, "prop": uid}))
 }
 
-fn control_type(pr: &effectcraft_project::Property) -> Option<ControlType> {
+fn control_type(pr: &redrob_effects_project::Property) -> Option<ControlType> {
     essential::control_type(pr)
 }
 
@@ -865,9 +865,9 @@ fn export_template(s: &mut Session, p: &Value) -> Result<Value> {
     {
         entries.push(("poster.png".into(), png));
     }
-    entries.insert(0, ("project.ecproj".into(), sub.to_json().into_bytes()));
+    entries.insert(0, ("project.rfx".into(), sub.to_json().into_bytes()));
     entries.insert(0, ("manifest.json".into(), serde_json::to_vec_pretty(&manifest).unwrap_or_default()));
-    let bytes = effectcraft_lottie::zip::store(&entries);
+    let bytes = redrob_effects_lottie::zip::store(&entries);
     s.services.write_file(&path, &bytes).map_err(|e| EngineError::Other(format!("cannot write {path}: {e}")))?;
     s.toast(format!("Exported template “{name}” to {path}"));
     Ok(json!({"path": path, "name": name, "bytes": bytes.len(), "controls": eg.flat().len(), "items": deps.len()}))
@@ -875,7 +875,7 @@ fn export_template(s: &mut Session, p: &Value) -> Result<Value> {
 
 /// Read a template's manifest and project (with media paths still archive-relative).
 pub fn read_template(bytes: &[u8]) -> std::result::Result<(Value, Project, Vec<(String, Vec<u8>)>), String> {
-    let entries = effectcraft_lottie::zip::read_stored(bytes);
+    let entries = redrob_effects_lottie::zip::read_stored(bytes);
     let get = |n: &str| entries.iter().find(|(k, _)| k == n).map(|(_, v)| v.clone());
     let manifest: Value =
         serde_json::from_slice(&get("manifest.json").ok_or("not an Redrob Film template (no manifest.json)")?).map_err(|e| format!("manifest.json: {e}"))?;
@@ -885,7 +885,8 @@ pub fn read_template(bytes: &[u8]) -> std::result::Result<(Value, Project, Vec<(
     if manifest.get("version").and_then(Value::as_u64).unwrap_or(0) > TEMPLATE_VERSION as u64 {
         return Err("the template was made by a newer Redrob Film".into());
     }
-    let text = String::from_utf8(get("project.ecproj").ok_or("template has no project.ecproj")?).map_err(|e| e.to_string())?;
+    let project = get("project.rfx").or_else(|| get("project.ecproj")); // legacy: templates packed before the rename
+    let text = String::from_utf8(project.ok_or("template has no project.rfx")?).map_err(|e| e.to_string())?;
     let mut project = Project::from_json(&text).map_err(|e| e.to_string())?;
     crate::upgrade_effects(&mut project);
     Ok((manifest, project, entries))
@@ -932,7 +933,7 @@ fn import_template(s: &mut Session, p: &Value) -> Result<Value> {
     essential::offset_ids(&mut sub, base);
     let new_comp = ItemId(tcomp.0 + base);
     let ids = s.edit("Import Template", None, |proj, st| {
-        let folder = proj.add_item(&name, effectcraft_color::Label::Yellow, None, ItemKind::Folder);
+        let folder = proj.add_item(&name, redrob_effects_color::Label::Yellow, None, ItemKind::Folder);
         let mut ids = vec![];
         for (id, mut it) in std::mem::take(&mut sub.items) {
             if it.parent.is_none() {

@@ -31,7 +31,7 @@
 //!   `quit.save`, `quit.dontSave`, `quit.cancel`.
 
 use egui::{Align2, RichText};
-use filmcraft_project::{AudioChannelMap, AudioChannels, ItemKind, TrackKind};
+use redrob_film_project::{AudioChannelMap, AudioChannels, ItemKind, TrackKind};
 use serde_json::{Value, json};
 
 use crate::FilmcraftApp;
@@ -96,7 +96,7 @@ pub fn route(app: &mut FilmcraftApp, id: &str, params: &Value) -> Option<Result<
         return None;
     }
     meta(id)?;
-    if let Err(e) = filmcraft_engine::find_command(id).map_or(Ok(()), |c| (c.enabled)(&app.session)) {
+    if let Err(e) = redrob_film_engine::find_command(id).map_or(Ok(()), |c| (c.enabled)(&app.session)) {
         app.ui.status = e.clone();
         return Some(Err(e));
     }
@@ -125,8 +125,8 @@ fn defaults(app: &FilmcraftApp, id: &str) -> (Value, Value) {
         "edit.pasteAttributes" | "edit.removeAttributes" => {
             // effects offered: the copied clips' (Paste) or the selected clips' (Remove) standard effects
             let mut names: Vec<(String, String)> = Vec::new();
-            let mut add = |e: &filmcraft_project::EffectInstance| {
-                if let Some(d) = e.def().filter(|d| !d.intrinsic && !filmcraft_project::graphic::is_layer_id(d.id))
+            let mut add = |e: &redrob_film_project::EffectInstance| {
+                if let Some(d) = e.def().filter(|d| !d.intrinsic && !redrob_film_project::graphic::is_layer_id(d.id))
                     && !names.iter().any(|n| n.0 == d.id)
                 {
                     names.push((d.id.to_string(), d.name.to_string()));
@@ -165,9 +165,9 @@ fn defaults(app: &FilmcraftApp, id: &str) -> (Value, Value) {
                 Value::Null,
             )
         }
-        "clip.nest" => (json!({"name": filmcraft_engine::commands::next_nested_name(s)}), Value::Null),
+        "clip.nest" => (json!({"name": redrob_film_engine::commands::next_nested_name(s)}), Value::Null),
         "clip.makeSubclip" => {
-            let d = filmcraft_engine::clip_ops::subclip_defaults(s, &json!({})).unwrap_or_else(|| json!({}));
+            let d = redrob_film_engine::clip_ops::subclip_defaults(s, &json!({})).unwrap_or_else(|| json!({}));
             (json!({"name": d["name"], "startFrame": d["startFrame"], "endFrame": d["endFrame"], "restrictTrims": true}), json!({"fps": d["fps"]}))
         }
         "clip.editSubclip" => {
@@ -196,7 +196,7 @@ fn defaults(app: &FilmcraftApp, id: &str) -> (Value, Value) {
             let (tc, tape) = it
                 .map(|(it, m)| {
                     let f = m.info.start_timecode.unwrap_or(0);
-                    (filmcraft_time::format_timecode_frames(f, m.frame_rate(), false), it.metadata.get("Tape Name").cloned().unwrap_or_default())
+                    (redrob_film_time::format_timecode_frames(f, m.frame_rate(), false), it.metadata.get("Tape Name").cloned().unwrap_or_default())
                 })
                 .unwrap_or_else(|| ("00:00:00:00".into(), String::new()));
             (json!({"timecode": tc, "tapeName": tape}), Value::Null)
@@ -209,7 +209,7 @@ fn defaults(app: &FilmcraftApp, id: &str) -> (Value, Value) {
                 .as_ref()
                 .map(|i| {
                     let rate = s.project.item(i.item).and_then(|p| p.as_media()).map(|m| m.frame_rate()).unwrap_or_default();
-                    filmcraft_time::format_timecode_frames(rate.frame_at(i.frame_hold.unwrap_or(i.source_in)), rate, false)
+                    redrob_film_time::format_timecode_frames(rate.frame_at(i.frame_hold.unwrap_or(i.source_in)), rate, false)
                 })
                 .unwrap_or_else(|| "00:00:00:00".into());
             (json!({"enabled": enabled, "holdOn": "in", "timecode": tc, "holdFilters": hold_filters}), Value::Null)
@@ -221,7 +221,7 @@ fn defaults(app: &FilmcraftApp, id: &str) -> (Value, Value) {
             let it = q.and_then(|q| s.state.selection.iter().find_map(|c| q.find_item(*c).map(|x| x.1.clone())));
             let fps = q.map(|q| q.settings.frame_rate.as_f64()).unwrap_or(24.0);
             let speed = it.as_ref().map_or(1.0, |i| i.speed);
-            let interp = it.as_ref().map_or(filmcraft_project::TimeInterpolation::default(), |i| i.time_interpolation);
+            let interp = it.as_ref().map_or(redrob_film_project::TimeInterpolation::default(), |i| i.time_interpolation);
             (
                 json!({"speed": (speed.abs() * 100.0 * 100.0).round() / 100.0, "reverse": speed < 0.0, "ripple": false, "interpolation": interp.name()}),
                 json!({"duration": it.as_ref().map_or(0, |i| i.duration.0), "speed": speed.abs(), "fps": fps}),
@@ -291,8 +291,8 @@ fn frames(ui: &mut egui::Ui, elems: &mut Elems, pre: &str, p: &mut Value, key: &
         if r.changed() {
             p[key] = json!(v);
         }
-        let rate = filmcraft_time::FrameRate::from_f64(if fps > 0.0 { fps } else { 24.0 });
-        ui.label(RichText::new(filmcraft_time::format_timecode_frames(v, rate, false)).monospace().weak());
+        let rate = redrob_film_time::FrameRate::from_f64(if fps > 0.0 { fps } else { 24.0 });
+        ui.label(RichText::new(redrob_film_time::format_timecode_frames(v, rate, false)).monospace().weak());
     });
 }
 
@@ -519,17 +519,17 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
                     (d.info["duration"].as_i64().unwrap_or(0), d.info["speed"].as_f64().unwrap_or(1.0), d.info["fps"].as_f64().unwrap_or(24.0));
                 let now = p["speed"].as_f64().unwrap_or(100.0) / 100.0;
                 if dur > 0 && now > 0.0 {
-                    let rate = filmcraft_time::FrameRate::from_f64(if fps > 0.0 { fps } else { 24.0 });
-                    let ticks = filmcraft_time::Tick((dur as f64 * was / now).round() as i64);
+                    let rate = redrob_film_time::FrameRate::from_f64(if fps > 0.0 { fps } else { 24.0 });
+                    let ticks = redrob_film_time::Tick((dur as f64 * was / now).round() as i64);
                     ui.horizontal(|ui| {
                         ui.label(tl!("Duration:"));
-                        ui.label(RichText::new(filmcraft_time::format_timecode_frames(rate.frame_at(ticks), rate, false)).monospace());
+                        ui.label(RichText::new(redrob_film_time::format_timecode_frames(rate.frame_at(ticks), rate, false)).monospace());
                     });
                 }
                 check(ui, &mut elems, pre, p, "reverse", tl!("Reverse Speed"), true);
                 check(ui, &mut elems, pre, p, "ripple", tl!("Ripple Edit, Shifting Trailing Clips"), true);
                 ui.label(RichText::new(tl!("Time Interpolation")).strong());
-                for m in filmcraft_project::TimeInterpolation::ALL {
+                for m in redrob_film_project::TimeInterpolation::ALL {
                     let r = ui.radio(p["interpolation"].as_str() == Some(m.name()), crate::i18n::t(m.label()));
                     push(&mut elems, format!("{pre}.interpolation.{}", m.name()), &r, m.label());
                     if r.clicked() {

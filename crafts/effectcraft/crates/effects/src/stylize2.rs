@@ -1,11 +1,11 @@
 //! Stylize effects (batch 2): cartoon, roughened edges, scatter, strobe, relief, painterly
 //! strokes, kaleidoscope, tiling, colour emboss, vignette and thresholds.
 
-use effectcraft_color::{luminance, rgb_to_hsl};
-use effectcraft_keyframe::Value;
-use effectcraft_project::ParamUi;
-use effectcraft_raster::{Image, Px};
 use rayon::prelude::*;
+use redrob_effects_color::{luminance, rgb_to_hsl};
+use redrob_effects_keyframe::Value;
+use redrob_effects_project::ParamUi;
+use redrob_effects_raster::{Image, Px};
 
 use crate::noise::fbm;
 use crate::util::{Plane, gauss_plane, guided_filter, hash1, join, layer_rect, lerp3, lerp4, morph_frac, premul, smoothstep, split, unpremul};
@@ -68,7 +68,7 @@ fn cartoon(ctx: &EffectCtx, mut b: Buf) -> Buf {
     let smoothed = if enh < 0.0 {
         // Softening: blend towards a blur of the picture.
         let s = 1.5 * b.scale;
-        let blur = effectcraft_raster::gaussian_blur(&smoothed, s, s, true);
+        let blur = redrob_effects_raster::gaussian_blur(&smoothed, s, s, true);
         let k = (-enh) as f32;
         let mut out = smoothed;
         out.data.par_iter_mut().zip(blur.data.par_iter()).for_each(|(p, q)| (0..4).for_each(|c| p[c] += (q[c] - p[c]) * k));

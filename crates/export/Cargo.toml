@@ -1,5 +1,5 @@
 [package]
-name = "filmcraft-export"
+name = "redrob-film-export"
 description = "Export pipeline: parallel render → encode → mux, presets, progress/cancel"
 version.workspace = true
 edition.workspace = true
@@ -10,22 +10,22 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-filmcraft-time = { workspace = true }
-filmcraft-frame = { workspace = true }
-filmcraft-color = { workspace = true }
-filmcraft-media = { workspace = true }
-filmcraft-project = { workspace = true }
-filmcraft-render = { workspace = true }
-filmcraft-audio-dsp = { workspace = true }
-filmcraft-geom = { workspace = true }
-filmcraft-text = { workspace = true }
-filmcraft-isobmff = { workspace = true }
-filmcraft-prores = { workspace = true }
-filmcraft-dnx = { workspace = true }
-filmcraft-apv = { workspace = true }
-filmcraft-mxf = { workspace = true }
-filmcraft-aac = { workspace = true }
-filmcraft-h264enc = { workspace = true }
+redrob-film-time = { workspace = true }
+redrob-film-frame = { workspace = true }
+redrob-film-color = { workspace = true }
+redrob-film-media = { workspace = true }
+redrob-film-project = { workspace = true }
+redrob-film-render = { workspace = true }
+redrob-film-audio-dsp = { workspace = true }
+redrob-film-geom = { workspace = true }
+redrob-film-text = { workspace = true }
+redrob-film-isobmff = { workspace = true }
+redrob-film-prores = { workspace = true }
+redrob-film-dnx = { workspace = true }
+redrob-film-apv = { workspace = true }
+redrob-film-mxf = { workspace = true }
+redrob-film-aac = { workspace = true }
+redrob-film-h264enc = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -34,5 +34,5 @@ web-time = "1"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "tiff", "bmp"] }
 
 [dev-dependencies]
-filmcraft-testkit = { workspace = true }
-filmcraft-codecs = { workspace = true }
+redrob-film-testkit = { workspace = true }
+redrob-film-codecs = { workspace = true }

@@ -5,11 +5,11 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use filmcraft_media::generators::GeneratorSource;
-use filmcraft_media::{FrameRequest, Generator, MediaSource};
-use filmcraft_project::{ItemKind, Label, MediaClip, MediaRef, SequenceSettings, TrackKind};
-use filmcraft_render::SourceMap;
-use filmcraft_time::TICKS_PER_SECOND;
+use redrob_film_media::generators::GeneratorSource;
+use redrob_film_media::{FrameRequest, Generator, MediaSource};
+use redrob_film_project::{ItemKind, Label, MediaClip, MediaRef, SequenceSettings, TrackKind};
+use redrob_film_render::SourceMap;
+use redrob_film_time::TICKS_PER_SECOND;
 
 use super::*;
 
@@ -18,7 +18,7 @@ struct Scratch(PathBuf);
 
 impl Scratch {
     fn new(name: &str) -> Self {
-        let d = filmcraft_testkit::fixtures::workspace_root().join("target").join("export-tests").join(format!("{name}-{}", std::process::id()));
+        let d = redrob_film_testkit::fixtures::workspace_root().join("target").join("export-tests").join(format!("{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         Scratch(d)
@@ -74,7 +74,7 @@ fn matte(color: [f32; 4], w: u32, h: u32, tone_db: Option<f32>) -> (Arc<Project>
 }
 
 fn ffprobe_json(args: &[&str], path: &str) -> Option<serde_json::Value> {
-    let ffprobe = filmcraft_testkit::ffprobe_or_skip("export settings")?;
+    let ffprobe = redrob_film_testkit::ffprobe_or_skip("export settings")?;
     let mut a = vec!["-v", "error", "-of", "json"];
     a.extend_from_slice(args);
     a.push(path);
@@ -142,7 +142,7 @@ fn jpeg_targa_and_dpx_sequences() {
             Format::DpxSequence => assert_eq!(bytes.len(), 2048 + 64 * 36 * 4),
             _ => assert_eq!(bytes.len(), 18 + 64 * 36 * if alpha { 4 } else { 3 } + 26),
         }
-        let Some(ffmpeg) = filmcraft_testkit::ffmpeg_or_skip("jpeg / targa / dpx sequences") else { continue };
+        let Some(ffmpeg) = redrob_film_testkit::ffmpeg_or_skip("jpeg / targa / dpx sequences") else { continue };
         let first = first.to_string_lossy().to_string();
         let out = std::process::Command::new(ffmpeg).args(["-v", "error", "-i", &first, "-f", "rawvideo", "-pix_fmt", "rgba", "-"]).output().unwrap();
         assert!(out.status.success(), "{first}: {}", String::from_utf8_lossy(&out.stderr));
@@ -178,7 +178,7 @@ fn openexr_sequences() {
         let first = dir.0.join(&want[0]);
         let bytes = std::fs::read(&first).unwrap();
         assert_eq!(&bytes[..4], &[0x76, 0x2F, 0x31, 0x01]);
-        let Some(ffmpeg) = filmcraft_testkit::ffmpeg_or_skip("OpenEXR sequences") else { continue };
+        let Some(ffmpeg) = redrob_film_testkit::ffmpeg_or_skip("OpenEXR sequences") else { continue };
         let out = std::process::Command::new(ffmpeg)
             .args(["-v", "error", "-i"])
             .arg(&first)
@@ -281,13 +281,13 @@ fn aac_audio_writes_m4a_and_adts() {
     let r = export(&p, seq, &s, &m, &Progress::default()).unwrap();
     assert_eq!(r.frames, 48_000, "one second of samples");
     let bytes = std::fs::read(&m4a).unwrap();
-    let file = filmcraft_isobmff::open(bytes.clone()).unwrap();
+    let file = redrob_film_isobmff::open(bytes.clone()).unwrap();
     assert_eq!(file.tracks.len(), 1, "audio only");
     let t = &file.tracks[0];
-    let filmcraft_isobmff::CodecConfig::Aac(cfg) = &t.entries[0].codec else { panic!("not AAC: {:?}", t.entries[0].codec) };
+    let redrob_film_isobmff::CodecConfig::Aac(cfg) = &t.entries[0].codec else { panic!("not AAC: {:?}", t.entries[0].codec) };
     assert_eq!((cfg.object_type, cfg.sample_rate, cfg.channel_config), (2, 48_000, 2));
     assert!(t.samples.len() >= 48_000 / 1024, "{} access units", t.samples.len());
-    let mut dec = filmcraft_aac::Decoder::new(&cfg.asc).unwrap();
+    let mut dec = redrob_film_aac::Decoder::new(&cfg.asc).unwrap();
     let mut pcm: Vec<Vec<f32>> = Vec::new();
     for i in 0..t.samples.len() {
         let out = dec.decode(&file.read_sample(&bytes, 0, i).unwrap()).unwrap();
@@ -313,7 +313,7 @@ fn aac_audio_writes_m4a_and_adts() {
     export(&p, seq, &s, &m, &Progress::default()).unwrap();
     let b = std::fs::read(&adts).unwrap();
     // AAC-LC 44.1 kHz (index 4) mono: 00010 0100 0001 000
-    let mut dec = filmcraft_aac::Decoder::new(&[0x12, 0x08]).unwrap();
+    let mut dec = redrob_film_aac::Decoder::new(&[0x12, 0x08]).unwrap();
     let (mut pos, mut units, mut pcm) = (0usize, 0usize, vec![Vec::new()]);
     while pos < b.len() {
         let h = &b[pos..pos + 7];
@@ -335,7 +335,7 @@ fn aac_audio_writes_m4a_and_adts() {
         assert_eq!(st["sample_rate"], "44100");
         assert_eq!(st["channels"], 1);
     }
-    if let Some(ffmpeg) = filmcraft_testkit::ffmpeg_or_skip("AAC Audio decode") {
+    if let Some(ffmpeg) = redrob_film_testkit::ffmpeg_or_skip("AAC Audio decode") {
         for f in [&m4a, &adts] {
             let out = std::process::Command::new(&ffmpeg).args(["-v", "error", "-xerror", "-i", f, "-f", "null", "-"]).output().unwrap();
             assert!(out.status.success() && out.stderr.is_empty(), "{f}: {}", String::from_utf8_lossy(&out.stderr));
@@ -455,7 +455,7 @@ fn frame_size_rate_and_scaling() {
     let r = export(&p, seq, &s, &m, &Progress::default()).unwrap();
     assert_eq!(r.frames, 12, "1 s at 12 fps");
     let bytes: Arc<[u8]> = std::fs::read(&path).unwrap().into();
-    let src = filmcraft_codecs::open_bytes("square.mp4", bytes).unwrap();
+    let src = redrob_film_codecs::open_bytes("square.mp4", bytes).unwrap();
     let v = src.info().video.clone().unwrap();
     assert_eq!((v.width, v.height), (256, 256));
     let f = src.video_frame(FrameRequest::full(Tick(TICKS_PER_SECOND / 2))).unwrap().to_rgba8();
@@ -481,7 +481,7 @@ fn frame_size_rate_and_scaling() {
     };
     export(&p, seq, &s, &m, &Progress::default()).unwrap();
     let bytes: Arc<[u8]> = std::fs::read(&path).unwrap().into();
-    let src = filmcraft_codecs::open_bytes("fill.mov", bytes).unwrap();
+    let src = redrob_film_codecs::open_bytes("fill.mov", bytes).unwrap();
     let f = src.video_frame(FrameRequest::full(Tick(TICKS_PER_SECOND / 2))).unwrap().to_rgba8();
     assert!(f[(5 * 200 + 100) * 4] > 200, "filled to the top edge");
 }
@@ -489,7 +489,7 @@ fn frame_size_rate_and_scaling() {
 /// Integrated loudness of planar audio.
 fn lufs(planar: &[Vec<f32>], sr: u32) -> (f64, f64) {
     let refs: Vec<&[f32]> = planar.iter().map(Vec::as_slice).collect();
-    let s = filmcraft_audio_dsp::loudness::measure(&refs, sr as f64);
+    let s = redrob_film_audio_dsp::loudness::measure(&refs, sr as f64);
     (s.integrated_lufs, s.true_peak_dbtp)
 }
 
@@ -533,7 +533,7 @@ fn loudness_normalization_hits_target_and_true_peak() {
     s.effects.loudness = LoudnessNormalization { enabled: true, target_lufs: -20.0, true_peak_dbtp: -1.0 };
     export(&p, seq, &s, &m, &Progress::default()).unwrap();
     let bytes: Arc<[u8]> = std::fs::read(&path).unwrap().into();
-    let src = filmcraft_codecs::open_bytes("loud.mp4", bytes).unwrap();
+    let src = redrob_film_codecs::open_bytes("loud.mp4", bytes).unwrap();
     let a = src.audio(4800, 38_400, 48_000).unwrap();
     let (i, _) = lufs(&a.channels, 48_000);
     assert!((i + 20.0).abs() < 0.5, "AAC: {i:.2} LUFS");
@@ -553,7 +553,7 @@ fn two_pass_and_cbr_h264() {
         assert_eq!(prog.total.load(Ordering::Relaxed), 24 * passes);
         assert_eq!(prog.done.load(Ordering::Relaxed), 24 * passes);
         let bytes: Arc<[u8]> = std::fs::read(&path).unwrap().into();
-        let src = filmcraft_codecs::open_bytes("x.mp4", bytes).unwrap();
+        let src = redrob_film_codecs::open_bytes("x.mp4", bytes).unwrap();
         let f = src.video_frame(FrameRequest::full(Tick(TICKS_PER_SECOND / 2))).unwrap().to_rgba8();
         assert!((f[2] as i32 - 204).abs() < 12 && (f[1] as i32 - 127).abs() < 12, "{mode:?}: {:?}", &f[..4]);
     }
@@ -586,7 +586,7 @@ fn crf_h264() {
         assert_eq!((r.frames, prog.total.load(Ordering::Relaxed)), (24, 24));
         let bytes: Arc<[u8]> = std::fs::read(&path).unwrap().into();
         sizes.push(bytes.len());
-        let src = filmcraft_codecs::open_bytes("x.mp4", bytes).unwrap();
+        let src = redrob_film_codecs::open_bytes("x.mp4", bytes).unwrap();
         let f = src.video_frame(FrameRequest::full(Tick(TICKS_PER_SECOND / 2))).unwrap().to_rgba8();
         assert!((f[2] as i32 - 204).abs() < 12 && (f[1] as i32 - 127).abs() < 12, "CRF {crf}: {:?}", &f[..4]);
     }

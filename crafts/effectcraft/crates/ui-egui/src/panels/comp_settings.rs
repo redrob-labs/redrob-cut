@@ -4,9 +4,9 @@
 
 use crate::i18n::{tr, tr_args};
 use crate::icons::Icon;
-use effectcraft_engine::prefs::CompPreset;
-use effectcraft_engine::time::{FrameRate, format_timecode_frames, parse_timecode};
 use egui::{Color32, vec2};
+use redrob_effects_engine::prefs::CompPreset;
+use redrob_effects_engine::time::{FrameRate, format_timecode_frames, parse_timecode};
 use serde_json::json;
 
 use crate::automation::Registry;

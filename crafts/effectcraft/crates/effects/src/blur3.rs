@@ -10,10 +10,10 @@
 //!   a small translation search (sum of squared differences on luma) and substituted with
 //!   feathered patch blending. Deterministic; neighbours come from [`crate::EffectHost::self_at`].
 
-use effectcraft_keyframe::Value;
-use effectcraft_project::ParamUi;
-use effectcraft_raster::{Image, Px};
 use rayon::prelude::*;
+use redrob_effects_keyframe::Value;
+use redrob_effects_project::ParamUi;
+use redrob_effects_raster::{Image, Px};
 
 use crate::util::Plane;
 use crate::{Buf, EffectCtx, EffectSpec, num, p, popup, slider};
@@ -336,7 +336,7 @@ mod tests {
             let v = if (((x + 2) / 6) + (y / 6)) % 2 == 0 { 1.0 } else { 0.0 };
             [v, v, v, 1.0]
         });
-        if f % 2 == 0 { sharp } else { effectcraft_raster::gaussian_blur(&sharp, 2.5, 2.5, true) }
+        if f % 2 == 0 { sharp } else { redrob_effects_raster::gaussian_blur(&sharp, 2.5, 2.5, true) }
     }
 
     #[test]
