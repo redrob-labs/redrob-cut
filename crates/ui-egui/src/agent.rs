@@ -284,10 +284,8 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
     let mut child = ui.new_child(egui::UiBuilder::new().max_rect(rect.shrink2(vec2(MARGIN, 6.0))));
     let ui = &mut child;
     ui.horizontal(|ui| {
-        ui.label(RichText::new("Redrob Code").strong().color(t.text));
-        if let Some(n) = &app.agent.agent_name {
-            ui.label(RichText::new(n).small().color(t.text_faint));
-        }
+        // The button keeps its place on the right; the title and the agent's name take what is
+        // left and elide ("Redrob Co…") instead of running under the dock's edge.
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
             if app.agent_services.add_to_redrob_code.is_some() {
                 let b = ui
@@ -300,6 +298,12 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
                     app.ui.status = e;
                 }
             }
+            ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                ui.add(egui::Label::new(RichText::new("Redrob Code").strong().color(t.text)).truncate());
+                if let Some(n) = &app.agent.agent_name {
+                    ui.add(egui::Label::new(RichText::new(n).small().color(t.text_faint)).truncate());
+                }
+            });
         });
     });
     if app.agent_services.factory.is_some() && !crate::account::connected(app) {

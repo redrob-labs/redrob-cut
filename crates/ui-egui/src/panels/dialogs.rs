@@ -408,17 +408,17 @@ fn delete_tracks(app: &mut FilmcraftApp, ctx: &egui::Context) -> bool {
     keep
 }
 
-/// Help ▸ About Redrob Film, in three tabs: About (version and the Redrob links),
-/// Contributors and Models (the credits compiled in from `contributors/contributors.json`, see
+/// Help ▸ About Redrob Film, in two tabs: About (version and the Redrob links) and
+/// Contributors (the credits compiled in from `contributors/contributors.json`, see
 /// `crate::credits` and docs/contributors.md).
 ///
-/// Automation ids: `about.tab.about`, `about.tab.contributors`, `about.tab.models`; the About tab's
+/// Automation ids: `about.tab.about`, `about.tab.contributors`; the About tab's
 /// links and the credits controls are listed on [`about_tab`] and [`crate::credits::contributors_ui`].
 fn about(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
     let tab_id = egui::Id::new("about_tab");
     let mut tab = ui.data_mut(|d| d.get_temp::<u8>(tab_id)).unwrap_or(0);
     ui.horizontal(|ui| {
-        for (i, (id, label)) in [("about", tl!("About")), ("contributors", tl!("Contributors")), ("models", tl!("Models"))].into_iter().enumerate() {
+        for (i, (id, label)) in [("about", tl!("About")), ("contributors", tl!("Contributors"))].into_iter().enumerate() {
             let i = i as u8;
             let r = ui.selectable_label(tab == i, label);
             app.auto.add(&format!("about.tab.{id}"), r.rect, label);
@@ -435,10 +435,6 @@ fn about(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
             ui.set_width(680.0);
             crate::credits::contributors_ui(ui, &t, &mut app.auto);
         }
-        2 => {
-            ui.set_width(680.0);
-            crate::credits::models_ui(ui);
-        }
         _ => about_tab(app, ui),
     }
 }
@@ -446,7 +442,7 @@ fn about(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
 /// About ▸ About: version, licence and the project links. The website is the first, accented
 /// button.
 ///
-/// Automation ids: `about.website`, `about.appPage`, `about.github`, `about.reportIssue`.
+/// Automation ids: `about.website`, `about.github`, `about.reportIssue`.
 fn about_tab(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
     use crate::icons::{self, Icon};
     use crate::links;
@@ -489,7 +485,6 @@ fn about_tab(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
     };
     link(ui, "website", Icon::Globe, "redrob.io", links::WEBSITE, true);
     ui.add_space(6.0);
-    link(ui, "appPage", Icon::Globe, tl!("Redrob Film on redrob.io"), links::APP_PAGE, false);
     link(ui, "github", Icon::Code, tl!("Source code on GitHub"), links::GITHUB, false);
     link(ui, "reportIssue", Icon::Code, tl!("Report an issue"), links::ISSUES, false);
     ui.add_space(10.0);

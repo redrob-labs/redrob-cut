@@ -1232,8 +1232,6 @@ Window
 Help
   Redrob Film Help... | help.docs {"page":"help"} | F1
   Scripting Help... | help.docs {"page":"scripting"}
-  Expression Reference... | help.docs {"page":"expressions"}
-  Effect Reference... | help.docs {"page":"effects"}
   Animation Presets... | anim.browsePresets
   Keyboard Shortcuts... | app.keyboardShortcuts
   ---

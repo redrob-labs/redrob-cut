@@ -232,9 +232,23 @@ pub struct Playback {
 
 /// How long (s) the audio clock may stand still during playback before the wall clock takes over.
 /// An output stream can open and then never call back (ALSA with a busy or misconfigured device,
-/// #136); playback must not freeze on it. Devices that are slow to start (Bluetooth) stay well
-/// under this.
+/// #136); playback must not freeze on it. This is the wait for a device that has not asked for a
+/// single buffer yet.
 pub const AUDIO_STALL_S: f64 = 1.0;
+
+/// A device that did fill its first buffer gets this long to start consuming before it is given
+/// up on. Most outputs ask for one buffer the moment the stream opens and then only run once the
+/// device has woken (a suspended PipeWire/PulseAudio sink, a WASAPI endpoint in power saving,
+/// Bluetooth): measured here as a 1.5–2 s pause after the first callback, which the 1 s wait
+/// took for a stall, so every sequence played without sound.
+pub const AUDIO_START_STALL_S: f64 = 4.0;
+
+/// How long the audio clock may sit at `frames` (filled so far, at `sample_rate`) before the
+/// device counts as stalled: [`AUDIO_STALL_S`] for a device that never called back or has been
+/// running for over half a second, [`AUDIO_START_STALL_S`] while it is still starting.
+pub fn audio_stall_limit(frames: u64, sample_rate: u32) -> f64 {
+    if frames == 0 || frames >= u64::from(sample_rate) / 2 { AUDIO_STALL_S } else { AUDIO_START_STALL_S }
+}
 
 /// How long `ui.screenshot` waits for the window to present the frame.
 const SCREENSHOT_TIMEOUT_S: f64 = 10.0;
@@ -1044,9 +1058,10 @@ impl FilmcraftApp {
             self.ui.status = tl!("Audio output failed: playing without sound (check Settings ▸ Audio Hardware)").into();
         }
         if let Some((f, sr)) = reading {
+            let stall = now - self.playback.audio_seen.1;
             if f != self.playback.audio_seen.0 {
                 self.playback.audio_seen = (f, now);
-            } else if now - self.playback.audio_seen.1 >= AUDIO_STALL_S {
+            } else if stall >= audio_stall_limit(f, sr) {
                 // the device stopped consuming samples: continue from where the audio got to on
                 // the wall clock, without sound
                 let played = if sr > 0 { f as f64 / sr as f64 } else { 0.0 };
@@ -1056,7 +1071,7 @@ impl FilmcraftApp {
                 if let Some(a) = self.audio.as_mut() {
                     a.stop();
                 }
-                log::warn!("audio output stalled (no samples consumed for {AUDIO_STALL_S} s); playing without sound");
+                log::warn!("audio output stalled (no samples consumed for {stall:.1} s after {f} frames); playing without sound");
                 self.ui.status = tl!("Audio output is not responding: playing without sound (check Settings ▸ Audio Hardware)").into();
             }
         }
