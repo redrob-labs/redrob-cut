@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.2 -- 2026-10-16
+
+### Fixed
+
+- Timeline: pressing the ruler or the playhead seeks at once and the playhead follows the mouse from
+  the press on, also when the pointer leaves the ruler or the handle; the playhead has a 12 px
+  handle over the full height of the tracks (Selection tool) with a resize cursor.
+- Audio: the output stream is opened with the configured settings, then without the fixed buffer
+  size, then with the device's own default format, rate and channels, so a device whose mix format
+  differs from the settings (Windows WASAPI) no longer stays silent; an output that cannot be
+  opened or stops with an error says so in the status bar, and the device and its default
+  configuration are logged at start-up.
+- Account: a sign-in in Redrob Launcher (the shared account file) is used ahead of this app's own
+  key, so signing in once in the launcher signs Redrob Film in as well.
+
 ## 0.2.1 -- 2026-10-16
 
 ### Fixed

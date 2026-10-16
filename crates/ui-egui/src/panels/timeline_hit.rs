@@ -20,6 +20,11 @@ pub const ROLL_PX: f32 = 2.5;
 /// Widest an edge zone gets (px), on each side of a clip edge.
 pub const EDGE_PX: f32 = 7.0;
 
+/// Half the width (px) of the playhead handle: the zone either side of the playhead line, over the
+/// whole height of the tracks, that the Selection tool grabs to move the playhead (the head on the
+/// ruler is grabbed through the ruler, which seeks anywhere).
+pub const PLAYHEAD_PX: f32 = 6.0;
+
 /// The trim the Selection tool starts at an edit point: Cmd+Shift = roll, Cmd = ripple. With the
 /// Trim setting on (`no_modifier`), no modifier is needed: right on the cut (when a clip is on the
 /// other side) rolls, elsewhere on the edge ripples. Otherwise a plain drag is a regular trim.
@@ -51,6 +56,8 @@ pub(crate) fn edge_geometry(seq: &Sequence, layout: &Layout, track: TrackId, cli
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Hit {
     Ruler,
+    /// The playhead line on the tracks (its handle, [`PLAYHEAD_PX`] either side).
+    Playhead,
     Clip {
         track: TrackId,
         clip: ClipId,
@@ -234,6 +241,16 @@ impl Grab {
 /// tools trim at a clip edge and which trim they start. `roll_ripple` is Settings ▸ Trim ▸ "Allow
 /// Selection tool to choose Roll and Ripple trims without modifier key".
 pub fn grab_at(seq: &Sequence, layout: &Layout, pos: Pos2, tool: Tool, mods: Modifiers, roll_ripple: bool) -> Grab {
+    // The Selection tool grabs the playhead anywhere along its line, not only at its head: the
+    // handle is PLAYHEAD_PX either side, the full height of the tracks. Other tools (Razor at the
+    // playhead, Pen on a Volume line) keep working right on it.
+    if tool == Tool::Selection
+        && let Some(px) = layout.playhead_x
+        && (pos.x - px).abs() <= PLAYHEAD_PX
+        && layout.content.contains(pos)
+    {
+        return Grab::Other(Hit::Playhead);
+    }
     let h = hit(seq, layout, pos);
     if let Hit::Clip { track, clip, edge: None } = h
         && matches!(tool, Tool::Selection | Tool::Pen)
@@ -339,6 +356,7 @@ mod tests {
             pps: 100.0,
             scroll: 0.0,
             split_y: TOP + 60.0,
+            playhead_x: None,
         };
         (seq, layout, track)
     }
