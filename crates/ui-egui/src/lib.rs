@@ -1021,6 +1021,9 @@ impl FilmcraftApp {
             Err(e) => {
                 log::warn!("audio output unavailable: {e}");
                 self.playback.audio_clock = false;
+                // the status bar says why there is no sound (the device's own note when it has one)
+                self.ui.status =
+                    self.audio.as_ref().and_then(|audio| audio.note()).unwrap_or_else(|| format!("Audio output failed: {e} (playing without sound)"));
             }
         }
     }
@@ -1055,7 +1058,12 @@ impl FilmcraftApp {
                 audio.stop();
             }
             log::warn!("audio output lost its playback clock; playing without sound");
-            self.ui.status = tl!("Audio output failed: playing without sound (check Settings ▸ Audio Hardware)").into();
+            // the device's own note names the error (cpal's error callback) when it has one
+            self.ui.status = self
+                .audio
+                .as_ref()
+                .and_then(|a| a.note())
+                .unwrap_or_else(|| tl!("Audio output failed: playing without sound (check Settings ▸ Audio Hardware)").into());
         }
         if let Some((f, sr)) = reading {
             let stall = now - self.playback.audio_seen.1;
