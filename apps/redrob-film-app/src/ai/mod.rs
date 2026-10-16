@@ -58,6 +58,11 @@ pub fn toggle(ui: &mut egui::Ui, dock: &mut AiDock) {
 pub fn body(ui: &mut egui::Ui, edit: &mut FilmcraftApp) -> bool {
     let had_dialog = edit.dialog.is_some();
     let rect = ui.available_rect_before_wrap();
+    // The panel measures its frame by what the contents take, and stores that as the width to
+    // show next frame. `agent::show` paints into a child `Ui` without allocating anything here,
+    // so without this the frame hugs the panel's minimum width at the left of the dock, the
+    // header is clipped to it, and every drag of the handle snaps back to the minimum.
+    ui.set_min_size(rect.size());
     redrob_film_ui_egui::agent::show(edit, ui, rect);
     !had_dialog && edit.dialog.is_some()
 }
