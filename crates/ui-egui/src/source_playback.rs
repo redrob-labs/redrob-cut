@@ -8,7 +8,7 @@ use redrob_film_render::SourceProvider;
 use redrob_film_time::Tick;
 use serde_json::json;
 
-use crate::{AUDIO_STALL_S, FilmcraftApp, Playback};
+use crate::{FilmcraftApp, Playback, audio_stall_limit};
 
 #[derive(Default)]
 pub struct SourcePlayback {
@@ -224,7 +224,8 @@ impl FilmcraftApp {
         {
             clock.audio_seen = (frames, now);
         }
-        if clock.audio_clock && (reading.is_none() || now - clock.audio_seen.1 >= AUDIO_STALL_S) {
+        let stalled = reading.is_none_or(|(frames, sr)| now - clock.audio_seen.1 >= audio_stall_limit(frames, sr));
+        if clock.audio_clock && stalled {
             clock.anchor_tick = time;
             clock.anchor_time = now;
             clock.audio_clock = false;

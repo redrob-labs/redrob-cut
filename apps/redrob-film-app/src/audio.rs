@@ -250,6 +250,15 @@ impl AudioOut for CpalOut {
         }
         .map_err(|e| e.to_string())?;
         stream.play().map_err(|e| e.to_string())?;
+        log::info!(
+            "audio output: {} on {} ({:?}, {} Hz, {} ch, buffer {:?})",
+            dev.name().unwrap_or_else(|_| "?".into()),
+            host.id().name(),
+            cfg.sample_format(),
+            self.rate,
+            self.channels,
+            config.buffer_size
+        );
         self.stream = Some(stream);
         Ok(self.rate)
     }
