@@ -2,6 +2,22 @@
 
 ## Changes
 
+## 0.2.0
+
+Redrob names everywhere a user meets one; old files keep opening.
+
+- **Redrob file types and identifiers.** Projects save as `.rfilm` (effects sidecar
+  `.rfilm.effects.json`), effects projects as `.rfx` / `.rfxx` with root `<RedrobEffectsProject>`;
+  MIME types `application/x-redrob-film` / `application/x-redrob-effects`; MCP resources
+  `redrob-film://` and `redrob-effects://`; environment variables `REDROB_FILM_*` / `REDROB_EFFECTS_*`.
+- **Old files and settings still work.** Project, effects and XML files saved by 0.1.0 and earlier,
+  old template archives, recovery snapshots, old MCP URIs and the old data, config, port and font
+  environment variables are read as fallbacks. Nothing writes the old spelling.
+- **Crates renamed** to `redrob-film-*` and `redrob-effects-*`; the effectcraft subtree carries only
+  its code and licences. `tools/rename_crates.py`, `tools/prune_upstream.py` and
+  `tools/merge_effectcraft.py` redo this after every upstream pull; `scripts/check_brand.py` fails on
+  any leftover.
+
 ## 0.1.0
 
 The first Redrob Film release (the release workflow checks that this section exists for the tagged version).
