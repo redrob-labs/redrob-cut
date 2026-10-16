@@ -183,6 +183,9 @@ pub struct Layout {
     pub scroll: f64,
     /// The y of the divider between the video tracks (above) and the audio tracks (below).
     pub split_y: f32,
+    /// The playhead's x, when a sequence is shown: the playhead handle (`Hit::Playhead`) is a zone
+    /// around it that runs the full height of the tracks (#feedback 2026-10-16).
+    pub playhead_x: Option<f32>,
 }
 
 impl Layout {
@@ -368,7 +371,8 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
         let rect = Rect::from_min_max(pos2(content.min.x, top), pos2(content.max.x, top + ah));
         rows.push(Row { track: tr.id, kind: TrackKind::Audio, index: i, rect, lane: app.ui.timeline.track_lanes.contains_key(&tr.id.0) });
     }
-    let layout = Layout { content, ruler, rows: rows.clone(), pps, scroll, split_y };
+    let mut layout = Layout { content, ruler, rows: rows.clone(), pps, scroll, split_y, playhead_x: None };
+    layout.playhead_x = Some(layout.x_of(app.session.playhead()));
     app.tl.layout = Some(layout.clone());
 
     // ---- backgrounds
@@ -1612,6 +1616,7 @@ pub fn hit_json(app: &FilmcraftApp, pos: Pos2, mods: egui::Modifiers) -> Value {
     };
     match grab.hit() {
         Hit::Ruler => json!({"hit": "ruler", "time": t.0}),
+        Hit::Playhead => json!({"hit": "playhead", "time": t.0}),
         Hit::Clip { track, clip, edge } => {
             json!({"hit": "clip", "track": track.0, "clip": clip.0, "edge": edge.map(|e| format!("{e:?}")), "kind": kind, "time": t.0})
         }
@@ -1941,6 +1946,35 @@ pub(crate) fn wheel_input(ctx: &egui::Context) -> WheelInput {
     })
 }
 
+/// A press on the ruler or the playhead handle: playback stops and the playhead goes to the press
+/// (onto the marker pressed, if any, #695).
+fn start_scrub(app: &mut FilmcraftApp, seq: &Sequence, layout: &Layout, p: Pos2, mods: egui::Modifiers) {
+    app.stop();
+    let rate = seq.settings.frame_rate;
+    let mut tt = rate.snap_nearest(layout.tick_at(p.x).max(Tick::ZERO));
+    if mods.shift || app.session.prefs.timeline.snap_playhead {
+        tt = snap_playhead(app, seq, layout, tt);
+    }
+    // a press on a marker selects it: the playhead goes exactly onto it (#695)
+    if let Some(m) = marker_at(seq, layout, p) {
+        tt = m.max(Tick::ZERO);
+    }
+    app.session.set_playhead(tt);
+}
+
+/// The playhead follows a drag to screen `x`. Shift snaps; so does Settings ▸ Timeline ▸ "Snap
+/// playhead in Timeline when Snap is enabled".
+fn scrub_to(app: &mut FilmcraftApp, seq: &Sequence, layout: &Layout, x: f32, mods: egui::Modifiers) {
+    let rate = seq.settings.frame_rate;
+    let mut tt = rate.snap_nearest(layout.tick_at(x).max(Tick::ZERO));
+    if mods.shift || app.session.prefs.timeline.snap_playhead {
+        tt = snap_playhead(app, seq, layout, tt);
+    }
+    if tt != app.session.playhead() {
+        app.session.set_playhead(tt);
+    }
+}
+
 fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &Layout, rect: Rect) {
     let ctx = ui.ctx().clone();
     let area = Rect::from_min_max(pos2(layout.content.min.x, layout.ruler.min.y), layout.content.max);
@@ -1959,7 +1993,27 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
         && ctx.input(|i| i.pointer.primary_pressed())
         && let Some(p) = ctx.input(|i| i.pointer.press_origin())
     {
-        app.tl.pressed = Some(Pressed { pos: p, tick: layout.tick_at(p.x), grab: grab_at(seq, layout, p, tool, mods, roll_ripple) });
+        let grab = grab_at(seq, layout, p, tool, mods, roll_ripple);
+        if matches!(grab, Grab::Other(Hit::Ruler | Hit::Playhead)) && app.tl.drag.is_none() {
+            // The playhead follows the press itself, not the release or egui's drag threshold:
+            // a press anywhere on the ruler seeks, and the pointer is owned until the button comes
+            // up, so the drag goes on when it leaves the ruler or the handle (feedback 2026-10-16).
+            start_scrub(app, seq, layout, p, mods);
+            app.tl.drag = Some(Drag::Scrub);
+            app.tl.pressed = None;
+        } else {
+            app.tl.pressed = Some(Pressed { pos: p, tick: layout.tick_at(p.x), grab });
+        }
+    }
+    // the playhead drag: driven by the pointer itself, so it starts on the press and goes on
+    // wherever the pointer is, until the button comes up
+    if matches!(app.tl.drag, Some(Drag::Scrub)) {
+        ctx.set_cursor_icon(CursorIcon::ResizeHorizontal);
+        if ctx.input(|i| i.pointer.primary_down())
+            && let Some(p) = ctx.pointer_interact_pos()
+        {
+            scrub_to(app, seq, layout, p.x, mods);
+        }
     }
 
     // ---- wheel, as in Premiere Pro on macOS (checked in 26.5.2):
@@ -2009,6 +2063,7 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
     {
         let g = grab_at(seq, layout, p, tool, mods, roll_ripple);
         let cur = match (tool, g) {
+            (_, Grab::Other(Hit::Playhead)) => CursorIcon::ResizeHorizontal,
             (_, Grab::Edge { .. }) => CursorIcon::ResizeColumn,
             (Tool::Selection, Grab::Other(Hit::Transition { edge: Some(_), .. })) => CursorIcon::ResizeColumn,
             (Tool::Selection, Grab::Other(Hit::Transition { edge: None, .. })) => CursorIcon::Grab,
@@ -2037,7 +2092,7 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
     }
 
     // ---- press: act on what was under the pointer when the button went down (#259)
-    if resp.drag_started() || (resp.clicked() && app.tl.drag.is_none()) {
+    if app.tl.drag.is_none() && (resp.drag_started() || resp.clicked()) {
         let pressed = match app.tl.pressed.take() {
             Some(pr) => pr,
             // a press and release in the same frame is never stored: it happened where egui says
@@ -2054,7 +2109,7 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
             g => g,
         };
         let started = match (tool, grab) {
-            (_, Grab::Other(Hit::Ruler)) => Some(Drag::Scrub),
+            (_, Grab::Other(Hit::Ruler | Hit::Playhead)) => Some(Drag::Scrub),
             (Tool::Hand, _) => Some(Drag::Pan { last: p }),
             (Tool::Zoom, _) => {
                 if resp.clicked() {
@@ -2182,16 +2237,7 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
         };
         if let Some(d) = started {
             if matches!(d, Drag::Scrub) {
-                app.stop();
-                let mut tt = rate.snap_nearest(layout.tick_at(p.x).max(Tick::ZERO));
-                if mods.shift || app.session.prefs.timeline.snap_playhead {
-                    tt = snap_playhead(app, seq, layout, tt);
-                }
-                // a press on a marker selects it: the playhead goes exactly onto it (#695)
-                if let Some(m) = marker_at(seq, layout, p) {
-                    tt = m.max(Tick::ZERO);
-                }
-                app.session.set_playhead(tt);
+                start_scrub(app, seq, layout, p, mods);
             }
             if resp.drag_started() {
                 app.tl.drag = Some(d);
@@ -2207,12 +2253,7 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
         let t_here = layout.tick_at(p.x);
         let new = match d {
             Drag::Scrub => {
-                let mut tt = rate.snap_nearest(t_here.max(Tick::ZERO));
-                // Shift snaps; Settings ▸ Timeline ▸ "Snap playhead in Timeline when Snap is enabled"
-                if mods.shift || app.session.prefs.timeline.snap_playhead {
-                    tt = snap_playhead(app, seq, layout, tt);
-                }
-                app.session.set_playhead(tt);
+                scrub_to(app, seq, layout, p.x, mods);
                 Some(Drag::Scrub)
             }
             Drag::Pan { last } => {
@@ -2349,6 +2390,11 @@ fn interact(app: &mut FilmcraftApp, ui: &mut egui::Ui, seq: &Sequence, layout: &
         if let Some(Err(e)) = r {
             app.ui.status = e.to_string();
         }
+    }
+
+    // ---- the playhead drag ends when the button comes up, whether or not egui counted it as a drag
+    if matches!(app.tl.drag, Some(Drag::Scrub)) && ctx.input(|i| !i.pointer.primary_down()) {
+        app.tl.drag = None;
     }
 
     // ---- double-click a transition: Set Transition Duration (Premiere)
@@ -2949,6 +2995,7 @@ mod new_track_tests {
             pps: 100.0,
             scroll: 0.0,
             split_y: 200.0,
+            playhead_x: None,
         };
         let at = |y| new_track_at(&seq, &layout, y, 50.0, 50.0);
         assert_eq!(at(40.0), Some((TrackKind::Video, Rect::from_min_max(pos2(0.0, 100.0), pos2(800.0, 150.0)))));

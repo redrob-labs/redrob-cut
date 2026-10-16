@@ -99,8 +99,9 @@ pub fn shared_account_path() -> Option<PathBuf> {
     Some(dir.join("account.json"))
 }
 
-/// The key the app uses now: its own when it has one, else the computer's shared one, read fresh
-/// every time (the person may sign in or out in Redrob Launcher while this app is open).
+/// The key the app uses now: the computer's shared one (a sign-in in Redrob Launcher counts as a
+/// sign-in here) when that file is present and valid, else this app's own. The shared file is
+/// read fresh every time (the person may sign in or out in Redrob Launcher while this app is open).
 #[derive(Clone)]
 pub struct KeySource {
     own: Arc<Mutex<Option<Stored>>>,
@@ -110,10 +111,10 @@ pub struct KeySource {
 impl KeySource {
     /// The key and whether it is the shared one.
     pub fn current(&self) -> Option<(Stored, bool)> {
-        if let Some(s) = self.own.lock().ok().and_then(|g| g.clone()) {
-            return Some((s, false));
+        if let Some(s) = self.shared.as_deref().and_then(load) {
+            return Some((s, true));
         }
-        self.shared.as_deref().and_then(load).map(|s| (s, true))
+        self.own.lock().ok().and_then(|g| g.clone()).map(|s| (s, false))
     }
 }
 
@@ -240,7 +241,7 @@ struct Attempt {
 /// The app's account: the stored key, and at most one connection attempt in the background.
 pub struct DeviceAccount {
     path: Option<PathBuf>,
-    /// Redrob Launcher's shared account file, the fallback when this app has no key of its own.
+    /// Redrob Launcher's shared account file, preferred over this app's own key when present.
     shared: Option<PathBuf>,
     /// The shared key last seen, so a change there restarts the AI features like a change here does.
     shared_seen: Mutex<Option<String>>,
@@ -543,11 +544,14 @@ mod tests {
         assert!(acct.generation() > g0);
         let g1 = acct.generation();
         assert_eq!(acct.generation(), g1, "an unchanged shared key restarts nothing");
-        // The app's own key wins.
+        // The launcher's shared key wins over the app's own; the own key is what remains without it.
         assert!(save(&own, &key("rk_own", "Redrob Film")).is_ok());
         let mut acct = DeviceAccount::new(Some(own.clone()), Some(shared.clone()), Arc::new(Script::new(vec![])), "https://c".into(), None);
+        assert_eq!(acct.key_source().current().map(|(s, via)| (s.api_key, via)), Some(("rk_shared".into(), true)));
+        assert!(std::fs::remove_file(&shared).is_ok());
         assert_eq!(acct.key_source().current().map(|(s, via)| (s.api_key, via)), Some(("rk_own".into(), false)));
         // Disconnecting here removes only this app's own key; the launcher's file is not this app's to delete.
+        assert!(save(&shared, &key("rk_shared", "Redrob Launcher")).is_ok());
         acct.disconnect();
         assert!(!own.exists() && shared.exists());
         assert_eq!(acct.key_source().current().map(|(s, _)| s.api_key), Some("rk_shared".into()));

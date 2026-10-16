@@ -24,6 +24,9 @@ pub struct CpalOut {
     /// The fallback picked when the default device could not be opened, as (host, device) names,
     /// so later lookups (`devices`, `configure`, `start`) reuse it instead of probing every PCM.
     fallback: Mutex<Option<(String, String)>>,
+    /// The last stream error, written by cpal's error callback and shown by `note` (a desktop
+    /// launch has no terminal; on Windows `windows_subsystem = "windows"` discards stderr).
+    error: Arc<Mutex<Option<String>>>,
 }
 
 /// A hardware note for the status bar, translated when it is shown.
@@ -33,6 +36,8 @@ enum Note {
     Fallback(String),
     /// No output device at all: playback runs without sound.
     NoDevice,
+    /// The output stream could not be opened, or stopped with an error: playback runs without sound.
+    Error(String),
 }
 
 impl Note {
@@ -41,6 +46,7 @@ impl Note {
         match self {
             Note::Fallback(device) => fmt(t("Audio hardware: the default output device cannot be opened; using '{device}'"), &[("device", device)]),
             Note::NoDevice => t("No audio output device found: playing without sound (check Settings ▸ Audio Hardware)").to_string(),
+            Note::Error(e) => fmt(t("Audio output failed: {error} (playing without sound; check Settings ▸ Audio Hardware)"), &[("error", e)]),
         }
     }
 }
@@ -119,6 +125,14 @@ impl CpalOut {
         let fallback = Mutex::new(None);
         let choice = output_device(&host, "", &fallback);
         let cfg = choice.as_ref().and_then(|c| c.device.default_output_config().ok());
+        if let Some(c) = &choice {
+            log::info!(
+                "audio output device: {} on {} (default config {:?})",
+                c.device.name().unwrap_or_else(|_| "?".into()),
+                host.id().name(),
+                cfg.as_ref().map(|c| (c.sample_format(), c.sample_rate().0, c.channels()))
+            );
+        }
         let note = match choice {
             Some(c) => c.fallback,
             None => {
@@ -136,6 +150,7 @@ impl CpalOut {
             document_rate: None,
             note,
             fallback,
+            error: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -153,6 +168,52 @@ impl CpalOut {
         Ok(exact.unwrap_or(default))
     }
 
+    /// One output stream in `config`, converting from the f32 the mixer produces when the device
+    /// wants another sample format.
+    fn build(
+        &self,
+        dev: &cpal::Device,
+        format: cpal::SampleFormat,
+        config: &cpal::StreamConfig,
+        fill: Box<dyn FnMut(&mut [f32], usize) + Send>,
+    ) -> Result<cpal::Stream, cpal::BuildStreamError> {
+        match format {
+            cpal::SampleFormat::F32 => self.f32_stream(dev, config, fill),
+            cpal::SampleFormat::I8 => self.converted_stream::<i8>(dev, config, fill),
+            cpal::SampleFormat::I16 => self.converted_stream::<i16>(dev, config, fill),
+            cpal::SampleFormat::I24 => self.converted_stream::<cpal::I24>(dev, config, fill),
+            cpal::SampleFormat::I32 => self.converted_stream::<i32>(dev, config, fill),
+            cpal::SampleFormat::I64 => self.converted_stream::<i64>(dev, config, fill),
+            cpal::SampleFormat::U8 => self.converted_stream::<u8>(dev, config, fill),
+            cpal::SampleFormat::U16 => self.converted_stream::<u16>(dev, config, fill),
+            cpal::SampleFormat::U32 => self.converted_stream::<u32>(dev, config, fill),
+            cpal::SampleFormat::U64 => self.converted_stream::<u64>(dev, config, fill),
+            cpal::SampleFormat::F64 => self.converted_stream::<f64>(dev, config, fill),
+            _ => Err(cpal::BuildStreamError::StreamConfigNotSupported),
+        }
+    }
+
+    fn f32_stream(
+        &self,
+        dev: &cpal::Device,
+        config: &cpal::StreamConfig,
+        mut fill: Box<dyn FnMut(&mut [f32], usize) + Send>,
+    ) -> Result<cpal::Stream, cpal::BuildStreamError> {
+        let channels = usize::from(config.channels);
+        let played = self.played.clone();
+        let failed = self.failed.clone();
+        let error = self.error.clone();
+        dev.build_output_stream(
+            config,
+            move |buf: &mut [f32], _| {
+                fill(buf, channels);
+                played.fetch_add((buf.len() / channels) as u64, Ordering::SeqCst);
+            },
+            move |e| stream_error(&failed, &error, e),
+            None,
+        )
+    }
+
     fn converted_stream<T>(
         &self,
         dev: &cpal::Device,
@@ -166,6 +227,7 @@ impl CpalOut {
         let played = self.played.clone();
         let failed = self.failed.clone();
         let error_flag = failed.clone();
+        let error = self.error.clone();
         let mut scratch = Vec::new();
         dev.build_output_stream(
             config,
@@ -183,15 +245,18 @@ impl CpalOut {
                 convert_samples(&scratch, buf);
                 played.fetch_add((buf.len() / channels) as u64, Ordering::SeqCst);
             },
-            move |e| stream_error(&error_flag, e),
+            move |e| stream_error(&error_flag, &error, e),
             None,
         )
     }
 }
 
-fn stream_error(failed: &AtomicBool, e: cpal::StreamError) {
+/// cpal's error callback: the stream is dead, so the playback clock is given up and the status
+/// bar says why (`note`). Not the realtime data callback, but kept allocation-light all the same.
+fn stream_error(failed: &AtomicBool, error: &Mutex<Option<String>>, e: cpal::StreamError) {
     if !failed.swap(true, Ordering::SeqCst) {
         eprintln!("redrob-film: audio stream error: {e}");
+        *error.lock().unwrap_or_else(PoisonError::into_inner) = Some(e.to_string());
     }
 }
 
@@ -203,64 +268,37 @@ fn convert_samples<T: cpal::Sample + cpal::FromSample<f32>>(input: &[f32], outpu
     }
 }
 
+/// The stream configurations to try, in order: the one the settings ask for; the same with the
+/// device's own buffer size (WASAPI and some ALSA/CoreAudio devices refuse a fixed size); the
+/// device's default configuration (format, rate and channels as the device reports them). Opening
+/// the first that works is what keeps a Windows machine from playing in silence when the mix format
+/// is not what the settings expect.
+fn attempts(wanted: &cpal::SupportedStreamConfig, config: &cpal::StreamConfig, default: Option<cpal::SupportedStreamConfig>) -> Vec<(cpal::SupportedStreamConfig, cpal::StreamConfig)> {
+    let mut out = vec![(wanted.clone(), config.clone())];
+    if config.buffer_size != cpal::BufferSize::Default {
+        let mut c = config.clone();
+        c.buffer_size = cpal::BufferSize::Default;
+        out.push((wanted.clone(), c));
+    }
+    if let Some(d) = default
+        && (d.sample_format() != wanted.sample_format() || d.sample_rate() != wanted.sample_rate() || d.channels() != wanted.channels())
+    {
+        let c: cpal::StreamConfig = d.clone().into();
+        out.push((d, c));
+    }
+    out
+}
+
 impl AudioOut for CpalOut {
-    fn start(&mut self, mut fill: Box<dyn FnMut(&mut [f32], usize) + Send>) -> Result<u32, String> {
+    fn start(&mut self, fill: Box<dyn FnMut(&mut [f32], usize) + Send>) -> Result<u32, String> {
         self.stop();
-        let host = host(&self.hw.device_class);
-        let DeviceChoice { device: dev, fallback } = output_device(&host, &self.hw.default_output, &self.fallback).ok_or("no output device")?;
-        self.note = fallback;
-        let cfg = self.config(&dev)?;
-        let channels = cfg.channels() as usize;
-        if channels == 0 || cfg.sample_rate().0 == 0 {
-            return Err("the output device returned an invalid channel count or sample rate".into());
+        *self.error.lock().unwrap_or_else(PoisonError::into_inner) = None;
+        let r = self.open(fill);
+        if let Err(e) = &r {
+            log::warn!("audio output unavailable: {e}");
+            self.note = Some(Note::Error(e.clone()));
         }
-        let mut config: cpal::StreamConfig = cfg.clone().into();
-        if let cpal::SupportedBufferSize::Range { min, max } = cfg.buffer_size()
-            && (*min..=*max).contains(&self.hw.buffer_size)
-        {
-            config.buffer_size = cpal::BufferSize::Fixed(self.hw.buffer_size);
-        }
-        self.rate = cfg.sample_rate().0;
-        self.channels = cfg.channels();
-        self.played.store(0, Ordering::SeqCst);
-        self.failed.store(false, Ordering::SeqCst);
-        let played = self.played.clone();
-        let failed = self.failed.clone();
-        let stream = match cfg.sample_format() {
-            cpal::SampleFormat::F32 => dev.build_output_stream(
-                &config,
-                move |buf: &mut [f32], _| {
-                    fill(buf, channels);
-                    played.fetch_add((buf.len() / channels) as u64, Ordering::SeqCst);
-                },
-                move |e| stream_error(&failed, e),
-                None,
-            ),
-            cpal::SampleFormat::I8 => self.converted_stream::<i8>(&dev, &config, fill),
-            cpal::SampleFormat::I16 => self.converted_stream::<i16>(&dev, &config, fill),
-            cpal::SampleFormat::I24 => self.converted_stream::<cpal::I24>(&dev, &config, fill),
-            cpal::SampleFormat::I32 => self.converted_stream::<i32>(&dev, &config, fill),
-            cpal::SampleFormat::I64 => self.converted_stream::<i64>(&dev, &config, fill),
-            cpal::SampleFormat::U8 => self.converted_stream::<u8>(&dev, &config, fill),
-            cpal::SampleFormat::U16 => self.converted_stream::<u16>(&dev, &config, fill),
-            cpal::SampleFormat::U32 => self.converted_stream::<u32>(&dev, &config, fill),
-            cpal::SampleFormat::U64 => self.converted_stream::<u64>(&dev, &config, fill),
-            cpal::SampleFormat::F64 => self.converted_stream::<f64>(&dev, &config, fill),
-            other => return Err(format!("unsupported sample format {other:?}")),
-        }
-        .map_err(|e| e.to_string())?;
-        stream.play().map_err(|e| e.to_string())?;
-        log::info!(
-            "audio output: {} on {} ({:?}, {} Hz, {} ch, buffer {:?})",
-            dev.name().unwrap_or_else(|_| "?".into()),
-            host.id().name(),
-            cfg.sample_format(),
-            self.rate,
-            self.channels,
-            config.buffer_size
-        );
-        self.stream = Some(stream);
-        Ok(self.rate)
+        r
     }
     fn stop(&mut self) {
         self.stream = None;
@@ -296,7 +334,65 @@ impl AudioOut for CpalOut {
         }
     }
     fn note(&self) -> Option<String> {
+        if let Some(e) = self.error.lock().unwrap_or_else(PoisonError::into_inner).clone() {
+            return Some(Note::Error(e).text());
+        }
         self.note.as_ref().map(Note::text)
+    }
+}
+
+impl CpalOut {
+    fn open(&mut self, fill: Box<dyn FnMut(&mut [f32], usize) + Send>) -> Result<u32, String> {
+        let host = host(&self.hw.device_class);
+        let DeviceChoice { device: dev, fallback } = output_device(&host, &self.hw.default_output, &self.fallback).ok_or("no output device")?;
+        self.note = fallback;
+        let cfg = self.config(&dev)?;
+        if cfg.channels() == 0 || cfg.sample_rate().0 == 0 {
+            return Err("the output device returned an invalid channel count or sample rate".into());
+        }
+        let mut config: cpal::StreamConfig = cfg.clone().into();
+        if let cpal::SupportedBufferSize::Range { min, max } = cfg.buffer_size()
+            && (*min..=*max).contains(&self.hw.buffer_size)
+        {
+            config.buffer_size = cpal::BufferSize::Fixed(self.hw.buffer_size);
+        }
+        self.played.store(0, Ordering::SeqCst);
+        self.failed.store(false, Ordering::SeqCst);
+        // Every attempt gets the same mixer: a failed `build_output_stream` consumes its closure.
+        let fill = Arc::new(Mutex::new(fill));
+        let shared = || {
+            let f = fill.clone();
+            Box::new(move |buf: &mut [f32], ch: usize| (f.lock().unwrap_or_else(PoisonError::into_inner))(buf, ch)) as Box<dyn FnMut(&mut [f32], usize) + Send>
+        };
+        let mut opened = None;
+        let mut last = String::from("no stream configuration to try");
+        for (c, sc) in attempts(&cfg, &config, dev.default_output_config().ok()) {
+            match self.build(&dev, c.sample_format(), &sc, shared()) {
+                Ok(s) => {
+                    opened = Some((s, c, sc));
+                    break;
+                }
+                Err(e) => {
+                    log::warn!("audio output: cannot open {:?} {} Hz {} ch buffer {:?}: {e}", c.sample_format(), c.sample_rate().0, c.channels(), sc.buffer_size);
+                    last = e.to_string();
+                }
+            }
+        }
+        let (stream, cfg, config) = opened.ok_or(last)?;
+        stream.play().map_err(|e| e.to_string())?;
+        self.rate = cfg.sample_rate().0;
+        self.channels = cfg.channels();
+        log::info!(
+            "audio output: {} on {} ({:?}, {} Hz, {} ch, buffer {:?})",
+            dev.name().unwrap_or_else(|_| "?".into()),
+            host.id().name(),
+            cfg.sample_format(),
+            self.rate,
+            self.channels,
+            config.buffer_size
+        );
+        self.stream = Some(stream);
+        Ok(self.rate)
     }
 }
 
@@ -338,8 +434,10 @@ mod tests {
     #[test]
     fn failed_stream_relinquishes_the_playback_clock() {
         let failed = AtomicBool::new(false);
-        stream_error(&failed, cpal::StreamError::DeviceNotAvailable);
+        let error = Mutex::new(None);
+        stream_error(&failed, &error, cpal::StreamError::DeviceNotAvailable);
         assert!(failed.load(Ordering::SeqCst));
+        assert!(error.lock().unwrap_or_else(PoisonError::into_inner).is_some());
         let output = CpalOut::new();
         assert_eq!(output.played_frames(), None);
     }
