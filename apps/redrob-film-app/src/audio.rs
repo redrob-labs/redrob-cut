@@ -273,7 +273,11 @@ fn convert_samples<T: cpal::Sample + cpal::FromSample<f32>>(input: &[f32], outpu
 /// device's default configuration (format, rate and channels as the device reports them). Opening
 /// the first that works is what keeps a Windows machine from playing in silence when the mix format
 /// is not what the settings expect.
-fn attempts(wanted: &cpal::SupportedStreamConfig, config: &cpal::StreamConfig, default: Option<cpal::SupportedStreamConfig>) -> Vec<(cpal::SupportedStreamConfig, cpal::StreamConfig)> {
+fn attempts(
+    wanted: &cpal::SupportedStreamConfig,
+    config: &cpal::StreamConfig,
+    default: Option<cpal::SupportedStreamConfig>,
+) -> Vec<(cpal::SupportedStreamConfig, cpal::StreamConfig)> {
     let mut out = vec![(wanted.clone(), config.clone())];
     if config.buffer_size != cpal::BufferSize::Default {
         let mut c = config.clone();
@@ -373,7 +377,13 @@ impl CpalOut {
                     break;
                 }
                 Err(e) => {
-                    log::warn!("audio output: cannot open {:?} {} Hz {} ch buffer {:?}: {e}", c.sample_format(), c.sample_rate().0, c.channels(), sc.buffer_size);
+                    log::warn!(
+                        "audio output: cannot open {:?} {} Hz {} ch buffer {:?}: {e}",
+                        c.sample_format(),
+                        c.sample_rate().0,
+                        c.channels(),
+                        sc.buffer_size
+                    );
                     last = e.to_string();
                 }
             }
