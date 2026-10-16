@@ -43,6 +43,9 @@ redrob-effects-project = { workspace = true }
 redrob-effects-render = { workspace = true }
 redrob-effects-time = { workspace = true }
 redrob-effects-color = { workspace = true }
+# The Effects editor's font database, scanned in the background at start-up (`shell.rs`) so its
+# first frame does not scan the system fonts on the UI thread.
+redrob-effects-text = { workspace = true }
 # `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
 redrob-film-automation = { workspace = true }
 tokio = { version = "1", features = ["rt-multi-thread"] }

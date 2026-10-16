@@ -127,20 +127,28 @@ fn font_signature(defs: &egui::FontDefinitions) -> FontSignature {
 }
 
 /// The union of every editor's font definitions. Every editor's named families are present, so
-/// whichever editor draws finds its fonts; the generic families (`Proportional`, `Monospace`)
-/// and any name two editors share come from `active`'s own definitions.
-pub fn merge_fonts(all: &HashMap<Mode, egui::FontDefinitions>, active: Mode) -> egui::FontDefinitions {
+/// whichever editor draws finds its fonts; a family both editors define (`Proportional`,
+/// `Monospace`, a shared name) gets the editors' fallback stacks appended in [`Mode::ALL`] order,
+/// each font once. The result does not depend on which editor is active, so a mode switch never
+/// re-installs fonts: `Context::set_fonts` rebuilds every font face (copying each font's bytes,
+/// parsing it, building its shaper and hinting state) and empties the glyph atlas, which took
+/// seconds per switch with the editors' CJK and system fallback fonts.
+pub fn merge_fonts(all: &HashMap<Mode, egui::FontDefinitions>) -> egui::FontDefinitions {
     let mut merged = egui::FontDefinitions::default();
     merged.font_data.clear();
     merged.families.clear();
-    let order = all.keys().copied().filter(|m| *m != active).chain(all.contains_key(&active).then_some(active));
-    for mode in order {
+    for mode in Mode::ALL {
         if let Some(defs) = all.get(&mode) {
             for (name, data) in &defs.font_data {
                 merged.font_data.entry(name.clone()).or_insert_with(|| data.clone());
             }
             for (family, stack) in &defs.families {
-                merged.families.insert(family.clone(), stack.clone());
+                let merged_stack = merged.families.entry(family.clone()).or_default();
+                for name in stack {
+                    if !merged_stack.contains(name) {
+                        merged_stack.push(name.clone());
+                    }
+                }
             }
         }
     }
@@ -222,11 +230,8 @@ impl ModeState {
         if let Some(style) = self.styles.get(&next) {
             style.restore(ctx);
         }
-        if self.fonts.contains_key(&next) {
-            let merged = merge_fonts(&self.fonts, next);
-            self.merged_fonts = Some(font_signature(&merged));
-            ctx.set_fonts(merged);
-        }
+        // The merged set is the same for every mode (`merge_fonts`), so once it is live the
+        // switch needs no `set_fonts`: a font rebuild here froze the window for seconds.
         true
     }
 
@@ -252,7 +257,7 @@ impl ModeState {
         }
         let defs = ctx.fonts(|f| f.definitions().clone());
         self.fonts.insert(self.mode, defs);
-        let merged = merge_fonts(&self.fonts, self.mode);
+        let merged = merge_fonts(&self.fonts);
         self.merged_fonts = Some(font_signature(&merged));
         ctx.set_fonts(merged);
     }
@@ -304,6 +309,11 @@ impl ShellApp {
     /// `edit` is the fully wired Edit editor; `control_rx` the control server's requests and
     /// `edit_tx` the sender whose receiver `edit` was given with `FilmcraftApp::with_control`.
     pub fn new(edit: FilmcraftApp, control_rx: Option<Receiver<ControlRequest>>, edit_tx: Sender<ControlRequest>) -> Self {
+        // The Effects editor's first frame installs its fonts, and its CJK / script fallbacks come
+        // from a scan of the system font folders (`redrob_effects_text::fonts::scan_system`, a
+        // separate database from the Edit editor's). On the UI thread that scan was a large part
+        // of the seconds the first switch to Effects took: start it now, in the background.
+        redrob_effects_text::fonts::scan_system_in_background();
         Self {
             modes: ModeState::default(),
             edit,
@@ -878,7 +888,7 @@ mod tests {
     }
 
     #[test]
-    fn merged_fonts_are_the_union_and_prefer_the_active_editors_generic_families() {
+    fn merged_fonts_are_the_union_and_do_not_depend_on_the_active_editor() {
         let mut a = egui::FontDefinitions::default();
         a.families.insert(egui::FontFamily::Proportional, vec!["A".into()]);
         a.families.insert(egui::FontFamily::Name("shared".into()), vec!["A".into()]);
@@ -888,20 +898,16 @@ mod tests {
         b.families.insert(egui::FontFamily::Name("shared".into()), vec!["B".into()]);
         b.families.insert(egui::FontFamily::Name("only-b".into()), vec!["B".into()]);
         let all = HashMap::from([(Mode::Edit, a), (Mode::Effects, b)]);
-        let merged = merge_fonts(&all, Mode::Edit);
-        assert_eq!(merged.families[&egui::FontFamily::Proportional], vec!["A".to_string()]);
-        assert_eq!(merged.families[&egui::FontFamily::Name("shared".into())], vec!["A".to_string()]);
+        let merged = merge_fonts(&all);
+        assert_eq!(merged.families[&egui::FontFamily::Proportional], vec!["A".to_string(), "B".to_string()]);
+        assert_eq!(merged.families[&egui::FontFamily::Name("shared".into())], vec!["A".to_string(), "B".to_string()]);
         assert!(merged.families.contains_key(&egui::FontFamily::Name("only-a".into())));
         assert!(merged.families.contains_key(&egui::FontFamily::Name("only-b".into())));
-        let merged = merge_fonts(&all, Mode::Effects);
-        assert_eq!(merged.families[&egui::FontFamily::Proportional], vec!["B".to_string()]);
-        assert_eq!(merged.families[&egui::FontFamily::Name("shared".into())], vec!["B".to_string()]);
-        assert!(merged.families.contains_key(&egui::FontFamily::Name("only-a".into())));
         // font files are the union too (both carry egui's defaults here)
         assert_eq!(merged.font_data.len(), egui::FontDefinitions::default().font_data.len());
         // one editor alone is itself
         let one = HashMap::from([(Mode::Edit, all[&Mode::Edit].clone())]);
-        assert_eq!(font_signature(&merge_fonts(&one, Mode::Edit)), font_signature(&all[&Mode::Edit]));
+        assert_eq!(font_signature(&merge_fonts(&one)), font_signature(&all[&Mode::Edit]));
     }
 
     #[test]

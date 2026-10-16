@@ -5390,6 +5390,7 @@ dependencies = [
  "redrob-effects-host",
  "redrob-effects-project",
  "redrob-effects-render",
+ "redrob-effects-text",
  "redrob-effects-time",
  "redrob-effects-ui-egui",
  "redrob-film-automation",

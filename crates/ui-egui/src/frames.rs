@@ -548,21 +548,18 @@ impl FrameServer {
         }
         self.shared.stats.lock().unwrap_or_else(|e| e.into_inner()).request_misses += 1;
         if prio == 0 {
-            // A new frame on screen for this view replaces the one asked for before: scrubbing
-            // asks for one per refresh, and without this the oldest position would decode
-            // first (or keep a decoder busy seeking to it) while the newest waits.
+            // A new frame on screen for this view replaces the ones queued for it before:
+            // scrubbing asks for one per refresh, and without this the oldest position would
+            // decode first while the newest waits.
             //
-            // A job already running for the same frame at an older revision (a value being
-            // dragged asks for a new revision per refresh) is left to finish: it needs the same
-            // source frames, so it holds no decoder back, and when frames take longer than a
-            // refresh, cancelling each one for the next would show nothing until the mouse rests.
+            // The job already running for this view is left to finish, whichever frame it is
+            // on. It used to be cancelled for a different frame, and with frames slower than a
+            // refresh (a seek into compressed video) every scrub position was thrown away for the
+            // next one: the picture only caught up once the mouse rested. Now each finished job
+            // shows, and the worker then takes the newest position from the queue, so the
+            // picture follows the drag at the rate frames can be decoded.
             let same_view = |k: &FrameKey| k.target == key.target && k.size == key.size;
             q.retain(|j| !(j.prio == 0 && !j.prefetch && same_view(&j.key)));
-            for (k, c, prefetch) in self.shared.in_flight.lock().unwrap_or_else(|e| e.into_inner()).iter() {
-                if !prefetch && same_view(k) && k.frame != key.frame {
-                    c.store(true, Ordering::Relaxed);
-                }
-            }
         }
         q.push_back(Job { key, queued: Instant::now(), cancel: Default::default(), prefetch, catch_up, time, scale, project: project.clone(), prio });
         drop(q);
