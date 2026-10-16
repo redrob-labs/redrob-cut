@@ -2,6 +2,16 @@
 
 ## Changes
 
+## 0.2.2
+
+Fixes from the second Windows round.
+
+- **Playhead grabs on the press.** A press on the ruler or on the 12 px playhead handle seeks at
+  once and keeps following the mouse until the button comes up.
+- **Audio opens on the device's own format.** Settings config, then no fixed buffer, then the
+  device default; failures are shown in the status bar and logged.
+- **Launcher sign-in counts here.** The shared account file is used ahead of the app's own key.
+
 ## 0.2.1
 
 Fixes from the first Windows round.
