@@ -1,4 +1,4 @@
-//! Modal dialogs: About (community links, Contributors and Models credits), New Composition /
+//! Modal dialogs: About (community links and Contributors credits), New Composition /
 //! Composition Settings, Solid Settings and the command palette (Camera/Light Settings live in `dialogs_3d`).
 
 use crate::i18n::{tr, tr_args};
@@ -265,9 +265,9 @@ pub fn show(app: &mut EffectcraftApp, ctx: &egui::Context) {
     }
 }
 
-/// About tabs: About · Contributors · Models.
-const ABOUT_TABS: [(&str, &str); 3] = [("About", "about"), ("Contributors", "contributors"), ("Models", "models")];
-/// Height of the Contributors / Models tab bodies (they scroll inside it).
+/// About tabs: About · Contributors.
+const ABOUT_TABS: [(&str, &str); 2] = [("About", "about"), ("Contributors", "contributors")];
+/// Height of the Contributors tab body (it scrolls inside it).
 const CREDITS_HEIGHT: f32 = 380.0;
 
 fn about(app: &mut EffectcraftApp, ctx: &egui::Context, t: &Tokens) {
@@ -288,15 +288,11 @@ fn about(app: &mut EffectcraftApp, ctx: &egui::Context, t: &Tokens) {
         ui.data_mut(|d| d.insert_temp(tab_id, tab));
         ui.separator();
         match tab {
-            1 | 2 => {
+            1 => {
                 let h = CREDITS_HEIGHT.min(ui.available_height().max(120.0));
                 ui.allocate_ui(vec2(ui.available_width(), h), |ui| {
                     ui.set_max_height(h);
-                    if tab == 1 {
-                        crate::credits::contributors_ui(ui, &mut app.auto);
-                    } else {
-                        crate::credits::models_ui(ui);
-                    }
+                    crate::credits::contributors_ui(ui, &mut app.auto);
                 });
             }
             _ => about_main(app, ui, t, &mut cmd),

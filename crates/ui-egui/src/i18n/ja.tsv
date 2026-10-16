@@ -3537,7 +3537,6 @@
 	GPU acceleration is unavailable; preview renders on the CPU	GPU アクセラレーションを利用できません。プレビューは CPU でレンダリングされます
 
 	Redrob Website	Redrob ウェブサイト
-	Redrob Film on redrob.io	redrob.io の Redrob Film
 	An agentic, pure-Rust non-linear video editor by Redrob.	Redrob による、エージェント駆動の純 Rust ノンリニア動画編集ソフト。
 	Links	リンク
 	Connect to Redrob…	Redrob に接続…

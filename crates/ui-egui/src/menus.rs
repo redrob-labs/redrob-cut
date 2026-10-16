@@ -130,7 +130,6 @@ pub const UI_COMMANDS: &[UiCommand] = &[
     uic!("mode.edit", "Edit", [], None),
     uic!("mode.export", "Export", ["File", "Export"], Some("Cmd+M")),
     uic!("help.website", "Redrob Website", ["Help"], None),
-    uic!("help.appPage", "Redrob Film on redrob.io", ["Help"], None),
     uic!("help.github", "Source code on GitHub", ["Help"], None),
     uic!("help.reportIssue", "Report an Issue…", ["Help"], None),
     uic!("account.connect", "Connect to Redrob…", ["Help"], None),

@@ -16,12 +16,10 @@ fn sibling(s: &mut Session, p: &Value) -> Result<Value> {
     if str_p(p, "kind") == Some("github") { open(s, links::github_of(&slug)) } else { open(s, links::page_of(&slug)) }
 }
 
-/// Help ▸ EffectCraft Help / Scripting Help / Expression Reference / Effect Reference.
+/// Help ▸ Redrob Film Help / Scripting Help.
 fn docs(s: &mut Session, p: &Value) -> Result<Value> {
     let page = match str_p(p, "page").unwrap_or("help") {
         "scripting" => "docs/control-protocol.md",
-        "expressions" => "docs/expressions.md",
-        "effects" => "docs/effects.md",
         "agents" => "docs/agents.md",
         _ => "README.md",
     };
@@ -30,7 +28,7 @@ fn docs(s: &mut Session, p: &Value) -> Result<Value> {
 
 pub fn specs() -> Vec<CommandSpec> {
     vec![
-        cmd!("help.docs", "Redrob Film Help...", [], Some("F1"), "{page?: help|scripting|expressions|effects|agents}", always, docs),
+        cmd!("help.docs", "Redrob Film Help...", [], Some("F1"), "{page?: help|scripting|agents}", always, docs),
         cmd!("help.issues", "Report an issue...", ["Help"], None, "{}", always, |s, _| open(s, links::ISSUES.into())),
         cmd!("help.website", "Redrob website", ["Help"], None, "{}", always, |s, _| open(s, links::WEBSITE.into())),
         cmd!("help.appPage", "Redrob Film Home Page", ["Help"], None, "{}", always, |s, _| open(s, links::APP_PAGE.into())),
