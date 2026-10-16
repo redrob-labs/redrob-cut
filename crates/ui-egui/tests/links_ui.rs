@@ -93,11 +93,11 @@ fn community_links_everywhere() {
     // Header: no third-party community button.
     assert!(d.ids("header.discord").is_empty());
     d.snapshot("header");
-    // About dialog: website first, then app page, GitHub, issues.
+    // About dialog: website first, then GitHub, issues.
     d.ok("engine.execute", json!({"command": "app.about", "params": {}}));
     d.frames(3);
     let about = d.ids("about.");
-    for id in ["about.website", "about.appPage", "about.github", "about.reportIssue"] {
+    for id in ["about.website", "about.github", "about.reportIssue"] {
         assert!(about.iter().any(|a| a == id), "{id} in {about:?}");
     }
     d.snapshot("about");
@@ -108,7 +108,7 @@ fn community_links_everywhere() {
     d.ok("engine.execute", json!({"command": "mode.import", "params": {}}));
     d.frames(3);
     let home = d.ids("import.link.");
-    for id in ["import.link.website", "import.link.appPage", "import.link.github", "import.link.reportIssue"] {
+    for id in ["import.link.website", "import.link.github", "import.link.reportIssue"] {
         assert!(home.iter().any(|a| a == id), "{id} in {home:?}");
     }
     d.snapshot("home");
