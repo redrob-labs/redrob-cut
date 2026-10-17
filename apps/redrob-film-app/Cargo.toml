@@ -49,8 +49,7 @@ redrob-effects-text = { workspace = true }
 # `filmcraft mcp`: the MCP server the built-in agent (Redrob Code) starts from this same executable.
 redrob-film-automation = { workspace = true }
 # The Redrob Code app bridge (`app_bridge.rs`): this window's tools, served to the shared daemon.
-# TODO pin to the tag of the redrob-code release that ships it
-redrob-app-bridge = { git = "https://github.com/redrob-labs/redrob-code", branch = "feat/channels-app-bridge" }
+redrob-app-bridge = { git = "https://github.com/redrob-labs/redrob-code", tag = "v0.7.0" }
 tokio = { version = "1", features = ["rt-multi-thread"] }
 egui = { workspace = true }
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "accesskit", "wayland", "x11"] }
