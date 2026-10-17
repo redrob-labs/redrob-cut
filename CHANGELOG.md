@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 -- 2026-10-17
+
+### Added
+
+- Control from Redrob Code: while the desktop app is open it registers itself with the shared Redrob
+  Code daemon through the app bridge (redrob-code v0.7.0 protocol), so the agent in any Redrob
+  surface can drive the open project through the `app:film` tools -- `project_info`, `open_project`,
+  `list_clips`, `trim_clip`, `split_clip`, `set_playhead`, `render` and `render_status`. The tools
+  run against the live editor, exactly as the menus do; the app works as usual when no daemon is
+  running.
+- Release: the 512 px app icon ships as `redrob-film.png`, named in `redrob-launcher.json` so Redrob
+  Launcher's catalog shows this release's own logo.
+
 ## 0.2.2 -- 2026-10-16
 
 ### Fixed

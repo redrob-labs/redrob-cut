@@ -303,6 +303,8 @@ pub struct ShellApp {
     last_title: Option<String>,
     /// A close was approved while Effects had unsaved changes: the next request passes.
     close_approved: bool,
+    /// The Redrob Code app bridge (`app_bridge.rs`), registered while the window lives.
+    app_bridge: Option<crate::app_bridge::BridgeHandle>,
 }
 
 impl ShellApp {
@@ -326,7 +328,14 @@ impl ShellApp {
             bundle: BundleTracker::default(),
             last_title: None,
             close_approved: false,
+            app_bridge: None,
         }
+    }
+
+    /// Keep the Redrob Code app bridge for the window's lifetime; it unregisters on exit.
+    pub fn with_app_bridge(mut self, bridge: crate::app_bridge::BridgeHandle) -> Self {
+        self.app_bridge = Some(bridge);
+        self
     }
 
     pub fn mode(&self) -> Mode {
@@ -806,6 +815,10 @@ impl eframe::App for ShellApp {
 
     fn on_exit(&mut self) {
         log::info!("closing in {} mode (pending {:?}); effects created: {}", self.mode().label(), self.pending_mode(), self.effects_created());
+        // Unregister from Redrob Code first, so the agent stops seeing tools the window is closing.
+        if let Some(bridge) = self.app_bridge.take() {
+            bridge.stop();
+        }
         eframe::App::on_exit(&mut self.edit);
         if let Some(app) = self.effects.as_mut() {
             eframe::App::on_exit(app);

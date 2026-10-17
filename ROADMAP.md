@@ -2,6 +2,15 @@
 
 ## Changes
 
+## 0.3.0
+
+The editor answers to Redrob Code.
+
+- **Control from Redrob Code.** The open app registers its tools with the shared Redrob Code daemon
+  (`app:film`): project info, open project, list clips, trim, split, playhead, render and render
+  status, run against the live editor. Without a daemon the app works as before.
+- **Launcher icon.** The release ships `redrob-film.png` and names it in `redrob-launcher.json`.
+
 ## 0.2.2
 
 Fixes from the second Windows round.
