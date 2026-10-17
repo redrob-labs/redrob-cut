@@ -34,6 +34,7 @@
 mod acp;
 mod agent_setup;
 mod ai;
+mod app_bridge;
 mod app_nap;
 mod appearance;
 mod args;
@@ -318,6 +319,10 @@ fn main() -> eframe::Result {
             // token that only the built-in agent's MCP server is handed.
             let token = control_port.is_none().then(agent_setup::control_token);
             let (rx, bound) = control_server::start(control_port.unwrap_or(0), cc.egui_ctx.clone(), token.clone());
+            // The Redrob Code app bridge (app_bridge.rs): the shared daemon's agent drives this
+            // window too, through the same channel; the bridge is optional (no daemon, no bridge).
+            let (rx, bridge_tx) = app_bridge::relay(rx);
+            let bridge = app_bridge::start(bridge_tx, cc.egui_ctx.clone());
             // The shell sits on the channel first (its own `mode.*` commands, the catalogue, a
             // `ui.*` refusal while Effects is on screen) and forwards the rest to the Edit editor.
             let (edit_tx, edit_rx) = std::sync::mpsc::channel();
@@ -336,7 +341,7 @@ fn main() -> eframe::Result {
                 }));
             }
             // One window, two modes: the Edit editor built above, Effects on its first switch.
-            Ok(Box::new(shell::ShellApp::new(app, Some(rx), edit_tx)))
+            Ok(Box::new(shell::ShellApp::new(app, Some(rx), edit_tx).with_app_bridge(bridge)))
         }),
     );
     // The window could not be created (no usable GPU / graphics driver, no display): say so

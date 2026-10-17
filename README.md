@@ -59,6 +59,21 @@ cargo run --release -p redrob-film-cli -- mcp          # MCP server (headless)
 Cargo packages keep upstream's `filmcraft*` names so upstream syncs merge cleanly; the executables,
 app id (`ai.redrob.film`), installers and everything a person sees are Redrob Film's.
 
+## Control from Redrob Code
+
+While the desktop app is open it registers itself with the shared Redrob Code daemon, so the agent in any Redrob surface (a phone chat included) can drive the open project through the `app:film` tools:
+
+- `project_info` - the project's file path, the active sequence's duration, frame rate, resolution, track and clip counts.
+- `open_project` - open a project file (`.rfilm`) and describe it.
+- `list_clips` - the sequence's clips (optionally one track): id, track, name, timeline in/out and source in/out in seconds.
+- `trim_clip` - move a clip's in and/or out point to new timeline positions in seconds.
+- `split_clip` - cut a clip in two at a timeline position; answers the ids of the pieces.
+- `set_playhead` - move the playhead to a timeline position in seconds.
+- `render` - start the app's own export job for the sequence (optional output path and preset); answers the job id and output path.
+- `render_status` - a render job's progress, and the written path once it has finished.
+
+The tools run against the live editor, exactly as the menus do; the app works as usual when no daemon is running.
+
 ## Branches and contributing
 
 - Default branch `develop`, release branch `main`. Branch names follow the `feat/ fix/ chore/ docs/
