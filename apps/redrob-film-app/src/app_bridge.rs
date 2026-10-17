@@ -124,9 +124,8 @@ impl Link {
         let (req, reply) = ControlRequest::new("engine.execute", json!({"command": command, "params": params}));
         self.tx.send(req).map_err(|_| "the editor's control channel is closed".to_string())?;
         self.ctx.request_repaint();
-        let answer = reply
-            .recv_timeout(REPLY_TIMEOUT)
-            .map_err(|_| format!("`{command}` got no answer from the editor within {} s", REPLY_TIMEOUT.as_secs()))?;
+        let answer =
+            reply.recv_timeout(REPLY_TIMEOUT).map_err(|_| format!("`{command}` got no answer from the editor within {} s", REPLY_TIMEOUT.as_secs()))?;
         if answer.get("ok").and_then(Value::as_bool) == Some(true) {
             Ok(answer.get("result").cloned().unwrap_or(Value::Null))
         } else {
@@ -168,7 +167,10 @@ fn tools(link: &Link) -> Vec<Tool> {
         tool(
             "list_clips",
             "List the active sequence's clips, one per line: id, track, name, timeline in/out and source in/out in seconds.",
-            object(json!({ "track": { "type": "string", "description": "Only this track: V1, A2, a track id or a track name. All tracks when omitted." } }), &[]),
+            object(
+                json!({ "track": { "type": "string", "description": "Only this track: V1, A2, a track id or a track name. All tracks when omitted." } }),
+                &[],
+            ),
             list_clips,
         ),
         tool(
@@ -261,6 +263,7 @@ fn secs(v: &Value) -> String {
 }
 
 /// One timeline track with its position label (`V1`, `A2`).
+#[derive(Debug)]
 struct TrackView<'a> {
     label: String,
     track: &'a Value,
@@ -570,7 +573,10 @@ mod tests {
 
     #[test]
     fn job_lines_cover_running_finished_and_failed() {
-        assert_eq!(job_line(&json!({"id": 3, "label": "Export x.mp4", "progress": 0.5, "etaSeconds": 12.4, "finished": false})), "job 3 \"Export x.mp4\": 50% done, about 12 s left");
+        assert_eq!(
+            job_line(&json!({"id": 3, "label": "Export x.mp4", "progress": 0.5, "etaSeconds": 12.4, "finished": false})),
+            "job 3 \"Export x.mp4\": 50% done, about 12 s left"
+        );
         let done = job_line(&json!({"id": 3, "label": "Export x.mp4", "finished": true, "result": {"path": "/out/x.mp4", "frames": 240, "bytes": 5_000_000}}));
         assert_eq!(done, "job 3 \"Export x.mp4\": finished -> /out/x.mp4 (240 frames, 5 MB)");
         assert!(job_line(&json!({"id": 3, "label": "Export", "finished": true, "result": {"error": "disk full"}})).ends_with("failed: disk full"));
